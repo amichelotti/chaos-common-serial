@@ -13,7 +13,13 @@
 #include "AbstractSerialComm.h"
 
 #include <pthread.h>
+#ifdef DEBUG
 #include "common/debug.h"
+#else
+#include <stdio.h>
+#define DPRINT(x,ARGS...)
+#define DERR(x,ARGS...)
+#endif
 #ifndef POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE
 #define POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE 8192
 #endif
