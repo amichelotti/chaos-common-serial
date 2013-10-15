@@ -39,6 +39,29 @@ namespace common {
             } ;
             
             
+
+            const char* serdev;
+	    int max_answer_size;
+            int baudrate,parity,bits,stop;
+
+            pthread_mutex_t serial_chan_mutex;
+        protected:
+            PosixSerialComm* serial;
+            // return number of char copied if success, negative otherwise
+            int check_and_extract(char*buffer,char*protbuf,int size);
+            // return the total size of the message
+            int build_cmd(int slave,char*protbuf,char* cmd);
+
+            // return 0 if ok
+            int sendAck(int ackType,int timeo);
+            // return the acktype or an error
+            int waitAck(int timeo);
+	    
+#ifdef DEBUG
+	    void showMessage(char*buf);
+#endif
+        public:
+
             enum OcemErrors {
                 OCEM_CANNOT_OPEN_DEVICE =-100,
                 OCEM_CANNOT_INITALIZE,
@@ -58,23 +81,6 @@ namespace common {
 		OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE
             } ;
 
-            const char* serdev;
-	    int max_answer_size;
-            int baudrate,parity,bits,stop;
-
-            pthread_mutex_t serial_chan_mutex;
-        protected:
-            PosixSerialComm* serial;
-            // return number of char copied if success, negative otherwise
-            int check_and_extract(char*buffer,char*protbuf,int size);
-            // return the total size of the message
-            int build_cmd(int slave,char*protbuf,char* cmd);
-
-            // return 0 if ok
-            int sendAck(int ackType,int timeo);
-            // return the acktype or an error
-            int waitAck(int timeo);
-        public:
             OcemProtocol(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
             ~OcemProtocol();
             /**

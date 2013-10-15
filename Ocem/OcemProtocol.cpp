@@ -7,7 +7,7 @@
 //
 
 #include "OcemProtocol.h"
-
+#include <sstream>
 using namespace common::serial;
 
 OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
@@ -81,31 +81,34 @@ int OcemProtocol::sendAck(int ackType,int timeo){
 int OcemProtocol::check_and_extract(char *buffer, char *protbuf, int size){
     char *pntd= buffer;
     char *pnts= protbuf;
-    char crc=pnts[0];
+    char crc=0;
     int cnt=0;
     *pntd=0;
-    while((cnt<size) && (cnt<max_answer_size)&& (*pnts!=ETX)){
-        crc^=pnts[cnt];
-        if(cnt>0){
-            *pntd++=pnts[cnt];
-        }
-        cnt++;
+    while((cnt<size) && (cnt<max_answer_size)&& (pnts[cnt]!=ETX)){
+      crc^=pnts[cnt];
+      if(cnt>0){
+	*pntd++=pnts[cnt];
+      }
+      cnt++;
     }
     *pntd=0;
-    if(*pnts==ETX){
-        if(*(pnts+1) == crc){
-            DPRINT("crc check ok, message length %d\n",cnt-1);
-            return cnt-1;
-        } else {
-            DERR("crc check FAILED, calc %d, expected %d\n",crc,*(pnts+1));
-            return OCEM_POLL_ANSWER_CRC_FAILED;
-        }
+    if(pnts[cnt]==ETX){
+      crc^=pnts[cnt];
+      crc|=0x80;
+      if(pnts[cnt+1] == crc){
+	DPRINT("crc check ok, message length %d\n",cnt-1);
+	return cnt-1;
+      } else {
+	DERR("crc check FAILED, calc 0x%x, expected 0x%x\n",crc,pnts[cnt+1]);
+	return OCEM_POLL_ANSWER_CRC_FAILED;
+	
+      }
     } else {
-        DERR(" no ETX mactched size msg %d\n",cnt);
-        return OCEM_NO_ETX_MATCHED;
-        
+      DERR(" no ETX mactched size msg %d\n",cnt);
+      return OCEM_NO_ETX_MATCHED;
+      
     }
-    return 0;
+return 0;
 }
 int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     char bufreq[4];
@@ -139,19 +142,24 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     if(ret == EOT){
         DPRINT("slave %d says NO TRAFFIC\n",slave);
         pthread_mutex_unlock(&serial_chan_mutex);
-        return 0;
+        return OCEM_NO_TRAFFIC;
     } else if(ret == STX){
         int slave_rec;
+	int fetch=1;
         // answer with data
         tot = 0;
         //get the rest of the message
         DPRINT("slave %d has something, receiving...\n",slave);
-        while((tot<max_answer_size)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)&&(tmpbuf[tot]!=ETX)){
-            tot++;
+        while((tot<max_answer_size)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)&&(fetch<2)){
+	  if(tmpbuf[tot]==ETX){
+	    DPRINT("termination found %d characters\n",tot+1);
+	    fetch++;
+	  }
+	  tot++;	    
         }
-        slave_rec= tmpbuf[1] - 0x40;
+        slave_rec= tmpbuf[0] - 0x40;
         if(timeoccur)*timeoccur=timeor;
-        DPRINT("received %d bytes from %d (expected %d) , \n",tot,slave_rec,slave);
+        DPRINT("received %d bytes from %d [%d] (expected %d[%d]) , \n",tot,slave_rec,tmpbuf[0],slave,bufreq[1]);
         if(ret<0){
             DERR(" error reading message from slave %d ret %d, timeocc %d \n",slave,ret,timeor);
             pthread_mutex_unlock(&serial_chan_mutex);
@@ -165,8 +173,8 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
             return OCEM_UNEXPECTED_SLAVE_ANSWER;
         }
         
-        if(tmpbuf[tot]==ETX){
-            DPRINT("valid terminator found, checking and extracting message\n");
+        if(tmpbuf[tot-1]==ETX){
+	  DPRINT("valid terminator found crc x%x, checking and extracting message\n",tmpbuf[tot]);
             if((ret= check_and_extract(buf,&tmpbuf[0], size<tot?size:tot))>0){
                 int retack;
                 DPRINT("slave %d says:\"%s\"\n",slave,buf);
@@ -199,23 +207,56 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     return ret;
     
 }
+#ifdef DEBUG
+void OcemProtocol::showMessage(char*buf){
+  int stat=0;
+  int cnt;
+  std::stringstream msg;
+  char stringa[1024];
+  *stringa=0;
+  for(cnt=0;(cnt<max_answer_size) && (stat < 4);cnt++){
+    if(buf[cnt]==STX){
+      msg<< "<STX>";
+      stat++;
+    } else if(buf[cnt]==ETX){
+       msg<< "<ETX>";
+      stat++;
+    } else  if( stat==1){
+      msg<<"<"<<std::hex<<int(buf[cnt])<<">";
+      stat++;
+    } else  if( stat==2){
+      msg.put(buf[cnt]);
+    } else if(stat == 3){
+      msg <<"<"<<std::hex<<int(buf[cnt])<<">";
+      stat++;
+    }
+  }
 
+  DPRINT("%s\n",msg.str().c_str());
+
+
+}
+#endif
 int OcemProtocol::build_cmd(int slave,char*protbuf,char* cmd){
-    int cnt;
+  int cnt,cntt;
     char crc=0;
     protbuf[0]=STX;
     protbuf[1] = slave + 0x60;
-    for(cnt=0;(cnt<max_answer_size) && cmd&& (cmd[cnt]!=0);cnt++){
+    for(cnt=0,cntt=0;(cnt<max_answer_size) && cmd&& (cmd[cntt]!=0);cnt++){
         if(cnt>1){
-            protbuf[cnt] = cmd[cnt];
+            protbuf[cnt] = cmd[cntt];
+	    cntt++;
         }
         if(cnt>0)
-            crc^=protbuf[cnt];
+	  crc^=protbuf[cnt];
     }
     protbuf[cnt++] = ETX;
     crc^=ETX|0x80;
     protbuf[cnt++] = crc;
     DPRINT("msg size %d crc x%x\n",cnt,crc);
+#ifdef DEBUG
+    showMessage(protbuf);
+#endif
     return cnt;
 }
 
@@ -229,7 +270,7 @@ int OcemProtocol::waitAck(int timeo){
         return OCEM_READ_FAILED;
     }
 
-    DPRINT("received %d bytes answer, %d timeoccur\n",ret,timeor);
+    DPRINT("received %d [x%x] bytes answer, timeoccur %d\n",ret,tmpbuf,timeor);
     
     if(ret == 0){
         DERR("no answer from slave within %d ms, timeoccur %d\n",timeo,timeor);
