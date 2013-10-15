@@ -13,8 +13,9 @@
 #include "AbstractSerialComm.h"
 
 #include <pthread.h>
+
 #ifdef DEBUG
-#include "common/debug.h"
+#include "common/debug/debug.h"
 #else
 #include <stdio.h>
 #define DPRINT(x,ARGS...)
@@ -61,7 +62,9 @@ namespace common {
             
             int run_write();
             int run_read();
-
+#if 0
+            inline int search_delim(int start,int end, char delim);
+#endif
 	    int read_async_atomic(void *buffer,int nb);
 	    int write_async_atomic(void *buffer,int nb);
         public:
@@ -89,7 +92,19 @@ namespace common {
              @return number of bytes read, negative on error or timeout
              */
             int read(void *buffer,int nb,int ms_timeo=0,int*timeout_arised=0);
+         
             
+            /**
+             search for the specified delimiter and if it's found read the buffer till the specified terminator (included)
+             @param buffer destination buffer
+             @param nb max number of bytes to read
+             @param delim delimite
+             @param timeo milliseconds of timeouts, 0= no timeout
+             @param timeout_arised returns if a timeout has been triggered
+             @return number of bytes read, negative on error or timeout
+             */
+            int search_and_read(void *buffer,int nb,char delim,int ms_timeo=0,int*timeout_arised=0);
+
             /**
              reads (asynchronous) nb bytes from channel
              @param buffer destination buffer

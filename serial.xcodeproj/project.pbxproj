@@ -14,6 +14,10 @@
 		5348EA6217F068F40054D559 /* AbstractSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 5348EA6017F068F40054D559 /* AbstractSerialComm.h */; };
 		5348EA6517F06E8E0054D559 /* PosixSerialComm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */; };
 		5348EA6617F06E8E0054D559 /* PosixSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 5348EA6417F06E8E0054D559 /* PosixSerialComm.h */; };
+		53A3D5A71805A38500E7579A /* posixserialcomm_cwrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */; };
+		53A3D5A81805A38500E7579A /* posixserialcomm_cwrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */; };
+		53A3D5AB1805A68800E7579A /* OcemProtocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5A91805A68800E7579A /* OcemProtocol.cpp */; };
+		53A3D5AC1805A68800E7579A /* OcemProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5AA1805A68800E7579A /* OcemProtocol.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +42,10 @@
 		5348EA6017F068F40054D559 /* AbstractSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerialComm.h; path = source/AbstractSerialComm.h; sourceTree = "<group>"; };
 		5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixSerialComm.cpp; path = source/PosixSerialComm.cpp; sourceTree = "<group>"; };
 		5348EA6417F06E8E0054D559 /* PosixSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixSerialComm.h; path = source/PosixSerialComm.h; sourceTree = "<group>"; };
+		53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = posixserialcomm_cwrap.cpp; path = source/posixserialcomm_cwrap.cpp; sourceTree = "<group>"; };
+		53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = posixserialcomm_cwrap.h; path = source/posixserialcomm_cwrap.h; sourceTree = "<group>"; };
+		53A3D5A91805A68800E7579A /* OcemProtocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcemProtocol.cpp; sourceTree = "<group>"; };
+		53A3D5AA1805A68800E7579A /* OcemProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcemProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,12 +87,15 @@
 		533EF90E17E9F300004094C6 /* common_serial */ = {
 			isa = PBXGroup;
 			children = (
+				53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */,
+				53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */,
 				533EF90A17E9F2F7004094C6 /* serial.h */,
 				533EF90B17E9F2F7004094C6 /* serial.cpp */,
 				5348EA5F17F068F40054D559 /* AbstractSerialComm.cpp */,
 				5348EA6017F068F40054D559 /* AbstractSerialComm.h */,
 				5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */,
 				5348EA6417F06E8E0054D559 /* PosixSerialComm.h */,
+				53A3D5AD1807EAFD00E7579A /* Ocem */,
 			);
 			name = common_serial;
 			sourceTree = "<group>";
@@ -97,6 +108,15 @@
 			name = test_serial;
 			sourceTree = "<group>";
 		};
+		53A3D5AD1807EAFD00E7579A /* Ocem */ = {
+			isa = PBXGroup;
+			children = (
+				53A3D5A91805A68800E7579A /* OcemProtocol.cpp */,
+				53A3D5AA1805A68800E7579A /* OcemProtocol.h */,
+			);
+			name = Ocem;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -104,6 +124,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53A3D5AC1805A68800E7579A /* OcemProtocol.h in Headers */,
+				53A3D5A81805A38500E7579A /* posixserialcomm_cwrap.h in Headers */,
 				533EF90C17E9F2F7004094C6 /* serial.h in Headers */,
 				5348EA6217F068F40054D559 /* AbstractSerialComm.h in Headers */,
 				5348EA6617F06E8E0054D559 /* PosixSerialComm.h in Headers */,
@@ -180,7 +202,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				533EF90D17E9F2F7004094C6 /* serial.cpp in Sources */,
+				53A3D5A71805A38500E7579A /* posixserialcomm_cwrap.cpp in Sources */,
 				5348EA6117F068F40054D559 /* AbstractSerialComm.cpp in Sources */,
+				53A3D5AB1805A68800E7579A /* OcemProtocol.cpp in Sources */,
 				5348EA6517F06E8E0054D559 /* PosixSerialComm.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -257,6 +281,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
 				OTHER_LDFLAGS = (
@@ -296,7 +321,7 @@
 		533EF91A17E9F342004094C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
 				OTHER_LDFLAGS = (
@@ -317,7 +342,7 @@
 		533EF91B17E9F342004094C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
 				OTHER_LDFLAGS = (

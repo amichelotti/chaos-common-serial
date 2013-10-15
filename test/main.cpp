@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   desc.add_options()("cycles", boost::program_options::value<int>(),"test cycles and memory allocated");
   // put your additional options here
   desc.add_options()("dev", boost::program_options::value<std::string>(), "serial dev parameters </dev/ttySxx>,<baudrate>,<parity>,<bits>,<stop>");
-  desc.add_options()("buf", boost::program_options::value<std::int>(8192), "internal buffer");
+    desc.add_options()("buf", boost::program_options::value<int>(), "internal buffer");
     
   //////
   boost::program_options::variables_map vm;

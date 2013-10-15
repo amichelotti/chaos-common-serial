@@ -18,6 +18,6 @@
  *    	limitations under the License.
  */
 
-#include "serial.h"
+#include "common/serial/serial.h"
 
 using namespace common::serial;

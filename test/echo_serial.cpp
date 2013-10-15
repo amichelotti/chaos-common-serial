@@ -7,8 +7,8 @@
 //
 
 
-#include "serial.h"
-#include "posixserialcomm_cwrap.h"
+#include "common/serial/serial.h"
+
 using namespace common::serial;
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>

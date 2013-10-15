@@ -23,7 +23,8 @@ namespace common {
             SERIAL_CANNOT_SET_PARAMETERS,
             SERIAL_CANNOT_ALLOCATE_RESOURCES,
             SERIAL_TIMEOUT,
-            SERIAL_READ_ERROR
+            SERIAL_READ_ERROR,
+            SERIAL_CANNOT_FIND_DELIM
         } serial_error_t;
         
         // put your code here
