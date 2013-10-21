@@ -8,6 +8,7 @@
 
 
 #include "common/serial/serial.h"
+#include "common/debug/debug.h"
 
 using namespace common::serial;
 #include <boost/program_options.hpp>

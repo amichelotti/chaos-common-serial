@@ -64,7 +64,7 @@ void* read_th(void*arg){
   th_param_t* args=(th_param_t*)arg;
   int size = args->size;
   int start_size=args->start_size;
-  unsigned *wptr=args->wptr;
+
   unsigned*rptr= args->rptr;
   int comm = args->comm;
 

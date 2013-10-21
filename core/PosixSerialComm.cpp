@@ -6,6 +6,10 @@
 //  Created by andrea michelotti on 9/23/13.
 //  Copyright (c) 2013 andrea michelotti. All rights reserved.
 
+#ifdef POSIX_SERIAL_COMM_DEBUG
+#define DEBUG
+#endif
+#include "common/debug/debug.h"
 
 #include "PosixSerialComm.h"
 #include <fcntl.h>

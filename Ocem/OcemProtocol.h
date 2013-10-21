@@ -9,16 +9,14 @@
 #ifndef __serial__OcemProtocol__
 #define __serial__OcemProtocol__
 
+#ifdef OCEM_PROTOCOL_DEBUG
+#define DEBUG
+#endif
+#include "common/debug/debug.h"
+
 #include <iostream>
 #include "common/serial/serial.h"
 
-#ifdef DEBUG
-#include "common/debug/debug.h"
-#else
-#include <stdio.h>
-#define DPRINT(x,ARGS...)
-#define DERR(x,ARGS...)
-#endif
 #ifndef POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE
 #define POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE 8192
 #endif

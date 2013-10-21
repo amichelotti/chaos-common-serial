@@ -1,7 +1,13 @@
 #include "posixserialcomm_cwrap.h"
 #include "PosixSerialComm.h"
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef POSIX_SERIAL_COMM_CWRAP_DEBUG
+#define DEBUG
+#endif
+#include "common/debug/debug.h"
+
 #define MAX_HANDLE 100
 extern "C" {
 

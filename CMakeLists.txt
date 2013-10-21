@@ -22,7 +22,7 @@ if( DEFINED ENV{CHAOS_FRAMEWORK} )
       set (PROJECT_SOURCE_DIR $ENV{CHAOS_FRAMEWORK})
       INCLUDE_DIRECTORIES(../../ test ${PROJECT_SOURCE_DIR}/usr/local/include)
       LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/usr/local/lib)
-      ADD_DEFINITIONS(-g -O2 -Wall -DDEBUG)
+      ADD_DEFINITIONS(-g -O2 -Wall)
       
       FILE(GLOB serial_test_src test/*.cpp)
       ADD_EXECUTABLE(test_serial test/test_serial.cpp)
