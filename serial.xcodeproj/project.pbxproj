@@ -387,6 +387,8 @@
 		533EF90817E9F252004094C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
@@ -406,6 +408,8 @@
 		533EF90917E9F252004094C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
@@ -424,6 +428,8 @@
 		533EF91A17E9F342004094C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DSTROOT = /;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
@@ -442,6 +448,8 @@
 		533EF91B17E9F342004094C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DSTROOT = /;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
@@ -460,6 +468,8 @@
 		53A3D5D11817B9E200E7579A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -488,6 +498,8 @@
 		53A3D5D21817B9E200E7579A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;

@@ -24,7 +24,7 @@
 // include your class/functions headers here
 #include "common/serial/core/AbstractSerialComm.h"
 #include "common/serial/core/PosixSerialComm.h"
-#include "common/serial/posixserialcomm_cwrap.h"
+#include "common/serial/core/posixserialcomm_cwrap.h"
 
 namespace common {
   namespace serial {
