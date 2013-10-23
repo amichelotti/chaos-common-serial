@@ -1,5 +1,4 @@
-#include "posixserialcomm_cwrap.h"
-#include "PosixSerialComm.h"
+#include "serial.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

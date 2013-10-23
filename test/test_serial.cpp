@@ -77,7 +77,7 @@ void* read_th(void*arg){
       usleep(100000);
     }
     */
-    DPRINT("%d] reading %d bytes at @x%x\n",cnt ,cnt*4, (char*)wptr + start_size);
+    DPRINT("%d] reading %d bytes at @x%x\n",cnt ,cnt*4, (char*)rptr + start_size);
     ret=  LVread_serial(comm,(char*)rptr + start_size,cnt*4,-1,&timeo);
     DPRINT("%d] READ %d bytes\n",cnt,ret);
     if(ret!=cnt*4) {

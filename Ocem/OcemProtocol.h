@@ -96,7 +96,7 @@ namespace common {
              perform a select request toward the given slave
              @param slave slave address
              @param command a zero terminated string containing the command
-             @param timeo timeout in milliseconds (0 indefinite wait)
+             @param timeo timeout in milliseconds (=0 indefinite wait)
              @param timeoccur return 1 if a timeout occured
              @return the number of characters of the command sent or negative for error
              */

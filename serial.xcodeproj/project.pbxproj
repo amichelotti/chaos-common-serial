@@ -7,21 +7,58 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		533EF90C17E9F2F7004094C6 /* serial.h in Headers */ = {isa = PBXBuildFile; fileRef = 533EF90A17E9F2F7004094C6 /* serial.h */; };
-		533EF90D17E9F2F7004094C6 /* serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 533EF90B17E9F2F7004094C6 /* serial.cpp */; };
-		533EF91D17E9F365004094C6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 533EF91C17E9F365004094C6 /* main.cpp */; };
-		5348EA6117F068F40054D559 /* AbstractSerialComm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5348EA5F17F068F40054D559 /* AbstractSerialComm.cpp */; };
-		5348EA6217F068F40054D559 /* AbstractSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 5348EA6017F068F40054D559 /* AbstractSerialComm.h */; };
-		5348EA6517F06E8E0054D559 /* PosixSerialComm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */; };
-		5348EA6617F06E8E0054D559 /* PosixSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 5348EA6417F06E8E0054D559 /* PosixSerialComm.h */; };
-		53A3D5A71805A38500E7579A /* posixserialcomm_cwrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */; };
-		53A3D5A81805A38500E7579A /* posixserialcomm_cwrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */; };
-		53A3D5AB1805A68800E7579A /* OcemProtocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5A91805A68800E7579A /* OcemProtocol.cpp */; };
-		53A3D5AC1805A68800E7579A /* OcemProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5AA1805A68800E7579A /* OcemProtocol.h */; };
+		5318892C1817DA660058D1F5 /* serial.h in Headers */ = {isa = PBXBuildFile; fileRef = 5318892B1817DA660058D1F5 /* serial.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5318892D1817DC710058D1F5 /* OcemProtocol.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 53A3D5C51817B89E00E7579A /* OcemProtocol.h */; };
+		53A3D5BB1817B87800E7579A /* AbstractSerialComm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5B31817B87800E7579A /* AbstractSerialComm.cpp */; };
+		53A3D5BC1817B87800E7579A /* AbstractSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5B41817B87800E7579A /* AbstractSerialComm.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		53A3D5BD1817B87800E7579A /* PosixSerialComm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5B51817B87800E7579A /* PosixSerialComm.cpp */; };
+		53A3D5BE1817B87800E7579A /* PosixSerialComm.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5B61817B87800E7579A /* PosixSerialComm.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		53A3D5BF1817B87800E7579A /* posixserialcomm_cwrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5B71817B87800E7579A /* posixserialcomm_cwrap.cpp */; };
+		53A3D5C01817B87800E7579A /* posixserialcomm_cwrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 53A3D5B81817B87800E7579A /* posixserialcomm_cwrap.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53A3D5C21817B87800E7579A /* serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5BA1817B87800E7579A /* serial.cpp */; };
+		53A3D5C61817B89E00E7579A /* OcemProtocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5C41817B89E00E7579A /* OcemProtocol.cpp */; };
+		53A3D5C91817B97000E7579A /* test_serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53A3D5C81817B97000E7579A /* test_serial.cpp */; };
+		53ECE3B01817BABF00ABD226 /* echo_serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53ECE3AF1817BABF00ABD226 /* echo_serial.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		5318892E1817DF670058D1F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 533EF8FB17E9F252004094C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 533EF90217E9F252004094C6;
+			remoteInfo = common_serial;
+		};
+		531889301817E0520058D1F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 533EF8FB17E9F252004094C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 533EF90217E9F252004094C6;
+			remoteInfo = common_serial;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
+		5318892A1817D98B0058D1F5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PUBLIC_HEADERS_FOLDER_PATH)/Ocem";
+			dstSubfolderSpec = 0;
+			files = (
+				5318892D1817DC710058D1F5 /* OcemProtocol.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		533EF91117E9F342004094C6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		53A3D5CC1817B9E100E7579A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -33,19 +70,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5318892B1817DA660058D1F5 /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serial.h; sourceTree = "<group>"; };
 		533EF90317E9F252004094C6 /* libcommon_serial.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcommon_serial.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		533EF90A17E9F2F7004094C6 /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serial.h; path = source/serial.h; sourceTree = "<group>"; };
-		533EF90B17E9F2F7004094C6 /* serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = serial.cpp; path = source/serial.cpp; sourceTree = "<group>"; };
 		533EF91317E9F342004094C6 /* test_serial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_serial; sourceTree = BUILT_PRODUCTS_DIR; };
-		533EF91C17E9F365004094C6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = test/main.cpp; sourceTree = "<group>"; };
-		5348EA5F17F068F40054D559 /* AbstractSerialComm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractSerialComm.cpp; path = source/AbstractSerialComm.cpp; sourceTree = "<group>"; };
-		5348EA6017F068F40054D559 /* AbstractSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerialComm.h; path = source/AbstractSerialComm.h; sourceTree = "<group>"; };
-		5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixSerialComm.cpp; path = source/PosixSerialComm.cpp; sourceTree = "<group>"; };
-		5348EA6417F06E8E0054D559 /* PosixSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixSerialComm.h; path = source/PosixSerialComm.h; sourceTree = "<group>"; };
-		53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = posixserialcomm_cwrap.cpp; path = source/posixserialcomm_cwrap.cpp; sourceTree = "<group>"; };
-		53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = posixserialcomm_cwrap.h; path = source/posixserialcomm_cwrap.h; sourceTree = "<group>"; };
-		53A3D5A91805A68800E7579A /* OcemProtocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcemProtocol.cpp; sourceTree = "<group>"; };
-		53A3D5AA1805A68800E7579A /* OcemProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcemProtocol.h; sourceTree = "<group>"; };
+		53A3D5B31817B87800E7579A /* AbstractSerialComm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractSerialComm.cpp; sourceTree = "<group>"; };
+		53A3D5B41817B87800E7579A /* AbstractSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractSerialComm.h; sourceTree = "<group>"; };
+		53A3D5B51817B87800E7579A /* PosixSerialComm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PosixSerialComm.cpp; sourceTree = "<group>"; };
+		53A3D5B61817B87800E7579A /* PosixSerialComm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PosixSerialComm.h; sourceTree = "<group>"; };
+		53A3D5B71817B87800E7579A /* posixserialcomm_cwrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = posixserialcomm_cwrap.cpp; sourceTree = "<group>"; };
+		53A3D5B81817B87800E7579A /* posixserialcomm_cwrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = posixserialcomm_cwrap.h; sourceTree = "<group>"; };
+		53A3D5BA1817B87800E7579A /* serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cpp; sourceTree = "<group>"; };
+		53A3D5C41817B89E00E7579A /* OcemProtocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcemProtocol.cpp; sourceTree = "<group>"; };
+		53A3D5C51817B89E00E7579A /* OcemProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcemProtocol.h; sourceTree = "<group>"; };
+		53A3D5C81817B97000E7579A /* test_serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_serial.cpp; path = test/test_serial.cpp; sourceTree = "<group>"; };
+		53A3D5CE1817B9E100E7579A /* echo_serial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = echo_serial; sourceTree = BUILT_PRODUCTS_DIR; };
+		53ECE3AF1817BABF00ABD226 /* echo_serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = echo_serial.cpp; path = test/echo_serial.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +102,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		53A3D5CB1817B9E100E7579A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -71,6 +117,7 @@
 			children = (
 				533EF90E17E9F300004094C6 /* common_serial */,
 				533EF91417E9F342004094C6 /* test_serial */,
+				53A3D5CF1817B9E200E7579A /* echo_serial */,
 				533EF90417E9F252004094C6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +127,7 @@
 			children = (
 				533EF90317E9F252004094C6 /* libcommon_serial.dylib */,
 				533EF91317E9F342004094C6 /* test_serial */,
+				53A3D5CE1817B9E100E7579A /* echo_serial */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,15 +135,9 @@
 		533EF90E17E9F300004094C6 /* common_serial */ = {
 			isa = PBXGroup;
 			children = (
-				53A3D5A51805A38500E7579A /* posixserialcomm_cwrap.cpp */,
-				53A3D5A61805A38500E7579A /* posixserialcomm_cwrap.h */,
-				533EF90A17E9F2F7004094C6 /* serial.h */,
-				533EF90B17E9F2F7004094C6 /* serial.cpp */,
-				5348EA5F17F068F40054D559 /* AbstractSerialComm.cpp */,
-				5348EA6017F068F40054D559 /* AbstractSerialComm.h */,
-				5348EA6317F06E8E0054D559 /* PosixSerialComm.cpp */,
-				5348EA6417F06E8E0054D559 /* PosixSerialComm.h */,
-				53A3D5AD1807EAFD00E7579A /* Ocem */,
+				5318892B1817DA660058D1F5 /* serial.h */,
+				53A3D5C31817B89E00E7579A /* Ocem */,
+				53A3D5B21817B87800E7579A /* core */,
 			);
 			name = common_serial;
 			sourceTree = "<group>";
@@ -103,18 +145,40 @@
 		533EF91417E9F342004094C6 /* test_serial */ = {
 			isa = PBXGroup;
 			children = (
-				533EF91C17E9F365004094C6 /* main.cpp */,
+				53A3D5C81817B97000E7579A /* test_serial.cpp */,
 			);
 			name = test_serial;
 			sourceTree = "<group>";
 		};
-		53A3D5AD1807EAFD00E7579A /* Ocem */ = {
+		53A3D5B21817B87800E7579A /* core */ = {
 			isa = PBXGroup;
 			children = (
-				53A3D5A91805A68800E7579A /* OcemProtocol.cpp */,
-				53A3D5AA1805A68800E7579A /* OcemProtocol.h */,
+				53A3D5B31817B87800E7579A /* AbstractSerialComm.cpp */,
+				53A3D5B41817B87800E7579A /* AbstractSerialComm.h */,
+				53A3D5B51817B87800E7579A /* PosixSerialComm.cpp */,
+				53A3D5B61817B87800E7579A /* PosixSerialComm.h */,
+				53A3D5B71817B87800E7579A /* posixserialcomm_cwrap.cpp */,
+				53A3D5B81817B87800E7579A /* posixserialcomm_cwrap.h */,
+				53A3D5BA1817B87800E7579A /* serial.cpp */,
 			);
-			name = Ocem;
+			path = core;
+			sourceTree = "<group>";
+		};
+		53A3D5C31817B89E00E7579A /* Ocem */ = {
+			isa = PBXGroup;
+			children = (
+				53A3D5C41817B89E00E7579A /* OcemProtocol.cpp */,
+				53A3D5C51817B89E00E7579A /* OcemProtocol.h */,
+			);
+			path = Ocem;
+			sourceTree = "<group>";
+		};
+		53A3D5CF1817B9E200E7579A /* echo_serial */ = {
+			isa = PBXGroup;
+			children = (
+				53ECE3AF1817BABF00ABD226 /* echo_serial.cpp */,
+			);
+			path = echo_serial;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,11 +188,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53A3D5AC1805A68800E7579A /* OcemProtocol.h in Headers */,
-				53A3D5A81805A38500E7579A /* posixserialcomm_cwrap.h in Headers */,
-				533EF90C17E9F2F7004094C6 /* serial.h in Headers */,
-				5348EA6217F068F40054D559 /* AbstractSerialComm.h in Headers */,
-				5348EA6617F06E8E0054D559 /* PosixSerialComm.h in Headers */,
+				53A3D5C01817B87800E7579A /* posixserialcomm_cwrap.h in Headers */,
+				5318892C1817DA660058D1F5 /* serial.h in Headers */,
+				53A3D5BC1817B87800E7579A /* AbstractSerialComm.h in Headers */,
+				53A3D5BE1817B87800E7579A /* PosixSerialComm.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +205,7 @@
 				533EF8FF17E9F252004094C6 /* Sources */,
 				533EF90017E9F252004094C6 /* Frameworks */,
 				533EF90117E9F252004094C6 /* Headers */,
+				5318892A1817D98B0058D1F5 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -163,10 +227,29 @@
 			buildRules = (
 			);
 			dependencies = (
+				5318892F1817DF670058D1F5 /* PBXTargetDependency */,
 			);
 			name = test_serial;
 			productName = test_serial;
 			productReference = 533EF91317E9F342004094C6 /* test_serial */;
+			productType = "com.apple.product-type.tool";
+		};
+		53A3D5CD1817B9E100E7579A /* echo_serial */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 53A3D5D01817B9E200E7579A /* Build configuration list for PBXNativeTarget "echo_serial" */;
+			buildPhases = (
+				53A3D5CA1817B9E100E7579A /* Sources */,
+				53A3D5CB1817B9E100E7579A /* Frameworks */,
+				53A3D5CC1817B9E100E7579A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				531889311817E0520058D1F5 /* PBXTargetDependency */,
+			);
+			name = echo_serial;
+			productName = echo_serial;
+			productReference = 53A3D5CE1817B9E100E7579A /* echo_serial */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -192,6 +275,7 @@
 			targets = (
 				533EF90217E9F252004094C6 /* common_serial */,
 				533EF91217E9F342004094C6 /* test_serial */,
+				53A3D5CD1817B9E100E7579A /* echo_serial */,
 			);
 		};
 /* End PBXProject section */
@@ -201,11 +285,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				533EF90D17E9F2F7004094C6 /* serial.cpp in Sources */,
-				53A3D5A71805A38500E7579A /* posixserialcomm_cwrap.cpp in Sources */,
-				5348EA6117F068F40054D559 /* AbstractSerialComm.cpp in Sources */,
-				53A3D5AB1805A68800E7579A /* OcemProtocol.cpp in Sources */,
-				5348EA6517F06E8E0054D559 /* PosixSerialComm.cpp in Sources */,
+				53A3D5BB1817B87800E7579A /* AbstractSerialComm.cpp in Sources */,
+				53A3D5BF1817B87800E7579A /* posixserialcomm_cwrap.cpp in Sources */,
+				53A3D5BD1817B87800E7579A /* PosixSerialComm.cpp in Sources */,
+				53A3D5C61817B89E00E7579A /* OcemProtocol.cpp in Sources */,
+				53A3D5C21817B87800E7579A /* serial.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,11 +297,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				533EF91D17E9F365004094C6 /* main.cpp in Sources */,
+				53A3D5C91817B97000E7579A /* test_serial.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		53A3D5CA1817B9E100E7579A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53ECE3B01817BABF00ABD226 /* echo_serial.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5318892F1817DF670058D1F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 533EF90217E9F252004094C6 /* common_serial */;
+			targetProxy = 5318892E1817DF670058D1F5 /* PBXContainerItemProxy */;
+		};
+		531889311817E0520058D1F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 533EF90217E9F252004094C6 /* common_serial */;
+			targetProxy = 531889301817E0520058D1F5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		533EF90517E9F252004094C6 /* Debug */ = {
@@ -233,6 +338,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -266,6 +372,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -280,60 +387,53 @@
 		533EF90817E9F252004094C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
-				OTHER_LDFLAGS = (
-					"-lboost_chrono",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_program_options",
-					"-lboost_regex",
-					"-lboost_filesystem",
-					"-lboost_log",
-					"-lboost_log_setup",
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../",
+					"$(SRCROOT)/../../usr/local/include",
 				);
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/lib";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
+				OTHER_LDFLAGS = "-lcommon_debug";
+				PRIVATE_HEADERS_FOLDER_PATH = "$(SRCROOT)/../../usr/local/include/common/serial/core";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(SRCROOT)/../../usr/local/include/common/serial";
 			};
 			name = Debug;
 		};
 		533EF90917E9F252004094C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
-				OTHER_LDFLAGS = (
-					"-lboost_chrono",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_program_options",
-					"-lboost_regex",
-					"-lboost_filesystem",
-					"-lboost_log",
-					"-lboost_log_setup",
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../",
+					"$(SRCROOT)/../../usr/local/include",
 				);
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/lib";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
+				OTHER_LDFLAGS = "-lcommon_debug";
+				PRIVATE_HEADERS_FOLDER_PATH = "$(SRCROOT)/../../usr/local/include/common/serial/core";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "$(SRCROOT)/../../usr/local/include/common/serial";
 			};
 			name = Release;
 		};
 		533EF91A17E9F342004094C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DSTROOT = /;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/bin";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
 				OTHER_LDFLAGS = (
+					"-lcommon_debug",
 					"-lcommon_serial",
-					"-lboost_chrono",
-					"-lboost_system",
-					"-lboost_thread",
 					"-lboost_program_options",
 					"-lboost_regex",
-					"-lboost_filesystem",
-					"-lboost_log",
-					"-lboost_log_setup",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -342,19 +442,69 @@
 		533EF91B17E9F342004094C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DSTROOT = /;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/bin";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
 				OTHER_LDFLAGS = (
+					"-lcommon_debug",
 					"-lcommon_serial",
-					"-lboost_chrono",
-					"-lboost_system",
-					"-lboost_thread",
 					"-lboost_program_options",
 					"-lboost_regex",
-					"-lboost_filesystem",
-					"-lboost_log",
-					"-lboost_log_setup",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		53A3D5D11817B9E200E7579A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				DSTROOT = /;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/bin";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
+				OTHER_LDFLAGS = (
+					"-lcommon_debug",
+					"-lcommon_serial",
+					"-lboost_program_options",
+					"-lboost_regex",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		53A3D5D21817B9E200E7579A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				DSTROOT = /;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/include";
+				INSTALL_PATH = "$(SRCROOT)/../../usr/local/bin";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../usr/local/lib";
+				OTHER_LDFLAGS = (
+					"-lcommon_debug",
+					"-lcommon_serial",
+					"-lboost_program_options",
+					"-lboost_regex",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -386,6 +536,15 @@
 			buildConfigurations = (
 				533EF91A17E9F342004094C6 /* Debug */,
 				533EF91B17E9F342004094C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		53A3D5D01817B9E200E7579A /* Build configuration list for PBXNativeTarget "echo_serial" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53A3D5D11817B9E200E7579A /* Debug */,
+				53A3D5D21817B9E200E7579A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
