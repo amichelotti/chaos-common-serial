@@ -1,4 +1,4 @@
-#include "serial.h"
+#include "common/serial/serial.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
