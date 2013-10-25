@@ -22,6 +22,7 @@ if( DEFINED ENV{CHAOS_FRAMEWORK} )
       set (PROJECT_SOURCE_DIR $ENV{CHAOS_FRAMEWORK})
       INCLUDE_DIRECTORIES(../../ test ${PROJECT_SOURCE_DIR}/usr/local/include)
       LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/usr/local/lib)
+#-DOCEM_PROTOCOL_DEBUG 
       ADD_DEFINITIONS(-g -O2 -Wall)
       
       FILE(GLOB serial_test_src test/*.cpp)
@@ -56,4 +57,6 @@ INSTALL(FILES core/posixserialcomm_cwrap.h core/PosixSerialComm.h core/AbstractS
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL(FILES ${ocem_src} DESTINATION include/common/serial/Ocem ) 
 INSTALL_TARGETS(/lib  common_serial)
+INSTALL_TARGETS(/bin  test_serial)
+INSTALL_TARGETS(/bin  echo_serial)
 

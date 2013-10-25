@@ -121,7 +121,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
         return OCEM_BAD_SLAVEID;
     }
     pthread_mutex_lock(&serial_chan_mutex);
-    DPRINT(" performing poll request slave %d\n",slave);
+    DPRINT(" performing poll request slave %d, timeout %d ms\n",slave,timeo);
     bufreq[0]=ENQ;
     bufreq[1]=slave+ 0x40;
     /**
@@ -305,7 +305,7 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
         DERR("invalid slave id %d\n",slave);
         return OCEM_BAD_SLAVEID;
     }
-    DPRINT(" performing select request slave %d\n",slave);
+    DPRINT(" performing select request slave %d timeout %d ms\n",slave,timeo);
     bufreq[0]=ENQ;
     bufreq[1]=slave+ 0x60;
     pthread_mutex_lock(&serial_chan_mutex);
