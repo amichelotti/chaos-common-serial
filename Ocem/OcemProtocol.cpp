@@ -22,26 +22,33 @@ OcemProtocol::~OcemProtocol(){
 }
 
 int OcemProtocol::init(){
-    pthread_mutex_init(&serial_chan_mutex, NULL);
-    if(serial){
-        if(serial->init()!=0)
-            return OCEM_CANNOT_OPEN_DEVICE;
-        return 0;
-    } else {
-        serial =new PosixSerialComm(std::string(serdev),baudrate,parity,bits,stop,max_answer_size,max_answer_size);
-        if(serial){
-	  if(serial->init()!=0){
-	    DERR("cannot open OCEM device\n");
-	    return OCEM_CANNOT_OPEN_DEVICE;
-	  }
-            return 0;
-        }
+  int ret =0; 
+  pthread_mutex_init(&serial_chan_mutex, NULL);
+  pthread_mutex_lock(&serial_chan_mutex);
+  if(serial){
+    if(serial->init()!=0){
+      ret = OCEM_CANNOT_OPEN_DEVICE;	
     }
-    return OCEM_CANNOT_INITALIZE;
+    pthread_mutex_unlock(&serial_chan_mutex);
+    return ret;
+  } else {
+    serial =new PosixSerialComm(std::string(serdev),baudrate,parity,bits,stop,max_answer_size,max_answer_size);
+    DPRINT("OcemProtocol Creating new PosixSerial Comm handler x%x\n",serial);
+    if(serial){
+      if(serial->init()!=0){
+	DERR("cannot open OCEM device\n");
+	ret= OCEM_CANNOT_OPEN_DEVICE;
+      }
+      pthread_mutex_unlock(&serial_chan_mutex);
+      return ret;
+    }
+  }
+  pthread_mutex_unlock(&serial_chan_mutex);
+  return OCEM_CANNOT_INITALIZE;
 }
 int OcemProtocol::deinit(){
     if(serial){
-        delete serial;
+      delete serial;
     }
     serial = NULL;
     return 0;
@@ -307,15 +314,16 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
         return OCEM_BAD_SLAVEID;
     }
     DPRINT(" performing select request slave %d timeout %d ms\n",slave,timeo);
+    pthread_mutex_lock(&serial_chan_mutex);
     bufreq[0]=ENQ;
     bufreq[1]=slave+ 0x60;
-    pthread_mutex_lock(&serial_chan_mutex);
+
 
     if((ret= serial->write(bufreq,sizeof(bufreq),timeo,&timeow))!=2) {
-        DERR(" error writing slave %d ret %d, timeocc %d \n",slave,ret,timeow);
-        if(timeoccur)*timeoccur=timeow;
-        pthread_mutex_unlock(&serial_chan_mutex);
-        return OCEM_WRITE_FAILED;
+      DERR(" error writing slave %d ret %d, timeocc %d \n",slave,ret,timeow);
+      if(timeoccur)*timeoccur=timeow;
+      pthread_mutex_unlock(&serial_chan_mutex);
+      return OCEM_WRITE_FAILED;
     }
     
     if((ret=waitAck(timeo))!=ACK){
@@ -343,7 +351,6 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
 
             return OCEM_WRITE_FAILED;
         }
-        
         
         DPRINT(" command \"%s\" sent to slave %d\n",command,slave);
         DPRINT("waiting answer to the command from %d\n",slave);

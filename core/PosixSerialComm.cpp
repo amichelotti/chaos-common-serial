@@ -222,11 +222,16 @@ int PosixSerialComm::init(){
     int ret;
     pthread_attr_t attr;
     pthread_condattr_t cond_attr;
+    if(fd>=0){
+      DPRINT("PosixSerialComm already initialsed\n");
+      return 0;
+    }
     wpid=0;
     rpid=0;
     memset(&term,0,sizeof(termios));
+    
     fd = open(comm_dev.c_str(),O_RDWR|O_NONBLOCK);
-    DPRINT("initialising\n");
+    DPRINT("initialising PosixSerialComm\n");
     if(fd<=0){
       DERR("cannot open serial device \"%s\"\n",comm_dev.c_str());
       return SERIAL_CANNOT_OPEN_DEVICE;
@@ -366,7 +371,7 @@ int PosixSerialComm::deinit(){
     
     if(fd){
         close(fd);
-        fd = NULL;
+        fd = -1;
     }
     if(read_buffer){
         delete read_buffer;
