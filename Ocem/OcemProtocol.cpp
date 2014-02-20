@@ -9,6 +9,7 @@
 #include "OcemProtocol.h"
 #include <sstream>
 #include <unistd.h>
+#include <string.h>
 using namespace common::serial;
 
 OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
@@ -216,8 +217,8 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     return ret;
     
 }
-#ifdef DEBUG
-void OcemProtocol::showMessage(char*buf){
+
+void OcemProtocol::decodeBuf(char*buf,char*outbuf,int size){
   int stat=0;
   int cnt;
   std::stringstream msg;
@@ -242,10 +243,12 @@ void OcemProtocol::showMessage(char*buf){
   }
 
   DPRINT("%s\n",msg.str().c_str());
-
+  if(outbuf){
+    strncpy(outbuf,msg.str().c_str(),size);
+  }
 
 }
-#endif
+
 int OcemProtocol::build_cmd(int slave,char*protbuf,char* cmd){
   int cnt,cntt;
     char crc=0;
@@ -263,9 +266,8 @@ int OcemProtocol::build_cmd(int slave,char*protbuf,char* cmd){
     crc^=ETX|0x80;
     protbuf[cnt++] = crc;
     DPRINT("msg size %d crc x%x\n",cnt,crc);
-#ifdef DEBUG
-    showMessage(protbuf);
-#endif
+
+
     return cnt;
 }
 

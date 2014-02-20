@@ -55,9 +55,7 @@ namespace common {
             // return the acktype or an error
             int waitAck(int timeo);
 	    
-#ifdef DEBUG
-	    void showMessage(char*buf);
-#endif
+
         public:
 
             enum OcemErrors {
@@ -104,6 +102,8 @@ namespace common {
             
             int init();
             int deinit();
+	    
+	    void decodeBuf(char*inpbuf,char*outbuf,int size);
         };
     };
 };
