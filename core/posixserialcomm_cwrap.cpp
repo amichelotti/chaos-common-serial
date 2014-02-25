@@ -10,7 +10,7 @@
 #define MAX_HANDLE 100
 extern "C" {
 
-  static common::serial::PosixSerialComm* id2handle[MAX_HANDLE]={0};
+  static common::serial::AbstractSerialComm* id2handle[MAX_HANDLE]={0};
 
   pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop){
     int idx=-1;
@@ -39,7 +39,8 @@ extern "C" {
       delete id2handle[idx];
       id2handle[idx]=0;
     }
-    common::serial::PosixSerialComm *p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,internal_buffering,internal_buffering);
+        common::serial::AbstractSerialComm*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,internal_buffering,internal_buffering);
+    //    common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(serdev,baudrate,parity,bits,stop);
     if(p){
       if(p->init()!=0){
 	printf("## error during initialization\n");
@@ -61,9 +62,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm *p =( common::serial::AbstractSerialComm *)h;
       ret = p->deinit();
       delete p;
       id2handle[_h] = 0;
@@ -78,10 +79,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
 
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->write_async((void*)buf,bsize);
     }
     return ret;
@@ -93,9 +94,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->read_async((void*)buf,bsize);
     }
     return ret;
@@ -107,10 +108,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
       DPRINT("buf 0x%x size %d timeo %d\n",buf,bsize,timeo);
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->write((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
     }
@@ -123,10 +124,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       DPRINT("buf 0x%x size %d timeo %d\n",buf,bsize,timeo);
       ret = p->read((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
@@ -140,10 +141,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
 
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->byte_available_read();
     }
     return ret;
@@ -156,9 +157,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->byte_available_write();
     }
     return ret;
@@ -169,9 +170,9 @@ extern "C" {
       printf("## bad handle\n");
       return ;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       p->flush_write();
     }
   }
@@ -180,10 +181,10 @@ extern "C" {
       printf("## bad handle\n");
       return ;
     }
-    common::serial::PosixSerialComm* h = id2handle[_h];
+    common::serial::AbstractSerialComm* h = id2handle[_h];
 
     if(h){
-      common::serial::PosixSerialComm *p =( common::serial::PosixSerialComm *)h;
+      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       p->flush_read();
     }
 

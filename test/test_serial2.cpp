@@ -134,6 +134,7 @@ int test1(int size, int start_size,unsigned *wptr,unsigned*rptr,int comm){
 }
 
 
+
 int main(int argc, char *argv[])
 {
 
@@ -153,7 +154,7 @@ int main(int argc, char *argv[])
   boost::program_options::variables_map vm;
   boost::program_options::store(boost::program_options::parse_command_line(argc,argv, desc),vm);
   boost::program_options::notify(vm);
-    
+  
   if (vm.count("help")) {
     std::cout << desc << "\n";
     return 1;
@@ -184,48 +185,25 @@ int main(int argc, char *argv[])
   std::string parity = match[3];
   std::string bits = match[4];
   std::string stop = match[5];
-  int comm = popen_serial(bufsize,dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
-  if(comm<0){
-    std::cout<<"## error during initialization:"<<comm<<std::endl;
-    return -1;
-  }
-  wptr = (unsigned*)malloc((start_size + cycles)*4);
-  rptr = (unsigned*)malloc((start_size + cycles)*4);
-  
-  if(test1(cycles,start_size,wptr,rptr,comm) == 0){
-    printf("Test 1 success\n");
-  } else {
-    return -1;
-  }
+  char temp[10];
+  *temp=0;
 
+#if 1
+  common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
+  p->init();
+  printf("writing\n");
+  p->write((void*)"ciao",5,0,0);
+  printf("reading\n");
+  int ret;
 
-  
-#if 0      
-    if(test2(cycles,wptr,rptr,10,comm) == 0){
-      printf("Test 2 success\n");
-    } else {
-      return -1;
-    }
+      ret= p->read(temp,5,0,0);
 
-    if(test3(cycles,comm) == 0){
-      printf("Test 3 success\n");
-    } else {
-      return -3;
-    }
-    LVwrite_serial(comm, "*quit*",6,-1,0);
-    LVread_serial(comm, rptr,6,-1,0);
-    if(!strncmp((char*)rptr,"*quit*",6)){
-      printf("quitting\n");
-      pclose_serial( comm);
-      return 0;
-    }
-    pclose_serial(comm);
-  } else {
-    printf("## cannot allocate object\n");
-    return -4;
-  }
-  // test your libserial library here
+  printf("read: \"%s\", ret %d\n",temp,ret);
+
 #endif
+
+
+  
   return 0;
 }
 

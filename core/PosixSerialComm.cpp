@@ -6,6 +6,7 @@
 //  Created by andrea michelotti on 9/23/13.
 //  Copyright (c) 2013 andrea michelotti. All rights reserved.
 
+
 #ifdef POSIX_SERIAL_COMM_DEBUG
 #define DEBUG
 #endif
@@ -40,16 +41,19 @@ PosixSerialComm::~PosixSerialComm(){
 
 
 int PosixSerialComm::run_read(){
-  fd_set readfd,excfd;
+
     int ret;
     struct timeval tm;
+    fd_set readfd,excfd;
+
     FD_ZERO(&readfd);
     FD_SET(fd,&readfd);
     FD_ZERO(&excfd);
     FD_SET(fd,&excfd);
 
-    DPRINT("read thread buffer size %d bytes\n",read_buffer_size);
+    DPRINT("read thread buffer size %d bytes, readfd %d \n",read_buffer_size,fd);
     while(force_exit==0){
+
         //waits 
       DPRINT("wating for data wptr %d rptr %d full %d\n",w_read_buffer_ptr,r_read_buffer_ptr,read_full);
       tm.tv_sec=5;
@@ -62,9 +66,10 @@ int PosixSerialComm::run_read(){
 	continue;
       } else if((ret<0)|| (FD_ISSET(fd,&excfd))){
 	err_read++;
-	DPRINT("error on receive %d\n",err_read);
+	DERR("select:error on receive %d\n",err_read);
 	continue;
       }
+
       DPRINT("receiving ...\n");
       pthread_mutex_lock(&read_mutex);
       if(read_full){
@@ -230,18 +235,19 @@ int PosixSerialComm::init(){
     rpid=0;
     memset(&term,0,sizeof(termios));
     
-    fd = open(comm_dev.c_str(),O_RDWR|O_NONBLOCK);
+    fd = open(comm_dev.c_str(),O_RDWR|O_NOCTTY);
     DPRINT("initialising PosixSerialComm\n");
     if(fd<=0){
       DERR("cannot open serial device \"%s\"\n",comm_dev.c_str());
       return SERIAL_CANNOT_OPEN_DEVICE;
     }
+    cfmakeraw(&term);
     if(parity==1){
         //odd parity
         term.c_cflag|=PARENB;
         term.c_cflag|=PARODD;
     } else if(parity==2){
-        term.c_cflag|=PARENB;
+      term.c_cflag|=PARENB;
         term.c_cflag&=~PARODD;
     } else if(parity==0){
         term.c_cflag&=~PARENB;
@@ -297,7 +303,8 @@ int PosixSerialComm::init(){
       return SERIAL_CANNOT_SET_BAUDRATE;
         
     }
-    term.c_cc[VTIME]=0;
+    term.c_cflag |= CLOCAL|CREAD;
+    term.c_cc[VTIME]=1;
     term.c_cc[VMIN]=0;
     DPRINT("%s parameters baudrate:%d, parity %d stop %d bits %d\n",comm_dev.c_str(),baudrate,parity,stop,bits);
     if (tcsetattr(fd, TCSANOW, &term)<0){
