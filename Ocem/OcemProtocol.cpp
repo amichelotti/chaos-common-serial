@@ -150,8 +150,8 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     ret = waitAck(timeo);
     if(ret == EOT){
         DPRINT("slave %d says NO TRAFFIC\n",slave);
-	usleep(100000); // sleep
         pthread_mutex_unlock(&serial_chan_mutex);
+	usleep(100000); // sleep
         return OCEM_NO_TRAFFIC;
     } else if(ret == STX){
         int slave_rec;
@@ -316,8 +316,9 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
         DERR("invalid slave id %d\n",slave);
         return OCEM_BAD_SLAVEID;
     }
-    DPRINT(" performing select request slave %d timeout %d ms\n",slave,timeo);
     pthread_mutex_lock(&serial_chan_mutex);
+    DPRINT(" performing select request slave %d timeout %d ms\n",slave,timeo);
+
     bufreq[0]=ENQ;
     bufreq[1]=slave+ 0x60;
 
@@ -330,16 +331,20 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
     }
     
     if((ret=waitAck(timeo))!=ACK){
-      usleep(100000); // sleep
-      pthread_mutex_unlock(&serial_chan_mutex);
+
+      //      usleep(100000); // sleep
+
       if(ret == NAK){
 	DERR("slave not ready, sent NACK on selection\n");
+	pthread_mutex_unlock(&serial_chan_mutex);
 	return OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE;
       } else if(ret== EOT){
 	DPRINT("slave busy\n");
+	pthread_mutex_unlock(&serial_chan_mutex);
 	return OCEM_SLAVE_BUSY;
       }
       DERR("slave unexpected answer on selection\n");
+      pthread_mutex_unlock(&serial_chan_mutex);
       return OCEM_UNEXPECTED_SLAVE_ANSWER;
     }
     
@@ -359,16 +364,18 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
         DPRINT("waiting answer to the command from %d\n",slave);
         
         if((rett=waitAck(timeo))!=ACK){
-	  usleep(100000); // sleep
-	  pthread_mutex_unlock(&serial_chan_mutex);
+	  //	  usleep(100000); // sleep
 	  if(ret == NAK){
 	    DERR("slave cannot accept message %d\n",OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE);
+	    pthread_mutex_unlock(&serial_chan_mutex);
 	    return OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE;
 	  } else if(ret== EOT){
 	    DPRINT("slave busy\n");
+	    pthread_mutex_unlock(&serial_chan_mutex);
 	    return OCEM_SLAVE_BUSY;
 	  }
 	  DERR("slave unexpected answer\n");
+	  pthread_mutex_unlock(&serial_chan_mutex);
 	  return OCEM_UNEXPECTED_SLAVE_ANSWER;
 
 	  return rett;

@@ -64,15 +64,15 @@ namespace common {
                 OCEM_BAD_SLAVEID,
                 OCEM_WRITE_FAILED,
                 OCEM_READ_FAILED,
-                OCEM_NO_TRAFFIC,
+                OCEM_NO_TRAFFIC, // -95
                 OCEM_POLL_ANSWER_CRC_FAILED,
                 OCEM_MALFORMED_POLL_ANSWER,
-                OCEM_UNEXPECTED_SLAVE_ANSWER,
+                OCEM_UNEXPECTED_SLAVE_ANSWER, //-92
                 OCEM_EOT_MISSING_FROM_SLAVE,
-                OCEM_NO_ACK_FROM_SLAVE,
+                OCEM_NO_ACK_FROM_SLAVE, // -90
                 OCEM_ERROR_WRITING_ACK,
                 OCEM_NO_ETX_MATCHED,
-                OCEM_SLAVE_BUSY,
+                OCEM_SLAVE_BUSY, // -87
                 OCEM_BAD_SELECT_COMMAND,
 		OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE
             } ;
