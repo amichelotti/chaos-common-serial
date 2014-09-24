@@ -317,7 +317,7 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
         return OCEM_BAD_SLAVEID;
     }
     pthread_mutex_lock(&serial_chan_mutex);
-    DPRINT(" performing select request slave %d timeout %d ms\n",slave,timeo);
+    DPRINT(" performing select request to send command \"%s\" to slave %d timeout %d ms\n",command,slave,timeo);
 
     bufreq[0]=ENQ;
     bufreq[1]=slave+ 0x60;
