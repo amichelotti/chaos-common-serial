@@ -4,6 +4,13 @@ FILE(GLOB serial_src core/*.cpp Ocem/*.cpp)
 FILE(GLOB serial_test_src test/*.cpp)
 ADD_EXECUTABLE(test_serial test/test_serial.cpp)
 ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
+
+# -DPOSIX_SERIAL_COMM_DEBUG
+IF (DEBUG)
+  ADD_DEFINITIONS(-DPOSIX_SERIAL_COMM_DEBUG -DOCEM_PROTOCOL_DEBUG )
+ENDIF()
+
+
 IF(BUILD_FORCE_STATIC)
   ADD_LIBRARY(common_serial STATIC ${serial_src})
 ELSE()
@@ -11,9 +18,9 @@ ELSE()
 ENDIF()
             
 TARGET_LINK_LIBRARIES(common_serial common_debug)
-TARGET_LINK_LIBRARIES(test_serial common_serial pthread common_debug boost_program_options boost_regex)
+TARGET_LINK_LIBRARIES(test_serial common_serial pthread common_debug)
 
-TARGET_LINK_LIBRARIES(echo_serial common_serial pthread common_debug boost_program_options boost_regex)
+TARGET_LINK_LIBRARIES(echo_serial common_serial pthread common_debug)
 
 INSTALL_TARGETS(/bin test_serial)
 INSTALL_TARGETS(/bin echo_serial)

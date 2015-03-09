@@ -35,9 +35,9 @@ namespace common {
             int parity;
             int bits;
 	    int stop;
-            
+	    bool hwctrl;
         public:
-	AbstractSerialComm(std::string commdev,int _baudrate,int _parity,int _bits,int _stop):comm_dev(commdev),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop){}
+	AbstractSerialComm(std::string commdev,int _baudrate,int _parity,int _bits,int _stop,bool _hwctrl):comm_dev(commdev),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop),hwctrl(_hwctrl){}
             
             /**
              initialises resource and channel

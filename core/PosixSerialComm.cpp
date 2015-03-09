@@ -6,11 +6,13 @@
 //  Created by andrea michelotti on 9/23/13.
 //  Copyright (c) 2013 andrea michelotti. All rights reserved.
 
-
+#undef DEBUG
 #ifdef POSIX_SERIAL_COMM_DEBUG
 #define DEBUG
 #endif
-#include "common/debug/debug.h"
+
+
+#include <common/debug/debug.h>
 
 #include "PosixSerialComm.h"
 #include <fcntl.h>
@@ -23,14 +25,25 @@
 #include <string.h>
 using namespace common::serial;
 #define MIN(x,y) (x<y)?(x):(y)
-PosixSerialComm::PosixSerialComm(std::string serial_dev,int baudrate,int parity,int bits,int stop,int _write_buffer_size,int _read_buffer_size):common::serial::AbstractSerialComm(serial_dev,baudrate,parity,bits,stop),write_buffer(NULL),read_buffer(NULL),write_buffer_size(_write_buffer_size),read_buffer_size(_read_buffer_size),w_write_buffer_ptr(0),w_read_buffer_ptr(0),r_write_buffer_ptr(0),r_read_buffer_ptr(0){
+PosixSerialComm::PosixSerialComm(std::string serial_dev,int baudrate,int parity,int bits,int stop,bool hw,int _write_buffer_size,int _read_buffer_size):common::serial::AbstractSerialComm(serial_dev,baudrate,parity,bits,stop,hw),read_buffer(NULL),read_buffer_size(_read_buffer_size),w_read_buffer_ptr(0),r_read_buffer_ptr(0){
+#ifdef POSIX_WRITE_BUFFERING    
+  write_buffer=NULL;
+  r_write_buffer_ptr=0;
+  w_write_buffer_ptr=0;
+  write_buffer_size=_write_buffer_size;
+  nwrites=0;
+  err_write=0;
+  DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d write_buffer size %d read buffer size %d\n",serial_dev.c_str(),baudrate,parity,bits,stop,write_buffer_size,read_buffer_size);
+#else
+    DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d read buffer size %d\n",serial_dev.c_str(),baudrate,parity,bits,stop,read_buffer_size);
+#endif
     fd = -1;
-    nwrites=0;
+
     nreads=0;
     force_exit=0;
     err_read =0;
-    err_write=0;
-    DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d write_buffer size %d read buffer size %d\n",serial_dev.c_str(),baudrate,parity,bits,stop,write_buffer_size,read_buffer_size);
+
+
 }
 
 PosixSerialComm::~PosixSerialComm(){
@@ -53,9 +66,9 @@ int PosixSerialComm::run_read(){
 
     DPRINT("read thread buffer size %d bytes, readfd %d \n",read_buffer_size,fd);
     while(force_exit==0){
-
+      int tot_read=0;
         //waits 
-      DPRINT("wating for data wptr %d rptr %d full %d\n",w_read_buffer_ptr,r_read_buffer_ptr,read_full);
+      DPRINT("waiting for data wptr %d rptr %d full %d\n",w_read_buffer_ptr,r_read_buffer_ptr,read_full);
       tm.tv_sec=5;
       tm.tv_usec=0;
       ret = select(fd+1,&readfd,NULL,&excfd,&tm);
@@ -70,8 +83,8 @@ int PosixSerialComm::run_read(){
 	continue;
       }
 
-      DPRINT("receiving ...\n");
       pthread_mutex_lock(&read_mutex);
+      DPRINT("receiving readfd: %d readexc: %d ... ret=%d\n",FD_ISSET(fd,&readfd),FD_ISSET(fd,&excfd),ret);
       if(read_full){
 	DPRINT("read buffer FULL wptr:%d, rptr:%d, waiting\n",w_read_buffer_ptr,r_read_buffer_ptr);
 	wait_timeo(&read_full_cond,&read_mutex,0);
@@ -79,51 +92,69 @@ int PosixSerialComm::run_read(){
 
 	if((w_read_buffer_ptr-r_read_buffer_ptr) == 0){
 	  // EMPTY
-	  DPRINT("reading ... wptr:%d = rptr:%d\n",r_read_buffer_ptr,w_read_buffer_ptr);
+	  w_read_buffer_ptr=r_read_buffer_ptr=0;
+	  DPRINT("reading max %d ... wptr:%d = rptr:%d\n",read_buffer_size-w_read_buffer_ptr,r_read_buffer_ptr,w_read_buffer_ptr);
 	  ret= ::read(fd,&read_buffer[w_read_buffer_ptr],read_buffer_size-w_read_buffer_ptr);
 	  DPRINT("read %d/%d bytes  wptr:%d = rptr:%d (empty)\n",ret,read_buffer_size-w_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
 	  if(ret>0){
 	    w_read_buffer_ptr+=ret;
+	    tot_read+=ret;
 	    if(w_read_buffer_ptr == read_buffer_size){
 	      w_read_buffer_ptr=0;
 	      if(r_read_buffer_ptr>0){
-		DPRINT("reading ... wptr:%d <= rptr:%d\n",w_read_buffer_ptr,r_read_buffer_ptr);
+		DPRINT("reading again max %d ... wptr:%d <= rptr:%d\n",r_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
 		ret= ::read(fd,&read_buffer[0],r_read_buffer_ptr);
 		DPRINT("read %d/%d bytes  wptr:%d < rptr:%d\n",ret,r_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
 		if(ret>0){
 		  w_read_buffer_ptr=ret;
-		}
+		  tot_read+=ret;
+		} 
 	      }
 	    }
 	  }
 	} else if(w_read_buffer_ptr-r_read_buffer_ptr> 0){
-	  DPRINT("reading ... wptr:%d > rptr:%d\n",w_read_buffer_ptr,r_read_buffer_ptr);
+	  DPRINT("reading max %d ... wptr:%d > rptr:%d\n",read_buffer_size-w_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
 	  ret= ::read(fd,&read_buffer[w_read_buffer_ptr],read_buffer_size-w_read_buffer_ptr);
 	  DPRINT("read %d/%d bytes  wptr:%d > rptr:%d\n",ret,read_buffer_size-w_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
-	  if(ret>0)
+	  if(ret>0){
 	    w_read_buffer_ptr+=ret;
+	    tot_read+=ret;
+	  }
         } else {
-	  DPRINT("reading ... wptr:%d < rptr:%d\n",w_read_buffer_ptr,r_read_buffer_ptr);
+	  DPRINT("reading max %d ... wptr:%d < rptr:%d\n",r_read_buffer_ptr-w_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr);
 	  ret= ::read(fd,&read_buffer[w_read_buffer_ptr],r_read_buffer_ptr-w_read_buffer_ptr);
 	  DPRINT("read %d/%d bytes  wptr:%d < rptr:%d, full %d\n",ret,r_read_buffer_ptr-w_read_buffer_ptr,w_read_buffer_ptr,r_read_buffer_ptr,read_full);
 	  if(ret>0){
 	    w_read_buffer_ptr+=ret;
-	    
+	    tot_read+=ret;
 	  }	  
         }
 	if(w_read_buffer_ptr== read_buffer_size)
 	  w_read_buffer_ptr = 0;
-	if(w_read_buffer_ptr==r_read_buffer_ptr){
+
+	if((tot_read>0)&&((w_read_buffer_ptr==r_read_buffer_ptr))){
 	  read_full=1;
 	}
-        pthread_mutex_unlock(&read_mutex);
-        pthread_cond_signal(&read_cond);
+	DPRINT("%d] read completed wptr:%d  rptr:%d, tot_read %d,full %d \n",nreads,w_read_buffer_ptr,r_read_buffer_ptr,tot_read,read_full);
+	
+        
+	if(tot_read>0){
+	  pthread_cond_signal(&read_cond);
+	}
         nreads++;
-	DPRINT("%d] read completed wptr:%d  rptr:%d, full %d \n",nreads,w_read_buffer_ptr,r_read_buffer_ptr,read_full);
+	pthread_mutex_unlock(&read_mutex);
     }
     DPRINT("read thread exiting\n");
     return 0;
 }
+
+#ifdef POSIX_WRITE_BUFFERING    
+
+void* PosixSerialComm::write_thread(void* p){
+    PosixSerialComm* pnt = (PosixSerialComm*)p;
+    return (void*)pnt->run_write();
+}
+
 
 int PosixSerialComm::run_write(){
     fd_set writefd,excfd;
@@ -207,17 +238,13 @@ int PosixSerialComm::run_write(){
     return 0;
 }
 
+#endif
 
  void* PosixSerialComm::read_thread(void* p){
     PosixSerialComm* pnt = (PosixSerialComm*)p;
     return (void*)pnt->run_read();
 }
 
-
-void* PosixSerialComm::write_thread(void* p){
-    PosixSerialComm* pnt = (PosixSerialComm*)p;
-    return (void*)pnt->run_write();
-}
 /**
  initialises resource and channel
  @return 0 on success
@@ -236,10 +263,20 @@ int PosixSerialComm::init(){
     memset(&term,0,sizeof(termios));
     
     fd = open(comm_dev.c_str(),O_RDWR|O_NOCTTY);
+  
     DPRINT("initialising PosixSerialComm\n");
     if(fd<=0){
       DERR("cannot open serial device \"%s\"\n",comm_dev.c_str());
       return SERIAL_CANNOT_OPEN_DEVICE;
+    }
+    if(comm_dev == "/dev/ptmx"){
+      char* p=ptsname(fd);
+      if((p!=NULL) && (grantpt(fd)==0)&& (unlockpt(fd)==0)){
+	std::cout << "* client pty is \""<<p<<"\""<<std::endl;
+      } else {
+	DERR("cannot open PTY SERVER serial device \"%s\"\n",comm_dev.c_str());
+	return SERIAL_CANNOT_OPEN_DEVICE;
+      }
     }
     cfmakeraw(&term);
     if(parity==1){
@@ -278,7 +315,9 @@ int PosixSerialComm::init(){
       fd =-1;
       return SERIAL_BAD_BIT_PARAM;
     }
-    
+    if(hwctrl)
+      term.c_cflag |=CRTSCTS;
+
     switch (baudrate) {
         case 115200:
             ret= cfsetospeed(&term, B115200);
@@ -315,46 +354,57 @@ int PosixSerialComm::init(){
     }
     
     r_read_buffer_ptr = 0;
-    r_write_buffer_ptr = 0;
     w_read_buffer_ptr = 0;
-    w_write_buffer_ptr = 0;
+
     read_full = 0;
-    write_full =0;
-    nwrites=0;
     nreads=0;
     force_exit=0;
     err_read =0;
-    err_write =0;
+
     if(read_buffer==NULL){
-        read_buffer = new char[read_buffer_size];
+      read_buffer = new char[read_buffer_size];
     }
-    
+
+#ifdef POSIX_WRITE_BUFFERING    
+    w_write_buffer_ptr = 0;
+    r_write_buffer_ptr = 0;
+    write_full =0;
+    nwrites=0;
+    err_write =0;
     if(write_buffer==NULL){
         write_buffer = new char[write_buffer_size];
-        
     }
-    if(read_buffer == NULL || write_buffer==NULL){
+    if(write_buffer==NULL){
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_ALLOCATE_RESOURCES;
     }
+#endif
+    if(read_buffer == NULL){
+      close (fd);
+      fd =-1;
+      return SERIAL_CANNOT_ALLOCATE_RESOURCES;
+    }
+
     pthread_condattr_init(&cond_attr);
-    pthread_cond_init(&write_cond,&cond_attr);
-    pthread_cond_init(&write_full_cond,&cond_attr);
     pthread_cond_init(&read_full_cond,&cond_attr);
     pthread_cond_init(&read_cond,&cond_attr);
-    pthread_mutex_init(&write_mutex,NULL);
+
     pthread_mutex_init(&read_mutex,NULL);
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    
+#ifdef POSIX_WRITE_BUFFERING    
+    pthread_cond_init(&write_cond,&cond_attr);
+    pthread_cond_init(&write_full_cond,&cond_attr);
+    pthread_mutex_init(&write_mutex,NULL);
+
     if(pthread_create(&wpid,&attr,write_thread,this)<0){
       DERR("cannot create write thread\n");
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_ALLOCATE_RESOURCES;
     }
-    
+#endif
     if(pthread_create(&rpid,&attr,read_thread,this)<0){
       DERR("cannot create read thread\n");
       close (fd);
@@ -372,35 +422,37 @@ int PosixSerialComm::init(){
 int PosixSerialComm::deinit(){
     int* pwret,*prret;
     int wret,rret;
-    DPRINT("deinit fd %d, 0x%x 0x%x 0x%x 0x%x\n",fd,wpid,rpid,read_buffer,write_buffer);
+    DPRINT("deinit fd %d, 0x%x 0x%x\n",fd,wpid,rpid);
     pwret =&wret;
     prret = &rret;
     
     if(fd){
         close(fd);
-        fd = -1;
+        fd = NULL;
     }
     if(read_buffer){
         delete read_buffer;
         read_buffer = NULL;
     }
-    
+#ifdef POSIX_WRITE_BUFFERING    
     if(write_buffer){
         delete write_buffer;
         write_buffer = NULL;
     }
+#endif
     force_exit=1;
     
 
-
+#ifdef POSIX_WRITE_BUFFERING    
     if(wpid){
       DPRINT("waiting writer for x%x\n",wpid);
+
       pthread_cond_broadcast(&write_cond);
       pthread_cond_broadcast(&write_full_cond);
-
       pthread_join(wpid,(void**)&pwret);
       
     }
+#endif
     if(rpid){
       pthread_cond_broadcast(&read_cond);
       pthread_cond_broadcast(&read_full_cond);
@@ -452,26 +504,35 @@ int PosixSerialComm::read(void *buffer,int nb,int ms_timeo,int *timeo){
   assert(fd>=0);
   if(timeo) *timeo=0;
   while(tot<nb){
-      DPRINT("read %d data wptr: %d rptr:%d, read_full %d\n",nb,w_read_buffer_ptr, r_read_buffer_ptr,read_full); 
-      ret = read_async((char*)buffer+tot,nb-tot);
-      if(ret==0){
-	int res;
-	pthread_mutex_lock(&read_mutex);
-	DPRINT("Blocking read %d data wptr: %d rptr:%d\n",nb,w_read_buffer_ptr, r_read_buffer_ptr);    
+    DPRINT("read %d/%d data wptr: %d rptr:%d, read_full %d\n",tot,nb,w_read_buffer_ptr, r_read_buffer_ptr,read_full); 
+    ret = read_async((char*)buffer+tot,nb-tot);
+    if(ret==0){
+      int res;
+      pthread_mutex_lock(&read_mutex);
+      res = (w_read_buffer_ptr==r_read_buffer_ptr);
+      
+      if(res && (read_full==0)){
+	w_read_buffer_ptr=r_read_buffer_ptr=0; //reset pointers
+	DPRINT("Blocking read %d/%d data wptr: %d rptr:%d (because empty)\n",tot,nb,w_read_buffer_ptr, r_read_buffer_ptr);    
+
 	res = wait_timeo(&read_cond,&read_mutex,ms_timeo);
-	pthread_mutex_unlock(&read_mutex);
-	DPRINT("UnBlocking read %d data wptr: %d rptr:%d\n",nb,w_read_buffer_ptr, r_read_buffer_ptr);    
+	DPRINT("UnBlocking read %d/%d data wptr: %d rptr:%d\n",tot,nb,w_read_buffer_ptr, r_read_buffer_ptr);
+	
 	if(res<0){
 	  *timeo = 1;
+	  pthread_mutex_unlock(&read_mutex);
+		
 	  return tot;
 	}
-      } else if (ret>0){
-	tot+=ret;
-      } else {
-	return ret;
       }
+      pthread_mutex_unlock(&read_mutex);
+    } else if (ret>0){
+      tot+=ret;
+    } else {
+      return ret;
     }
-    return tot;
+  }
+  return tot;
 }
 #if 0
 int PosixSerialComm::search_and_read(void *buffer,int nb,char delim,int ms_timeo,int*timeout_arised){
@@ -573,7 +634,7 @@ int PosixSerialComm::read_async_atomic(void *buffer,int nb){
     int byte_to_copy;
     if(nb<=0) return 0;
     pthread_mutex_lock(&read_mutex);
-    DPRINT("read %d data wptr: %d rptr:%d read_full %d\n",nb,w_read_buffer_ptr, r_read_buffer_ptr,read_full);    
+    DPRINT("read_async_atomic %d data wptr: %d rptr:%d read_full %d\n",nb,w_read_buffer_ptr, r_read_buffer_ptr,read_full);    
     assert((w_read_buffer_ptr<read_buffer_size)&&(r_read_buffer_ptr <read_buffer_size));
 
     if((w_read_buffer_ptr- r_read_buffer_ptr)==0){
@@ -595,9 +656,9 @@ int PosixSerialComm::read_async_atomic(void *buffer,int nb){
 	if(r_read_buffer_ptr== read_buffer_size)
 	  r_read_buffer_ptr=0;
 
-	
-	pthread_mutex_unlock(&read_mutex);
 	pthread_cond_signal(&read_full_cond);
+	pthread_mutex_unlock(&read_mutex);
+
         return ret;
     }
     
@@ -663,6 +724,9 @@ int PosixSerialComm::byte_available_read(){
  @return number of bytes sucessfully written, negative on error or timeout
  */
 int PosixSerialComm::write(void *buffer,int nb,int ms_timeo,int* timeo){
+#ifndef POSIX_WRITE_BUFFERING
+  return ::write(fd,buffer,nb);
+#else
   int tot=0,ret=0;
   assert(fd>=0);
   if(timeo){
@@ -675,6 +739,7 @@ int PosixSerialComm::write(void *buffer,int nb,int ms_timeo,int* timeo){
     if(ret==0){
       int res;
       pthread_mutex_lock(&write_mutex);
+      
       DPRINT("Blocking write %d data write_full:%d , at 0x%x[%d]\n",nb-tot,write_full,(char*)buffer+tot,tot);
       res = wait_timeo(&write_full_cond,&write_mutex,ms_timeo);
       pthread_mutex_unlock(&write_mutex);
@@ -691,7 +756,7 @@ int PosixSerialComm::write(void *buffer,int nb,int ms_timeo,int* timeo){
   } ;
   
   return tot;
-  
+  #endif
 }
 
 
@@ -701,11 +766,15 @@ int PosixSerialComm::write(void *buffer,int nb,int ms_timeo,int* timeo){
  @param nb number of bytes to write
  @return number of bytes sucessfully written, negative on error or timeout
  */
+
 int PosixSerialComm::write_async_atomic(void *buffer,int nb){
     int byte_to_copy;
     int size_to_wrap; 
     int ret=0;
     if(nb<=0) return 0;
+#ifndef POSIX_WRITE_BUFFERING
+    return ::write(fd,buffer,nb);
+#else
     pthread_mutex_lock(&write_mutex);
     if(write_full>0){
       DPRINT("write skipped because FULL x%x of %d data\n",buffer,nb);    
@@ -763,15 +832,18 @@ int PosixSerialComm::write_async_atomic(void *buffer,int nb){
     if(w_write_buffer_ptr==write_buffer_size)
       w_write_buffer_ptr=0;
     
-    if(r_write_buffer_ptr== w_write_buffer_ptr){
+    if((ret>0)&&(r_write_buffer_ptr== w_write_buffer_ptr)){
         write_full=1;
     }
 
     DPRINT("async end wptr %d rptr %d full %d, return %d\n",w_write_buffer_ptr,r_write_buffer_ptr,write_full,ret);
-    pthread_mutex_unlock(&write_mutex);
     pthread_cond_signal(&write_cond);
+    pthread_mutex_unlock(&write_mutex);
+
 
     return ret;
+
+#endif
 }
 
 
@@ -781,6 +853,9 @@ int PosixSerialComm::write_async_atomic(void *buffer,int nb){
  @return number of bytes available, negative on error (buffer overflow)
  */
 int PosixSerialComm::byte_available_write(){
+  #ifndef POSIX_WRITE_BUFFERING
+  return 1;
+  #else
     int ret;
     if(write_full>0)
         return write_buffer_size;
@@ -791,17 +866,22 @@ int PosixSerialComm::byte_available_write(){
     DPRINT("buffer available %d bytes\n",ret);
     assert(ret<write_buffer_size);
     return ret;
+#endif
 }
 
 /**
  flush bytes in the write buffer
  */
 void PosixSerialComm::flush_write(){
+#ifndef POSIX_WRITE_BUFFERING
+  return;
+#else
   DPRINT("flush wptr = %d rptr=%d\n", w_write_buffer_ptr ,r_write_buffer_ptr);
   pthread_mutex_lock(&write_mutex);
   write_full=0;
   w_write_buffer_ptr = r_write_buffer_ptr = 0;
   pthread_mutex_unlock(&write_mutex);
+#endif
 }
 
 /**

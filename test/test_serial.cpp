@@ -5,14 +5,13 @@
 //
 //
 //
-
-
-
-#include "common/debug/debug.h"
-#include "common/serial/serial.h"
-#include <boost/program_options.hpp>
-#include <boost/regex.hpp>
-static const boost::regex parse_arg("(.+),(\\d+),(\\d),(\\d),(\\d)");
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <common/serial/pserial.h>
+#include <common/debug/debug.h>
+#define BUFFER_SIZE 8192
 #define BIG_BUFFER_SIZE 1024*1024
 /**
    test of byte_available
@@ -27,6 +26,9 @@ typedef struct th_param{
   int errors;
 } th_param_t;
 
+static  pthread_mutex_t mtx;
+ static unsigned counter=0;
+
 void* write_th(void*arg){
   int ret;
   th_param_t* args=(th_param_t*)arg;
@@ -37,20 +39,29 @@ void* write_th(void*arg){
   int comm = args->comm;
 
   int timeo=0;
+  counter =0;
   printf("Test write thread created, size %d , start %d\n",size,start_size);
   for(int cnt=start_size/4 ;cnt<(start_size+size);cnt++){
     for(int cntt=0;cntt<cnt;cntt++){
       wptr[cntt] = (cntt&0xffff) | (cnt<<16);
     }
-
+    
+    
     DPRINT("%d] writing %d bytes at @x%x\n",cnt ,cnt*4, (char*)wptr + start_size);
     ret= LVwrite_serial(comm, (char*)wptr + start_size,cnt*4,-1,&timeo);
-    DPRINT("%d] WROTE %d bytes\n",cnt,ret);
+    pthread_mutex_lock(&mtx);
+    counter+=ret;
+    pthread_mutex_unlock(&mtx);
+    printf("%d] WROTE %d bytes (accumulated %d)\n",cnt,ret,counter);
     if(ret!=cnt*4){
       printf("error writing %d/%d\n",ret,cnt*4);
       args->errors++;
       return 0;
     }
+
+    /*    while(counter>0)
+      usleep(100);
+    */
     //    sleep(1);
     
     if(args->errors){
@@ -73,21 +84,19 @@ void* read_th(void*arg){
 
   printf("Read thread created\n");
   for(int cnt=start_size/4 ;cnt<(start_size+size);cnt++){
-    /*  while((aval=comm->byte_available_read())<=0){
-      DPRINT("%d] wating bytes for read rx %d\n",cnt,trx);
-      usleep(100000);
-    }
-    */
     DPRINT("%d] reading %d bytes at @x%x\n",cnt ,cnt*4, (char*)rptr + start_size);
     ret=  LVread_serial(comm,(char*)rptr + start_size,cnt*4,-1,&timeo);
-    DPRINT("%d] READ %d bytes\n",cnt,ret);
+    printf("%d] READ %d bytes\n",cnt,ret);
+    pthread_mutex_lock(&mtx);
+    counter-=ret;
+    pthread_mutex_unlock(&mtx);
     if(ret!=cnt*4) {
       printf("## error reading %d !=%d\n",ret,cnt*4);
       args->errors++;
       return 0;
     }
     
-    printf("[%d] testing %d bytes data  \n",cnt,cnt*4);
+    DPRINT("[%d] testing %d bytes data  \n",cnt,cnt*4);
     for(int cntt=start_size;cntt<cnt;cntt++){
       if(rptr[cntt]!=((cntt&0xffff) | (cnt<<16))){
 	printf("## Test 1 data error [%d] value %d(%d,%d) expected %d(%d,%d)\n",cntt,rptr[cntt],rptr[cntt]>>16,rptr[cntt]&0xffff,(cntt | (cnt<<16)),cnt,cntt);
@@ -139,54 +148,64 @@ int main(int argc, char *argv[])
 
 
   int cycles=100,start_size=0;
-  boost::smatch match;
-  boost::program_options::options_description desc("options");
+  int opt;
+  
   unsigned*wptr,*rptr;
-  int bufsize = 8192;
-  desc.add_options()("help", "help");
-  desc.add_options()("cycles", boost::program_options::value<int>(),"test cycles and memory allocated");
-  desc.add_options()("start_size", boost::program_options::value<int>(),"test start with the specified size");
-  // put your additional options here
-  desc.add_options()("dev", boost::program_options::value<std::string>(), "serial dev parameters </dev/ttySxx>,<baudrate>,<parity>,<bits>,<stop>");
-  desc.add_options()("buf", boost::program_options::value<int>(), "internal buffer");
-  //////
-  boost::program_options::variables_map vm;
-  boost::program_options::store(boost::program_options::parse_command_line(argc,argv, desc),vm);
-  boost::program_options::notify(vm);
-    
-  if (vm.count("help")) {
-    std::cout << desc << "\n";
-    return 1;
+  int bufsize = BUFFER_SIZE;
+  
+  char *dev=NULL;
+  int baudrate=115200;
+  int parity=0;
+  int stop=1;
+  int bits=8;
+  bool hw=false;
+  while((opt=getopt(argc,argv,"d:b:p:s:w:c:a:f"))!=-1){
+    switch(opt){
+    case 'c':
+      cycles = atoi(optarg);
+      break;
+    case 'a':
+      start_size = atoi(optarg);
+      break;
+
+    case 'd':
+      dev = optarg;
+      break;
+    case 'b':
+      baudrate = atoi(optarg);
+      break;
+    case 'p':
+      parity = atoi(optarg);
+      break;
+    case 's':
+      stop= atoi(optarg);
+      break;
+    case 'w':
+      bits= atoi(optarg);
+      break;
+    case 'f':
+      hw= true;
+      break;
+      
+    default:
+      printf("Usage is: %s <-d serial dev> [-b baudrate] [-p parity] [-s stop] [-w bits] [-c <test cycles>] [-a <starting size of packets>] [-f]\n-f: enable control flow HW\n",argv[0]);
+      return 0;
+    }
+
   }
-  if(vm.count("dev")==0){
-    std::cout<<"## you must specify parameters:"<<desc<<std::endl;
+
+  if(dev==NULL){
+    printf("## you must specify a valid device \n");
     return -1;
   }
-  std::string param = vm["dev"].as<std::string>();
 
-  if(vm.count("cycles")){
-    cycles = vm["cycles"].as<int>();
-  }
-  if(vm.count("buf")){
-    bufsize = vm["buf"].as<int>();
-  }
+  printf("* dev: %s baudrate:%d parity:%d bits:%d stop:%d control flow hw:%s\n",dev,baudrate,parity,bits,stop,hw?"NO":"YES");
 
-  if(vm.count("start_size")){
-    start_size = vm["start_size"].as<int>();
-  }
 
-  if(!regex_match(param,match,parse_arg)){
-    std::cout<<"## bad parameter specification:"<<param<<" match:"<<match[0]<<std::endl;
-    return -2;
-  }
-  std::string dev = match[1];
-  std::string baudrate = match[2];
-  std::string parity = match[3];
-  std::string bits = match[4];
-  std::string stop = match[5];
-  int comm = popen_serial(bufsize,dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
+
+  int comm = popen_serial(bufsize,dev,baudrate,parity,bits,stop,hw);
   if(comm<0){
-    std::cout<<"## error during initialization:"<<comm<<std::endl;
+    printf("## error during initialization\n");
     return -1;
   }
   wptr = (unsigned*)malloc((start_size + cycles)*4);

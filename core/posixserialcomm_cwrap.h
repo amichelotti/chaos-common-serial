@@ -13,9 +13,10 @@ extern "C" {
      @param parity (0=no parity, 1 = odd,2 even)
      @param bits (7 or 8)
      @param stop (1 or 2) stop bits
+     @param hw enable HW control flow
      @return a serial handle on success (the index corresponding to the serial line), negative otherwise
    */
-  pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop);
+  pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop,bool hw);
 
   /**
      Deinitialize and close a serial connection
@@ -70,14 +71,14 @@ extern "C" {
      @param h handle of the serial connection
      @return the number of bytes available
    */
-  int byte_available_read_serial(pserial_handle_t h);
+  int pread_serial_count(pserial_handle_t h);
 
   /**
      returns the number of bytes wating to be trasmitted (in the internal buffer)
      @param h handle of the serial connection
      @return the number of bytes available
    */
-  int byte_available_write_serial(pserial_handle_t h);
+  int pwrite_serial_count(pserial_handle_t h);
   
 
   /**

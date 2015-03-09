@@ -5,71 +5,82 @@
 // echo over a serial line
 //
 //
-
-
-#include "common/serial/serial.h"
-#include "common/debug/debug.h"
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <common/serial/pserial.h>
+#include <common/debug/debug.h>
 
 using namespace common::serial;
-#include <boost/program_options.hpp>
-#include <boost/regex.hpp>
-static const boost::regex parse_arg("(.+),(\\d+),(\\d),(\\d),(\\d)");
-#define BUFFER_SIZE 16384
+
+#define BUFFER_SIZE 8192
 int main(int argc, char *argv[])
 {
 
   int ret;
-  
-  int bufsize = 8192;
-  boost::smatch match;
-  boost::program_options::options_description desc("options");
+  int opt;
+  int bufsize = BUFFER_SIZE;
+  char *dev=NULL;
+  int baudrate=115200;
+  int parity=0;
+  int stop=1;
+  int bits=8;
+  bool hw =false;
+  while((opt=getopt(argc,argv,"d:b:p:s:w:f"))!=-1){
+    switch(opt){
+    case 'd':
+      dev = optarg;
+      break;
+    case 'b':
+      baudrate = atoi(optarg);
+      break;
+    case 'p':
+      parity = atoi(optarg);
+      break;
+    case 's':
+      stop= atoi(optarg);
+      break;
+    case 'w':
+      bits= atoi(optarg);
+      break;
+    case 'f':
+      hw= true;
+      break;
+      
+    default:
+      printf("Usage is: %s <-d serial dev> [-b baudrate] [-p parity] [-s stop] [-w bits] [-f]\n-f: enable control flow HW\n",argv[0]);
 
+      return 0;
+    }
 
-  desc.add_options()("help", "help");
-
-  desc.add_options()("dev", boost::program_options::value<std::string>(), "serial dev parameters </dev/ttySxx>,<baudrate>,<parity>,<bits>,<stop>");
-  desc.add_options()("buf", boost::program_options::value<int>(), "internal buffer");    
-  //////
-  boost::program_options::variables_map vm;
-  boost::program_options::store(boost::program_options::parse_command_line(argc,argv, desc),vm);
-  boost::program_options::notify(vm);
-    
-  if (vm.count("help")) {
-    std::cout << desc << "\n";
-    return 1;
   }
-  if(vm.count("dev")==0){
-    std::cout<<"## you must specify parameters:"<<desc<<std::endl;
+
+  if(dev==NULL){
+    printf("## you must specify a valid device \n");
     return -1;
   }
-  if(vm.count("buf")){
-    bufsize = vm["buf"].as<int>();
-  }
-  std::string param = vm["dev"].as<std::string>();
 
-
-  if(!regex_match(param,match,parse_arg)){
-    std::cout<<"## bad parameter specification:"<<param<<" match:"<<match[0]<<std::endl;
-    return -2;
-  }
-  std::string dev = match[1];
-  std::string baudrate = match[2];
-  std::string parity = match[3];
-  std::string bits = match[4];
-  std::string stop = match[5];
-  int comm = popen_serial(bufsize,dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
+  printf("* dev: %s baudrate:%d parity:%d bits:%d stop:%d control flow hw:%s\n",dev,baudrate,parity,bits,stop,hw?"NO":"YES");
+  
+  int comm = popen_serial(bufsize,dev,baudrate,parity,bits,stop,hw);
   //  PosixSerialComm* comm=new PosixSerialComm(dev,atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
   if(comm>=0){
     char buffer[BUFFER_SIZE];
 
     while(1){
       int timeout=0;
-      ret=  LVread_serial(comm,buffer,BUFFER_SIZE,-1,&timeout);
+      int bytes=pread_serial_count(comm);
+      if(bytes<=0){
+	usleep(1);
+	continue;
+      }
+      ret=  LVread_serial(comm,buffer,bytes,-1,&timeout);
       if(timeout>0){
-	  printf("Read TIMEOUT ret = %d\n",ret);
+	printf("Read TIMEOUT ret = %d\n",ret);
       }
       if(ret>0){
-	DPRINT("received %d bytes\n",ret);
+	printf("received %d bytes\n",ret);
 	if(!strncmp(buffer,"*quit*",6)){
 	  ret =  LVwrite_serial(comm,(void*)"*quit*",6,-1,&timeout);
 	  pclose_serial(comm);
@@ -77,7 +88,7 @@ int main(int argc, char *argv[])
 	}
 	ret=  LVwrite_serial(comm,buffer,ret,1000,&timeout);
 	if(ret>0){
-	  DPRINT("sent %d bytes\n",ret);
+	  printf("sent %d bytes\n",ret);
 	} 
 	if(timeout>0){
 	  printf("Write Timeout ret = %d\n",ret);

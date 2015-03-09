@@ -33,30 +33,41 @@ namespace common {
             
             int fd; // file descriptor of the communication
             pthread_t wpid,rpid; // threads that handle write/read communication
-            char *write_buffer;
+      
             char *read_buffer;
-            int w_read_buffer_ptr; // producer thread
+#ifdef POSIX_WRITE_BUFFERING    
+	    char *write_buffer;
             int w_write_buffer_ptr; // producer user
+	    int r_write_buffer_ptr; // consumer thread
+	    int write_full;
+	    int write_buffer_size;
+	    pthread_mutex_t write_mutex;
+	    pthread_cond_t write_cond,write_full_cond;
+	    unsigned long nwrites;
+	    static void *write_thread(void *);
+            int run_write();
+#endif
+	    int w_read_buffer_ptr; // producer thread
             int r_read_buffer_ptr; // consumer user
-            int r_write_buffer_ptr; // consumer thread
-            int write_full;
+            
+
             int read_full;
-            int write_buffer_size;
+
             int read_buffer_size;
 	    int err_read,err_write;
-            pthread_mutex_t write_mutex,read_mutex;
-            pthread_cond_t write_cond,write_full_cond,read_cond,read_full_cond;
+
+	    pthread_mutex_t read_mutex;
+	    pthread_cond_t read_cond,read_full_cond;
             
-            static void *write_thread(void *);
+
             static void *read_thread(void *);
             int wait_timeo(pthread_cond_t* cond,pthread_mutex_t*,int timeo_ms);
-            unsigned long nwrites,nreads;
+
+	    unsigned long nreads;
             int force_exit;
             
             int producer(char*buffer,int bytes,pthread_mutex_t*);
             int consumer(char*buffer,int bytes,pthread_mutex_t*);
-            
-            int run_write();
             int run_read();
 #if 0
             inline int search_delim(int start,int end, char delim);
@@ -64,7 +75,7 @@ namespace common {
 	    int read_async_atomic(void *buffer,int nb);
 	    int write_async_atomic(void *buffer,int nb);
         public:
-            PosixSerialComm(std::string serial_dev,int baudrate,int parity,int bits,int stop,int _write_buffer_size=POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE,int _read_buffer_size=POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_READ_SIZE);
+            PosixSerialComm(std::string serial_dev,int baudrate,int parity,int bits,int stop,bool hwctrl=false,int _write_buffer_size=POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE,int _read_buffer_size=POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_READ_SIZE);
             
             ~PosixSerialComm();
                        /**

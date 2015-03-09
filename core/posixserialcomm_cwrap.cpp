@@ -1,18 +1,18 @@
-#include "common/serial/serial.h"
+#include <common/serial/pserial.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #ifdef POSIX_SERIAL_COMM_CWRAP_DEBUG
 #define DEBUG
 #endif
-#include "common/debug/debug.h"
+#include <common/debug/debug.h>
 
 #define MAX_HANDLE 100
 extern "C" {
 
   static common::serial::AbstractSerialComm* id2handle[MAX_HANDLE]={0};
 
-  pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop){
+  pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop,bool hw){
     int idx=-1;
     if(serdev){
       
@@ -39,7 +39,7 @@ extern "C" {
       delete id2handle[idx];
       id2handle[idx]=0;
     }
-        common::serial::AbstractSerialComm*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,internal_buffering,internal_buffering);
+    common::serial::AbstractSerialComm*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,hw,internal_buffering,internal_buffering);
     //    common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(serdev,baudrate,parity,bits,stop);
     if(p){
       if(p->init()!=0){
@@ -135,7 +135,7 @@ extern "C" {
     return ret;
 
   }
-  int byte_available_read_serial(pserial_handle_t _h){
+  int pread_serial_count(pserial_handle_t _h){
     int ret=0;
     if(_h>=MAX_HANDLE || _h<0) {
       printf("## bad handle\n");
@@ -151,7 +151,7 @@ extern "C" {
 
   }
 
-  int byte_available_write_serial(pserial_handle_t _h){
+  int pwrite_serial_count(pserial_handle_t _h){
     int ret=0;
     if(_h>=MAX_HANDLE || _h<0) {
       printf("## bad handle\n");

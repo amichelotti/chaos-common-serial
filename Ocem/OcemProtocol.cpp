@@ -49,7 +49,9 @@ int OcemProtocol::init(){
   return OCEM_CANNOT_INITALIZE;
 }
 int OcemProtocol::deinit(){
+  DPRINT("deinitializing protocol");
     if(serial){
+      
       delete serial;
     }
     serial = NULL;
@@ -210,9 +212,13 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
             return OCEM_MALFORMED_POLL_ANSWER;
 
         }
+    } else if (ret==ACK){
+      DPRINT("ACK received\n");
+      ret=0;
+    } else {
+      
+      DERR("no answer from slave %d within %d ms, timeouccur %d\n",slave,timeo,timeor);
     }
-    
-    DERR("no answer from slave %d within %d ms, timeouccur %d\n",slave,timeo,timeor);
     pthread_mutex_unlock(&serial_chan_mutex);
     return ret;
     
@@ -342,8 +348,17 @@ int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
 	DPRINT("slave busy\n");
 	pthread_mutex_unlock(&serial_chan_mutex);
 	return OCEM_SLAVE_BUSY;
+      } else if(ret== STX){
+	char buf;
+	int rr;
+	int count=0;
+	int t;
+	DPRINT("slave is answering with an unexpected buffer\n");
+	while(((rr=serial->read(&buf,1,timeo,&t))>0)&& (buf!=ETX))count++;
+	DPRINT("read %d characters\n",count);
+      } else {
+	DERR("slave completely unexpected answer on selection\n");
       }
-      DERR("slave unexpected answer on selection\n");
       pthread_mutex_unlock(&serial_chan_mutex);
       return OCEM_UNEXPECTED_SLAVE_ANSWER;
     }
