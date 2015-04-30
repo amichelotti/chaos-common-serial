@@ -33,7 +33,7 @@ namespace common {
             
             int fd; // file descriptor of the communication
             pthread_t wpid,rpid; // threads that handle write/read communication
-      
+            
             char *read_buffer;
 #ifdef POSIX_WRITE_BUFFERING    
 	    char *write_buffer;

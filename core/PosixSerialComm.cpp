@@ -58,7 +58,7 @@ int PosixSerialComm::run_read(){
     int ret;
     struct timeval tm;
     fd_set readfd,excfd;
-
+    assert(fd>=0);
     FD_ZERO(&readfd);
     FD_SET(fd,&readfd);
     FD_ZERO(&excfd);
