@@ -332,6 +332,7 @@ int PosixSerialComm::init(){
             ret = cfsetospeed(&term,B4800);
             break;
         default:
+            DERR("unsupported speed %d",baudrate);
             return SERIAL_UNSUPPORTED_SPEED;
             
     }
@@ -345,7 +346,7 @@ int PosixSerialComm::init(){
     term.c_cflag |= CLOCAL|CREAD;
     term.c_cc[VTIME]=1;
     term.c_cc[VMIN]=0;
-    DPRINT("%s parameters baudrate:%d, parity %d stop %d bits %d\n",comm_dev.c_str(),baudrate,parity,stop,bits);
+    DPRINT("%s parameters baudrate:%d, parity %d stop %d bits %d,fd:%d\n",comm_dev.c_str(),baudrate,parity,stop,bits,fd);
     if (tcsetattr(fd, TCSANOW, &term)<0){
       DERR("cannot set parameters baudrate:%d, parity %d stop %d bits %d\n",baudrate,parity,stop,bits);
       close (fd);

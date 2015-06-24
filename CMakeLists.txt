@@ -7,7 +7,14 @@ ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
 
 # -DPOSIX_SERIAL_COMM_DEBUG
 IF (DEBUG)
+
   ADD_DEFINITIONS(-DPOSIX_SERIAL_COMM_DEBUG -DOCEM_PROTOCOL_DEBUG )
+ENDIF()
+
+IF(FrameworkLib)
+SET(libs chaos_common ${FrameworkLib})
+ELSE()
+SET(libs pthread)
 ENDIF()
 
 
@@ -17,10 +24,10 @@ ELSE()
   ADD_LIBRARY(common_serial SHARED ${serial_src})
 ENDIF()
             
-TARGET_LINK_LIBRARIES(common_serial common_debug)
-TARGET_LINK_LIBRARIES(test_serial common_serial pthread common_debug)
+TARGET_LINK_LIBRARIES(common_serial common_debug ${libs})
+TARGET_LINK_LIBRARIES(test_serial common_serial common_debug ${libs})
 
-TARGET_LINK_LIBRARIES(echo_serial common_serial pthread common_debug)
+TARGET_LINK_LIBRARIES(echo_serial common_serial common_debug ${libs})
 
 INSTALL_TARGETS(/bin test_serial)
 INSTALL_TARGETS(/bin echo_serial)
