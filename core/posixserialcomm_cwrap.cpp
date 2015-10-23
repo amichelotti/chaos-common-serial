@@ -11,9 +11,23 @@
 extern "C" {
 
   static common::serial::AbstractSerialComm* id2handle[MAX_HANDLE]={0};
-
+  /*
+  static int getFirstFreeHandle(){
+    int cnt=0;
+    for(cnt=0;cnt<MAX_HANDLE;cnt++){
+      if(id2handle[cnt] == 0){
+	return cnt;
+      }
+    }
+    return -1;
+  }
+  */
   pserial_handle_t popen_serial(int internal_buffering,const char*serdev,int baudrate,int parity,int bits,int stop,bool hw){
     int idx=-1;
+  
+    if(serdev==NULL)
+      return -1;
+    
     if(serdev){
       
       char *pnt;
@@ -26,21 +40,25 @@ extern "C" {
 	printf("## bad serial number specification %s\n",serdev);
 	return -1;
       }
-      idx = atoi(pnt+1);
+      idx = strtoul(pnt+1,0,16);
     }
 
     if(idx<0 || idx>=MAX_HANDLE){
       printf("## bad index specification %d\n",idx);
       return -1;
-    }
+      }
+
     if(id2handle[idx]!=0){
       // close before
       printf("%% serial resource %d was open, closing\n",idx);
       delete id2handle[idx];
       id2handle[idx]=0;
-    }
+      }
+
     common::serial::AbstractSerialComm*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,hw,internal_buffering,internal_buffering);
     //    common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(serdev,baudrate,parity,bits,stop);
+
+    
     if(p){
       if(p->init()!=0){
 	printf("## error during initialization\n");
