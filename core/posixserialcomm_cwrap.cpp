@@ -5,7 +5,7 @@
 #ifdef POSIX_SERIAL_COMM_CWRAP_DEBUG
 #define DEBUG
 #endif
-#include <common/debug/debug.h>
+#include <common/debug/core/debug.h>
 
 #define MAX_HANDLE 100
 extern "C" {

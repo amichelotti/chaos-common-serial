@@ -12,7 +12,7 @@
 #endif
 
 
-#include <common/debug/debug.h>
+#include <common/debug/core/debug.h>
 
 #include "PosixSerialComm.h"
 #include <fcntl.h>

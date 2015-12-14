@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <common/serial/pserial.h>
-#include <common/debug/debug.h>
+#include <common/debug/core/debug.h>
 
 using namespace common::serial;
 
