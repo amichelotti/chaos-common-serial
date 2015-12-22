@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <common/serial/pserial.h>
-#include <common/debug/debug.h>
+#include <common/debug/core/debug.h>
 #define BUFFER_SIZE 8192
 #define BIG_BUFFER_SIZE 1024*1024
 /**

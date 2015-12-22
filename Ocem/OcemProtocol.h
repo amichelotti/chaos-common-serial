@@ -12,7 +12,7 @@
 #ifdef OCEM_PROTOCOL_DEBUG
 #define DEBUG
 #endif
-#include "common/debug/debug.h"
+#include <common/debug/core/debug.h>
 
 #include <iostream>
 #include "common/serial/serial.h"

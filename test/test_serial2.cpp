@@ -8,8 +8,8 @@
 
 
 
-#include "common/debug/debug.h"
-#include "common/serial/serial.h"
+#include <common/debug/core/debug.h>
+#include <common/serial/serial.h>
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
 static const boost::regex parse_arg("(.+),(\\d+),(\\d),(\\d),(\\d)");
