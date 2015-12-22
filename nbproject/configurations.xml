@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="core">
+        <in>AbstractSerialComm.cpp</in>
+        <in>PosixSerialComm.cpp</in>
+        <in>posixserialcomm_cwrap.cpp</in>
+        <in>serial.cpp</in>
+      </df>
+      <df name="Ocem">
+        <in>OcemProtocol.cpp</in>
+      </df>
+      <df name="test">
+        <in>echo_serial.cpp</in>
+        <in>test_serial.cpp</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-fPIC"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+      <item path="Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="core/AbstractSerialComm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="core/PosixSerialComm.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="core/posixserialcomm_cwrap.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="core/serial.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <folder path="0/Ocem">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../..</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>common_serial_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/core">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../..</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>common_serial_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/test">
+        <ccTool>
+          <incDir>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/exception</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time/gregorian</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/system</pElem>
+            <pElem>test</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common</pElem>
+            <pElem>core</pElem>
+            <pElem>../debug/core</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/config</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/format/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/format</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl/aux_</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl/aux_/preprocessed/gcc</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/type_traits/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/type_traits</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/smart_ptr/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/utility</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/smart_ptr</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/optional</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time/posix_time</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/iterator/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/range</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/range/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/concept/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/algorithm/string</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/algorithm/string/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/numeric/conversion/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/numeric/conversion</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/math/tools</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/math/policies</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/container</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/attributes</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/utility</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/utility/type_dispatch</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/core</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/expressions</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/sources</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/keywords</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/move/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/move</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/parameter/aux_</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/parameter</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/thread</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common/exception</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common/log</pElem>
+            <pElem>../..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="test/test_serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>test</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time/gregorian</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/system</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common</pElem>
+            <pElem>core</pElem>
+            <pElem>../debug/core</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/config</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/format/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/format</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl/aux_</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/mpl/aux_/preprocessed/gcc</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/type_traits/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/type_traits</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/smart_ptr/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/utility</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/smart_ptr</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/optional</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/date_time/posix_time</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/iterator/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/range</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/range/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/concept/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/algorithm/string</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/algorithm/string/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/numeric/conversion/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/numeric/conversion</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/math/tools</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/math/policies</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/container</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/attributes</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/utility</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/utility/type_dispatch</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/core</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/expressions</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/sources</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/log/keywords</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/move/detail</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/move</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/parameter/aux_</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/parameter</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/boost/thread</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common/exception</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include/chaos/common/log</pElem>
+            <pElem>../..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
