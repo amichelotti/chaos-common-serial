@@ -5,7 +5,7 @@
 #ifdef POSIX_SERIAL_COMM_CWRAP_DEBUG
 #define DEBUG
 #endif
-#include <common/debug/debug.h>
+#include <common/debug/core/debug.h>
 
 #define MAX_HANDLE 100
 extern "C" {
@@ -30,23 +30,38 @@ extern "C" {
     
     if(serdev){
       
-      char *pnt;
-      int len = strlen(serdev);
-      pnt = (char*)serdev+len-1;
-      while(isdigit(*pnt) && pnt>serdev){
-	pnt --;
+      char *pnt=serdev;
+      char*start_name=serdev;
+      while(*pnt!=0){
+	if(*pnt=='/')
+	  start_name=pnt;
+	pnt++;
       }
-      if(pnt == (serdev+len)){
-	printf("## bad serial number specification %s\n",serdev);
-	return -1;
+      if(start_name==serdev){
+	printf("## bad device name specification %s\n",serdev);
+	return -2;
       }
-      idx = strtoul(pnt+1,0,16);
+      
+      pnt=start_name;
+      while((!isdigit(*pnt)) && (*pnt!=0)){
+	pnt ++;
+      }
+      if(*pnt==0){
+	printf("## cannot find serial device number\n");
+	return -4;
+      }
+      
+      idx = strtoul(pnt,0,16);
+    } else {
+      	printf("## device name not specified\n");
+	return -5;
     }
 
     if(idx<0 || idx>=MAX_HANDLE){
       printf("## bad index specification %d\n",idx);
       return -1;
       }
+    DPRINT("opening %s index %d\n",serdev,idx);
 
     if(id2handle[idx]!=0){
       // close before
