@@ -21,16 +21,36 @@
 
 namespace common {
     namespace serial {
-
+        namespace ocem{
+        struct Request{
+            std::string buffer;
+            uint64_t timestamp;
+            uint32_t timeo_ms;
+            Request(){timeo_ms=0;timestamp=0;}
+        };
+        struct OcemData{
+            std::queue<Request> queue;
+            int last_req_index;
+            int protocol_errors;    // number of protocol errors
+            uint64_t last_req_time; // timestamp of last request
+            uint64_t avg_req_time; // average request time
+            uint64_t done_req_time;// average time to accomplish th request
+            uint64_t req_ok;        // number of request accomplished ok
+            uint64_t reqs;  // number of total request
+            OcemData(){last_req_time=0;req_ok=0;reqs=0;}
+            int pushRequest(std::string& buf, uint32_t timeo);
+            int popRequest(Request& req);
+        };
         class OcemProtocolBuffered:public OcemProtocol {
             
-                       
-            std::map<int,std::queue<std::string> > slave_poll_queue;
-            std::map<int,std::queue<std::string> > slave_select_queue;
+            typedef std::map<int,std::pair<OcemData*,OcemData*>  >  ocem_queue_t;
+            ocem_queue_t slave_queue;
 	    pthread_mutex_t schedule_mutex;
 	    pthread_cond_t awake;
-	    unsigned long nwrites;
+	    int slaves;
 	    static void *schedule_thread(void *);
+            pthread_t rpid;
+            int run;
 
         public:
 
@@ -38,6 +58,10 @@ namespace common {
             ~OcemProtocolBuffered();
             
             int registerSlave(int slaveid);
+            int unRegisterAll();
+
+            int unRegisterSlave(int slaveid);
+            void* runSchedule();
 
             /**
              perform a poll request toward the given slave
@@ -64,6 +88,7 @@ namespace common {
             int deinit();
 	    
         };
+    };
     };
 };
 

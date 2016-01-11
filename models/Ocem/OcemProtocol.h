@@ -12,14 +12,12 @@
 #ifdef OCEM_PROTOCOL_DEBUG
 #define DEBUG
 #endif
+
 #include <common/debug/core/debug.h>
 
 #include <iostream>
-#include "common/serial/serial.h"
+#include <common/serial/serial.h>
 
-#ifndef POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE
-#define POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE 8192
-#endif
 #include <pthread.h>
 
 namespace common {

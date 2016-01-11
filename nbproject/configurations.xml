@@ -8,8 +8,11 @@
         <in>posixserialcomm_cwrap.cpp</in>
         <in>serial.cpp</in>
       </df>
-      <df name="Ocem">
-        <in>OcemProtocol.cpp</in>
+      <df name="models">
+        <df name="Ocem">
+          <in>OcemProtocol.cpp</in>
+          <in>OcemProtocolBuffered.cpp</in>
+        </df>
       </df>
       <df name="test">
         <in>echo_serial.cpp</in>
@@ -39,7 +42,9 @@
       <flagsDictionary>
         <element flagsID="0" commonFlags="-fPIC"/>
         <element flagsID="1" commonFlags="-fPIC -fPIC -fPIC -O3 -O2"/>
-        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -O3 -fPIC -O2"/>
+        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -O3 -fPIC"/>
+        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -O3 -fPIC -O2"/>
+        <element flagsID="4" commonFlags="-fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -57,16 +62,12 @@
           </ccTool>
         </makeTool>
       </makefileType>
-      <item path="Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="0">
-        <ccTool flags="2">
-        </ccTool>
-      </item>
       <item path="core/AbstractSerialComm.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
       </item>
       <item path="core/PosixSerialComm.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="3">
           <incDir>
             <pElem>..</pElem>
             <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
@@ -79,10 +80,6 @@
       </item>
       <item path="core/posixserialcomm_cwrap.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="2">
-          <incDir>
-            <pElem>..</pElem>
-            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
-          </incDir>
           <preprocessorList>
             <Elem>CHAOS</Elem>
             <Elem>NDEBUG</Elem>
@@ -93,24 +90,26 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <folder path="0/Ocem">
+      <folder path="0/core">
+        <ccTool>
+          <preprocessorList>
+            <Elem>common_serial_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/models">
         <ccTool>
           <incDir>
             <pElem>..</pElem>
             <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+            <pElem>models/Ocem</pElem>
+            <pElem>models</pElem>
           </incDir>
           <preprocessorList>
             <Elem>CHAOS</Elem>
             <Elem>NDEBUG</Elem>
             <Elem>OCEM_PROTOCOL_DEBUG</Elem>
-            <Elem>common_serial_EXPORTS</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="0/core">
-        <ccTool>
-          <preprocessorList>
-            <Elem>common_serial_EXPORTS</Elem>
+            <Elem>common_serial_ocem_EXPORTS</Elem>
           </preprocessorList>
         </ccTool>
       </folder>
@@ -126,6 +125,17 @@
           </preprocessorList>
         </ccTool>
       </folder>
+      <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="4">
+        </ccTool>
+      </item>
+      <item path="models/Ocem/OcemProtocolBuffered.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool flags="4">
+        </ccTool>
+      </item>
       <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="1">
         </ccTool>
