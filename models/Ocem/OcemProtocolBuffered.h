@@ -26,7 +26,8 @@ namespace common {
             std::string buffer;
             uint64_t timestamp;
             uint32_t timeo_ms;
-            Request(){timeo_ms=0;timestamp=0;}
+            int32_t retry;
+            Request(){timeo_ms=0;timestamp=0;retry=0;}
         };
         struct OcemData{
             std::queue<Request> queue;
@@ -38,14 +39,14 @@ namespace common {
             uint64_t req_ok;        // number of request accomplished ok
             uint64_t reqs;  // number of total request
             OcemData(){last_req_time=0;req_ok=0;reqs=0;}
-            int pushRequest(std::string& buf, uint32_t timeo);
+            int pushRequest(Request&req);
             int popRequest(Request& req);
         };
         class OcemProtocolBuffered:public OcemProtocol {
             
             typedef std::map<int,std::pair<OcemData*,OcemData*>  >  ocem_queue_t;
             ocem_queue_t slave_queue;
-	    pthread_mutex_t schedule_mutex;
+	    pthread_mutex_t schedule_write_mutex,schedule_read_mutex;
 	    pthread_cond_t awake;
 	    int slaves;
 	    static void *schedule_thread(void *);

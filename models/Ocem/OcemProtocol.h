@@ -22,7 +22,7 @@
 
 namespace common {
     namespace serial {
-
+        namespace ocem {
         class OcemProtocol {
             
             enum OcemCtrlChars {
@@ -103,6 +103,7 @@ namespace common {
 	    
 	    void decodeBuf(char*inpbuf,char*outbuf,int size);
         };
+    };
     };
 };
 

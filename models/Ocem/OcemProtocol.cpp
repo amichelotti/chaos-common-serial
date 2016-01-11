@@ -10,7 +10,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <string.h>
-using namespace common::serial;
+using namespace common::serial::ocem;
 
 OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
 {

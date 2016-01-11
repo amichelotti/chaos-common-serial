@@ -13,8 +13,59 @@ using namespace common::serial::ocem;
 
 
 void* OcemProtocolBuffered::runSchedule(){
+    ocem_queue_t::iterator i;
+    char buffer[2048];
+    DPRINT("THREAD STARTED 0x%x",pthread_self());
+    OcemData*read_queue,*write_queue;
     run=1;
     while(run){
+        for(i=slave_queue.begin();i!=slave_queue.end();i++){
+            int ret,timeo;
+            read_queue=(i->second).first;
+            write_queue=(i->second).second;
+            DPRINT("- scheduling slave %d, cmd queue %d, output queue %d",i->first,write_queue->queue.size(),read_queue->queue.size());
+
+            // handle select
+            if(!write_queue->queue.empty()){
+               
+                pthread_mutex_lock(&schedule_write_mutex);
+
+                Request& cmd=write_queue->queue.front();
+                uint64_t when=common::debug::getUsTime()-cmd.timestamp;
+
+                ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
+                DPRINT("- slave %d sending command %s, timeout %d, issued %llu us ago",i->first,cmd.buffer.c_str(),cmd.timeo_ms,when);
+                write_queue->reqs++;
+                if(ret>0){
+                    write_queue->queue.pop();
+                    write_queue->req_ok++;
+                } else {
+                    cmd.retry++;
+                    if(cmd.retry>2){
+                        ERR("removing not working command, retries %d",cmd.retry);
+                        write_queue->queue.pop();
+                    }
+                    DPRINT("command not removed, retry later on");
+                }
+                pthread_mutex_unlock(&schedule_write_mutex);
+
+            }
+            
+            // handle poll
+            ret=OcemProtocol::poll(i->first,buffer,sizeof(buffer),1000);
+
+            if(ret>0){
+               DPRINT("- received from slave %d, data \"%s\", ret %d",i->first,buffer,ret);
+
+               pthread_mutex_lock(&schedule_read_mutex);
+               Request pol;
+               pol.buffer.assign(buffer,ret);
+               pol.timestamp=common::debug::getUsTime();
+               read_queue->pushRequest(pol);
+               pthread_mutex_unlock(&schedule_read_mutex);
+
+            }
+        }
     }
 }
 
@@ -71,27 +122,39 @@ int OcemProtocolBuffered::unRegisterSlave(int slaveid){
 }
 
 int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
-    pthread_mutex_lock(&schedule_mutex);
+    pthread_mutex_lock(&schedule_read_mutex);
     registerSlave(slaveid);
-    ocem_queue_t::iterator i=slave_queue.find(slaveid);
-    std::string data;
-    data.assign(buf,size);
-    (i->second).first->pushRequest(data,timeo);
+        ocem_queue_t::iterator i=slave_queue.find(slaveid);
     if(timeoccur)*timeoccur=0;
-    pthread_mutex_unlock(&schedule_mutex);
+
+    OcemData*read_queue=(i->second).first;
+    DPRINT("slave %d queue lenght %d ",slaveid,read_queue->queue.size());
+
+    if(!read_queue->queue.empty()){
+        Request req;
+        read_queue->popRequest(req);
+        DPRINT("slave %d returning \"%s\"",slaveid,read_queue->queue.size(),req.buffer.c_str());
+        memcpy(buf,req.buffer.c_str(),req.buffer.size()+1);
+        pthread_mutex_unlock(&schedule_read_mutex);
+
+        return req.buffer.size();
+    }
+    pthread_mutex_unlock(&schedule_read_mutex);
     return 0;
 }
            
 int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeoccur){
-    pthread_mutex_lock(&schedule_mutex);
+    pthread_mutex_lock(&schedule_write_mutex);
     registerSlave(slaveid);
     ocem_queue_t::iterator i=slave_queue.find(slaveid);
 
-    std::string data;
-    data.assign(command);
-    (i->second).second->pushRequest(data,timeo);
+    Request data;
+    data.buffer.assign(command);
+    data.timeo_ms=timeo;
+    data.timestamp=::common::debug::getUsTime();
+    (i->second).second->pushRequest(data);
     if(timeoccur)*timeoccur=0;
-    pthread_mutex_unlock(&schedule_mutex);
+    pthread_mutex_unlock(&schedule_write_mutex);
 
     return 0;
 }
@@ -104,7 +167,9 @@ int OcemProtocolBuffered::init(){
     pthread_condattr_init(&cond_attr);
     pthread_cond_init(&awake,&cond_attr);
 
-    pthread_mutex_init(&schedule_mutex,NULL);
+    pthread_mutex_init(&schedule_read_mutex,NULL);
+    pthread_mutex_init(&schedule_write_mutex,NULL);
+
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
     
@@ -124,14 +189,11 @@ int OcemProtocolBuffered::deinit(){
     return OcemProtocol::deinit();
 }
 
-  int OcemData::pushRequest(std::string& buf, uint32_t timeo){
+  int OcemData::pushRequest(Request &req){
     uint64_t tm=common::debug::getUsTime();
-    common::serial::ocem::Request rq;
-    rq.buffer=buf;
-    rq.timestamp=common::debug::getUsTime();
-    last_req_time=rq.timestamp;
+    last_req_time=common::debug::getUsTime();
     reqs++;
-    queue.push(rq);  
+    queue.push(req);  
     return reqs;
   }
   
