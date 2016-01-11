@@ -91,9 +91,9 @@ int OcemProtocol::sendAck(int ackType,int timeo){
     return 0;
 }
 int OcemProtocol::check_and_extract(char *buffer, char *protbuf, int size){
-    char *pntd= buffer;
-    char *pnts= protbuf;
-    char crc=0;
+    unsigned char *pntd= (unsigned char*)buffer;
+    unsigned char *pnts= (unsigned char*)protbuf;
+    unsigned char crc=0;
     int cnt=0;
     *pntd=0;
     while((cnt<size) && (cnt<max_answer_size)&& (pnts[cnt]!=ETX)){
@@ -111,12 +111,13 @@ int OcemProtocol::check_and_extract(char *buffer, char *protbuf, int size){
 	DPRINT("crc check ok, message length %d",cnt-1);
 	return cnt-1;
       } else {
-	ERR("crc check FAILED, calc 0x%x, expected 0x%x",crc,pnts[cnt+1]);
-	return OCEM_POLL_ANSWER_CRC_FAILED;
-	
+	ERR("crc check FAILED, calc 0x%x, expected 0x%x",crc&0xff,pnts[cnt+1]&0xff);
+	/// DISABLED FOR TEST!!
+	//	return OCEM_POLL_ANSWER_CRC_FAILED;
+	return cnt -1;
       }
     } else {
-      ERR(" no ETX mactched size msg %d",cnt);
+      ERR(" no ETX matched size msg %d",cnt);
       return OCEM_NO_ETX_MATCHED;
       
     }
@@ -158,27 +159,48 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
         return OCEM_NO_TRAFFIC;
     } else if(ret == STX){
         int slave_rec;
-	int fetch=1;
-        // answer with data
+        int found=0;
         tot = 0;
         //get the rest of the message
-        DPRINT("slave %d has something, receiving...",slave);
-        while((tot<max_answer_size)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)&&(fetch<2)){
+        DPRINT("slave %d has something (%d bytes), receiving...",slave,serial->byte_available_read());
+        while((tot<max_answer_size)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)&& (found==0)){
 	  if(tmpbuf[tot]==ETX){
-	    DPRINT("termination found %d characters",tot+1);
-	    fetch++;
+	    DPRINT("termination found %d characters",tot); 
+            found++;
 	  }
 	  tot++;	    
         }
+        //read crc
+        if(found==1){
+          //read CRC
+	  DPRINT("still %d bytes",serial->byte_available_read());
+           if((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))<0){
+               DERR("missing CRC");
+	       serial->flush_read();
+               sendAck(EOT, timeo);
+               pthread_mutex_unlock(&serial_chan_mutex);
+
+               return OCEM_MALFORMED_POLL_ANSWER;
+           } 
+        } else {
+            DERR("missing terminator");
+	    serial->flush_read();
+            sendAck(EOT, timeo);
+
+            pthread_mutex_unlock(&serial_chan_mutex);
+
+            return OCEM_MALFORMED_POLL_ANSWER;
+
+        }
         slave_rec= tmpbuf[0] - 0x40;
         if(timeoccur)*timeoccur=timeor;
-        DPRINT("received %d bytes from %d [%d] (expected %d[%d]) , ",tot,slave_rec,tmpbuf[0],slave,bufreq[1]);
-        if(ret<0){
+        DPRINT("received %d bytes from %d",tot,slave_rec);
+       /* if(ret<0){
             ERR(" error reading message from slave %d ret %d, timeocc %d ",slave,ret,timeor);
             pthread_mutex_unlock(&serial_chan_mutex);
 
             return OCEM_READ_FAILED;
-        }
+        }*/
         if(tmpbuf[0]!=bufreq[1]){
             ERR("Answer from slave %d (%d) instead of %d, byte read %d",slave_rec,tmpbuf[0],slave,tot);
             sendAck(EOT, timeo);
@@ -186,33 +208,27 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
             return OCEM_UNEXPECTED_SLAVE_ANSWER;
         }
         
-        if(tmpbuf[tot-1]==ETX){
-	  DPRINT("valid terminator found crc x%x, checking and extracting message",tmpbuf[tot]);
-            if((ret= check_and_extract(buf,&tmpbuf[0], size<tot?size:tot))>0){
-                int retack;
-                DPRINT("slave %d says:\"%s\"",slave,buf);
-                retack=sendAck(ACK, timeo);
-                pthread_mutex_unlock(&serial_chan_mutex);
-                if(retack==0)
-                    return ret;
-                return retack;
-            } else {
-                ERR("Answer contains errors, slave %d says:\"%s\", ret %d",slave,buf,ret);
-                //send busy
-                sendAck(EOT, timeo);
-                pthread_mutex_unlock(&serial_chan_mutex);
-
+     
+	  DPRINT("valid terminator found crc 0x%x, checking and extracting message",tmpbuf[tot]&0xff);
+        if((ret= check_and_extract(buf,&tmpbuf[0], size<tot?size:tot))>0){
+            int retack;
+            DPRINT("slave %d says:\"%s\"",slave,buf);
+            retack=sendAck(ACK, timeo);
+            pthread_mutex_unlock(&serial_chan_mutex);
+            if(retack==0)
                 return ret;
-            }
+            return retack;
         } else {
-            ERR("missing termination character reading message, byte read %d",tot);
+            ERR("Answer contains errors, slave %d says:\"%s\", ret %d",slave,buf,ret);
             //send busy
             sendAck(EOT, timeo);
+            //sendAck(ACK, timeo)
+	    serial->flush_read();
             pthread_mutex_unlock(&serial_chan_mutex);
 
-            return OCEM_MALFORMED_POLL_ANSWER;
-
+            return ret;
         }
+        
     } else if (ret==ACK){
       DPRINT("ACK received");
       ret=0;
@@ -308,9 +324,10 @@ int OcemProtocol::waitAck(int timeo){
 	  DPRINT("slave returned NAK");
 	  return tmpbuf;
 	}
+	serial->flush_read();
         ERR("malformed answer \"%d\"",tmpbuf);
     }
-    
+    serial->flush_read();
     return OCEM_UNEXPECTED_SLAVE_ANSWER;
 }
 
