@@ -91,7 +91,7 @@ int OcemProtocolBuffered::registerSlave(int slaveid){
         DPRINT("registering slave %d",slaveid);
         slave_queue.insert(std::make_pair<int,std::pair<OcemData*,OcemData* > >(slaveid,std::make_pair<OcemData*,OcemData*>(d,s)));
     } else {
-        DPRINT("already registered slave %d",slaveid);
+       // DPRINT("already registered slave %d",slaveid);
        return 0; 
     }
     
@@ -158,7 +158,7 @@ int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeocc
     if(timeoccur)*timeoccur=0;
     pthread_mutex_unlock(&schedule_write_mutex);
 
-    return 0;
+    return strlen(command);
 }
             
 int OcemProtocolBuffered::init(){
