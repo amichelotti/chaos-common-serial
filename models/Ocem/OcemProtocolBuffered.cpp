@@ -32,9 +32,9 @@ void* OcemProtocolBuffered::runSchedule(){
 
                 Request& cmd=write_queue->queue.front();
                 uint64_t when=common::debug::getUsTime()-cmd.timestamp;
-
-                ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
                 DPRINT("- slave %d sending command %s, timeout %d, issued %llu us ago",i->first,cmd.buffer.c_str(),cmd.timeo_ms,when);
+                ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
+
                 write_queue->reqs++;
                 if(ret>0){
                     write_queue->queue.pop();
@@ -76,9 +76,11 @@ void* OcemProtocolBuffered::runSchedule(){
 
 OcemProtocolBuffered::OcemProtocolBuffered(const char*serdev,int max_answer_size,int baudrate,int parity,int bits,int stop):OcemProtocol(serdev,max_answer_size,baudrate,parity,bits,stop){
     slaves=0;
+    initialized=0;
 }
 
 OcemProtocolBuffered::~OcemProtocolBuffered(){
+  deinit();
 }
             
 int OcemProtocolBuffered::registerSlave(int slaveid){
@@ -124,7 +126,7 @@ int OcemProtocolBuffered::unRegisterSlave(int slaveid){
 int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
     pthread_mutex_lock(&schedule_read_mutex);
     registerSlave(slaveid);
-        ocem_queue_t::iterator i=slave_queue.find(slaveid);
+    ocem_queue_t::iterator i=slave_queue.find(slaveid);
     if(timeoccur)*timeoccur=0;
 
     OcemData*read_queue=(i->second).first;
@@ -133,7 +135,7 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
     if(!read_queue->queue.empty()){
         Request req;
         read_queue->popRequest(req);
-        DPRINT("slave %d returning \"%s\"",slaveid,read_queue->queue.size(),req.buffer.c_str());
+        DPRINT("slave %d returning \"%s\"",slaveid,req.buffer.c_str());
         memcpy(buf,req.buffer.c_str(),req.buffer.size()+1);
         pthread_mutex_unlock(&schedule_read_mutex);
 
@@ -147,7 +149,7 @@ int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeocc
     pthread_mutex_lock(&schedule_write_mutex);
     registerSlave(slaveid);
     ocem_queue_t::iterator i=slave_queue.find(slaveid);
-
+    DPRINT("slave %d pushing command \"%s\"",slaveid,command);
     Request data;
     data.buffer.assign(command);
     data.timeo_ms=timeo;
@@ -162,6 +164,7 @@ int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeocc
 int OcemProtocolBuffered::init(){
      pthread_attr_t attr;
     pthread_condattr_t cond_attr;
+    if(initialized)return 0;
     int ret=OcemProtocol::init();
     
     pthread_condattr_init(&cond_attr);
@@ -177,16 +180,19 @@ int OcemProtocolBuffered::init(){
       DERR("cannot create schedule_thread thread");
       return -1;
     }
-    
+    initialized=1;
     return ret;
 }
 
 int OcemProtocolBuffered::deinit(){
     int* ret;
+    int rett;
     unRegisterAll();
     run=0;
     pthread_join(rpid,(void**)&ret);
-    return OcemProtocol::deinit();
+    rett=OcemProtocol::deinit();
+    initialized=0;
+    return rett;
 }
 
   int OcemData::pushRequest(Request &req){

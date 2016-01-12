@@ -113,8 +113,8 @@ int OcemProtocol::check_and_extract(char *buffer, char *protbuf, int size){
       } else {
 	ERR("crc check FAILED, calc 0x%x, expected 0x%x",crc&0xff,pnts[cnt+1]&0xff);
 	/// DISABLED FOR TEST!!
-	//	return OCEM_POLL_ANSWER_CRC_FAILED;
-	return cnt -1;
+	return OCEM_POLL_ANSWER_CRC_FAILED;
+	//return cnt -1;
       }
     } else {
       ERR(" no ETX matched size msg %d",cnt);

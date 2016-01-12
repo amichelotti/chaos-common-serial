@@ -86,7 +86,7 @@ namespace common {
              @param timeoccur return 1 if a timeout occured
              @return the number of characters read or negative for error
              */
-            int poll(int slave,char * buf,int size,int timeo=1000,int*timeoccur=0);
+            virtual int poll(int slave,char * buf,int size,int timeo=1000,int*timeoccur=0);
             
             /**
              perform a select request toward the given slave
@@ -96,10 +96,10 @@ namespace common {
              @param timeoccur return 1 if a timeout occured
              @return the number of characters of the command sent or negative for error
              */
-            int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
+            virtual int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
             
-            int init();
-            int deinit();
+            virtual int init();
+            virtual int deinit();
 	    
 	    void decodeBuf(char*inpbuf,char*outbuf,int size);
         };

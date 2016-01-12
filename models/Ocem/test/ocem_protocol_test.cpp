@@ -72,12 +72,14 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
 	} else if(op == "POLL"){
 	  int timeout=0;
 	  char buf[1024];
+	  *buf=0;
 	  ret=oc->poll(id,buf,sizeof(buf),5000,&timeout);
 	  if(ret<0){
 	    printf("## error polling ret:%d, timeout %d\n",ret,timeout);
 	  } else {
-	    char outbuf[1024];
-	    oc->decodeBuf(buf,outbuf,sizeof(outbuf));
+	    //char outbuf[1024];
+	    //oc->decodeBuf(buf,outbuf,sizeof(outbuf));
+	    printf("[%d] '%s'\n",ret,buf);
 	  }
 	}
       } else if(!strcmp(t,"QUIT")){
@@ -133,7 +135,7 @@ int main(int argc, char *argv[])
 #endif
   //////
  
-    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocolBuffered(dev.c_str());
+    common::serial::ocem::OcemProtocolBuffered* oc= new common::serial::ocem::OcemProtocolBuffered(dev.c_str());
     oc->init();
    raw_test(oc);
    delete oc;

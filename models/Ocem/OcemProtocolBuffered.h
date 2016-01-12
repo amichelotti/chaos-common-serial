@@ -52,7 +52,7 @@ namespace common {
 	    static void *schedule_thread(void *);
             pthread_t rpid;
             int run;
-
+	    int initialized;
         public:
 
             OcemProtocolBuffered(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
