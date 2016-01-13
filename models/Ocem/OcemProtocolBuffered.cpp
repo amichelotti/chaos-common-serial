@@ -26,7 +26,7 @@ void* OcemProtocolBuffered::runSchedule(){
 
 	pthread_mutex_lock(&write_queue->mutex);
 	size=write_queue->queue.size();
-	DPRINT("[%d] scheduling WRITE, cmd queue %d",i->first);
+	DPRINT("[%d] scheduling WRITE, cmd queue %d",i->first,size);
 	// handle select
 	if(!write_queue->queue.empty()){
 	  int cnt;
@@ -196,19 +196,18 @@ int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeocc
     if(timeoccur)*timeoccur=0;
     OcemData*write_queue=(i->second).second;
     pthread_mutex_lock(&write_queue->mutex);
-    #if 0
+  
     if(write_queue->queue.size()>0){
-        Request& last_cmd=->queue.back();
+        Request& last_cmd=write_queue->queue.back();
         std::string topush;
         topush.assign(command);
         if( last_cmd.buffer == topush){
             DPRINT("slave %d not pushing replicated command \"%s\"",slaveid,command);
-            pthread_mutex_unlock(&schedule_write_mutex);
+            pthread_mutex_unlock(&write_queue->mutex);
 
             return strlen(command); 
         }
     }
-#endif
     if(write_queue->queue.size()>=MAX_WRITE_QUEUE){
         DPRINT("[%d] WAIT for cmd queue reduce %d",slaveid,(i->second).second->queue.size());
         if(wait_timeo(&write_queue->awake,&write_queue->mutex,0)<0){
