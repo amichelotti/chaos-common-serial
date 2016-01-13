@@ -28,20 +28,19 @@ void* OcemProtocolBuffered::runSchedule(){
 	size=write_queue->queue.size();
 	DPRINT("[%d] scheduling WRITE, cmd queue %d",i->first,size);
 	// handle select
-	if(!write_queue->queue.empty()){
+	if(size>0){
 	  int cnt;
-
 	  Request& cmd=write_queue->queue.front();
 	  uint64_t when=common::debug::getUsTime()-cmd.timestamp;
 	  
 	  DPRINT("[%d] SENDING command %s, timeout %d, issued %llu us ago",i->first,cmd.buffer.c_str(),cmd.timeo_ms,when);
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
-
+          
 	  write_queue->reqs++;
 	  if(ret>0){
 	    write_queue->queue.pop();
 	    write_queue->req_ok++;
-	    DPRINT("[%d] command ok queue lenght %d",i->first,write_queue->queue.size());
+	    DPRINT("[%d] command ok (%d/%d) queue lenght %d",i->first,write_queue->req_ok,write_queue->reqs,write_queue->queue.size());
 	  } else {
 	    cmd.retry++;
 	    if(cmd.retry>2){
@@ -49,36 +48,36 @@ void* OcemProtocolBuffered::runSchedule(){
 	      write_queue->queue.pop();
 	    }
 	    DPRINT("[%i] command not removed, retry later on",i->first);
-	  }
+	  } 
 	}
 	
 	if((size == MAX_WRITE_QUEUE) && (write_queue->queue.size()<MAX_WRITE_QUEUE)){
 	  pthread_cond_signal(&write_queue->awake);
 	}
 	pthread_mutex_unlock(&write_queue->mutex);
-      }
-      
-      for(i=slave_queue.begin();i!=slave_queue.end();i++){
-	int ret,timeo,rdper=READ_PER_WRITE;
+      // handle poll/////////////////  
+        int rdper=READ_PER_WRITE;
 	read_queue=(i->second).first;
 	DPRINT("[%d] scheduling READ, queue %d",i->first,read_queue->queue.size());
-      // handle poll
-
 	pthread_mutex_lock(&read_queue->mutex);
 	do{
+          read_queue->reqs++;    
 	  ret=OcemProtocol::poll(i->first,buffer,sizeof(buffer),1000);
 	  if(ret>0){
 	    Request pol;
 	    pol.buffer.assign(buffer,ret);
 	    pol.timestamp=common::debug::getUsTime();
 	    read_queue->pushRequest(pol);
-	    DPRINT("[%d] received queue %d data \"%s\", ret %d",i->first,read_queue->queue.size(),buffer,ret);
-	  }
+	    read_queue->req_ok++;
+            pthread_cond_signal(&read_queue->awake);
+
+            DPRINT("[%d] received ( %d/%d) queue %d data \"%s\", ret %d",i->first,read_queue->req_ok,read_queue->reqs,read_queue->queue.size(),buffer,ret);     
+          }
 	} while((ret>0)&& --rdper);
 	pthread_mutex_unlock(&read_queue->mutex);
-      }
+      } 
 
-    }
+    }   
     DPRINT("EXITING SCHEDULE THREAD");
 }
 
@@ -156,7 +155,14 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
     OcemData*read_queue=(i->second).first;
     DPRINT("[%d] pool queue lenght %d ",slaveid,read_queue->queue.size());
     pthread_mutex_lock(&read_queue->mutex);
-
+    if(read_queue->queue.empty()){
+        if(wait_timeo(&read_queue->awake,&read_queue->mutex,timeo)<0){
+           pthread_mutex_unlock(&read_queue->mutex);
+           if(timeoccur)*timeoccur=1;
+           DERR("[%d] Timeout %d",slaveid,timeo);
+           return -1;
+        }
+    }
     if(!read_queue->queue.empty()){
         Request req;
         read_queue->popRequest(req);
@@ -164,7 +170,7 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
         memcpy(buf,req.buffer.c_str(),req.buffer.size()+1);
 	pthread_mutex_unlock(&read_queue->mutex);
         return req.buffer.size();
-    }
+    } 
     pthread_mutex_unlock(&read_queue->mutex);
 
     return 0;
