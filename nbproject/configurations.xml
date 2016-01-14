@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="97">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="Modules" displayName="Modules" projectFiles="true">
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c</itemPath>
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp</itemPath>
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCompilerABI.h</itemPath>
+    </logicalFolder>
     <df root="." name="0">
+      <df name="CMakeFiles">
+        <df name="2.8.12.2">
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+          <df name="CompilerIdCXX">
+            <in>CMakeCXXCompilerId.cpp</in>
+          </df>
+        </df>
+      </df>
       <df name="core">
         <in>AbstractSerialComm.cpp</in>
         <in>PosixSerialComm.cpp</in>
@@ -22,6 +37,15 @@
         <in>test_serial.cpp</in>
       </df>
     </df>
+    <df root="." name="1">
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false"
@@ -32,6 +56,7 @@
   </logicalFolder>
   <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
   <sourceRootList>
+    <Elem>.</Elem>
     <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
@@ -44,10 +69,9 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-fPIC"/>
-        <element flagsID="1" commonFlags="-fPIC -fPIC -O3 -O2 -O2"/>
-        <element flagsID="2" commonFlags="-fPIC -fPIC -O3 -fPIC"/>
-        <element flagsID="3" commonFlags="-fPIC -fPIC -O3 -fPIC -O2 -O2"/>
-        <element flagsID="4" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
+        <element flagsID="1" commonFlags="-fPIC -fPIC -O3 -fPIC -O2 -O2"/>
+        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
+        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -58,21 +82,33 @@
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
         </makeTool>
-        <preBuild>
-          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
-          <preBuildCommand></preBuildCommand>
-        </preBuild>
       </makefileType>
+      <item path="/usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c"
+            ex="false"
+            tool="0"
+            flavor2="2">
+      </item>
+      <item path="/usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c"
+            ex="false"
+            tool="0"
+            flavor2="2">
+      </item>
+      <item path="CMakeFiles/2.8.12.2/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
       <item path="core/AbstractSerialComm.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
       </item>
       <item path="core/PosixSerialComm.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
-          <preprocessorList>
-            <Elem>CHAOS</Elem>
-            <Elem>NDEBUG</Elem>
-          </preprocessorList>
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="core/posixserialcomm_cwrap.cpp" ex="false" tool="1" flavor2="4">
@@ -113,7 +149,7 @@
       <folder path="0/models/Ocem/test">
         <ccTool>
           <preprocessorList>
-            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
           </preprocessorList>
         </ccTool>
       </folder>
@@ -124,8 +160,20 @@
           </incDir>
         </ccTool>
       </folder>
+      <folder path="Modules">
+        <cTool>
+          <incDir>
+            <pElem>CMakeFiles/CMakeTmp</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>CMakeFiles/CMakeTmp</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
       <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="3">
+        <ccTool flags="1">
           <preprocessorList>
             <Elem>OCEM_PROTOCOL_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
@@ -136,7 +184,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="4">
+        <ccTool flags="3">
           <preprocessorList>
             <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
@@ -147,7 +195,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">

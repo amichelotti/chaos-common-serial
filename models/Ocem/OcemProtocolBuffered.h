@@ -20,7 +20,8 @@
 #include <queue>
 #define MAX_WRITE_QUEUE 2
 #define MAX_READ_QUEUE 32
-#define READ_PER_WRITE 2
+#define READ_PER_WRITE 1
+#define ERRORS_TOBE_FATAL 8
 namespace common {
     namespace serial {
         namespace ocem{
@@ -29,7 +30,8 @@ namespace common {
             uint64_t timestamp;
             uint32_t timeo_ms;
             int32_t retry;
-            Request(){timeo_ms=0;timestamp=0;retry=0;}
+            int32_t ret;
+            Request(){timeo_ms=0;timestamp=0;retry=0;ret=0;}
         };
         struct OcemData{
 	  std::queue<Request> queue;
@@ -40,17 +42,28 @@ namespace common {
 	  uint64_t avg_req_time; // average request time
 	  uint64_t done_req_time;// average time to accomplish th request
 	  uint64_t req_ok;        // number of request accomplished ok
+          uint64_t req_bad;        // number of request accomplished ok
+          uint64_t crc_err;
 	  uint64_t reqs;  // number of total request
-	  pthread_mutex_t mutex;
+	  pthread_mutex_t qmutex;
 	  pthread_cond_t awake;
-	  OcemData(){last_req_time=0;req_ok=0;reqs=0;}
-	  int pushRequest(Request&req);
-	  int popRequest(Request& req);
+	  OcemData();
+	  int pop();
+          int size();
+          int empty();
+          int push(Request& req);
+
+          int front(Request& req);
+          int back(Request& req);
+
+
+
         };
         class OcemProtocolBuffered:public OcemProtocol {
             
             typedef std::map<int,std::pair<OcemData*,OcemData*>  >  ocem_queue_t;
             ocem_queue_t slave_queue;
+            pthread_mutex_t mutex_buffer;
 
 	    int slaves;
 	    static void *schedule_thread(void *);
@@ -65,7 +78,7 @@ namespace common {
             
             int registerSlave(int slaveid);
             int unRegisterAll();
-
+	    
             int unRegisterSlave(int slaveid);
             void* runSchedule();
 
@@ -91,7 +104,12 @@ namespace common {
             int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
             
             int init();
+	    int start();
+             int stop();
+
             int deinit();
+            int getWriteSize(int slave);
+            int getReadSize(int slave);
 	    
         };
     };
