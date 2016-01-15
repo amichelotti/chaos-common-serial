@@ -155,7 +155,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
     if(ret == EOT){
         DPRINT("slave %d says NO TRAFFIC",slave);
         pthread_mutex_unlock(&serial_chan_mutex);
-	usleep(100000); // sleep
+	//usleep(100000); // sleep
         return OCEM_NO_TRAFFIC;
     } else if(ret == STX){
         int slave_rec;

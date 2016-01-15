@@ -37,14 +37,16 @@ static char* convToUpper(char*str){
 
 static void printRawCommandHelp(){
     std::cout<<"\tSELECT <OCEMID> <CMD>      : perform a select"<<std::endl;
-    std::cout<<"\tPOLL <OCEMID> : perform a poll and dump result"<<std::endl;
+    std::cout<<"\tPOLL <OCEMID> <1> : perform a poll and dump result"<<std::endl;
+    std::cout<<"\tLOOPPOLL <OCEMID> <#times>: perform a loop of polls and dump result"<<std::endl;
+
     std::cout<<"\tHELP               : this help"<<std::endl;
     std::cout<<"\tQUIT               : quit program"<<std::endl;
   
 }
 void raw_test(common::serial::ocem::OcemProtocol*oc){
   char stringa[1024];
-  boost::regex cmd_match("^(\\w+) (\\d+)(\\s+(.+)|)");
+  boost::regex cmd_match("^(\\w+) (\\d+) (.+)");
   if(oc->init()!=0 ){
     printf("## cannot initialize protocol\n");
     return;
@@ -56,7 +58,6 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
       boost::smatch match;
       convToUpper(t);
 
-      tm = common::debug::getUsTime();
       if(boost::regex_match(std::string(t),match,cmd_match,boost::match_perl)){
 	int ret;
           std::string op=match[1];
@@ -64,33 +65,57 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
 	int id = atoi(ids.c_str());
 	if(op == "SELECT"){
 	  int timeout=0;
-	  std::string cmd=match[4];
+	  std::string cmd=match[3];
+          tm = common::debug::getUsTime();
+
 	  ret=oc->select(id,(char*)cmd.c_str(),5000,&timeout);
 	  if(ret<0){
 	    printf("## error sending ret:%d, timeout :%d\n",ret,timeout);
-	  }
+	  } else {
+              printf("[%llu us] done\n",common::debug::getUsTime()-tm);
+          }
 	} else if(op == "POLL"){
 	  int timeout=0;
 	  char buf[1024];
 	  *buf=0;
+          tm = common::debug::getUsTime();
 	  ret=oc->poll(id,buf,sizeof(buf),5000,&timeout);
 	  if(ret<0){
 	    printf("## error polling ret:%d, timeout %d\n",ret,timeout);
-	  } else {
-	    //char outbuf[1024];
-	    //oc->decodeBuf(buf,outbuf,sizeof(outbuf));
-	    printf("[%d] '%s'\n",ret,buf);
-	  }
-	}
-      } else if(!strcmp(t,"QUIT")){
-	return;
+	  } 
+        } else if(op == "LOOPPOLL"){
+	  int timeout=0;
+	  char buf[1024];
+          std::string tim=match[3];
+
+          int looptimes=atoi(tim.c_str());
+          int cnt=looptimes;
+          uint64_t tot;
+	  *buf=0;
+          printf("looppol %d times on id %d\n",cnt,id);
+          tm = common::debug::getUsTime();
+          while(cnt--){
+              int ret;
+              oc->select(id,"COR",1000,0);
+              ret=oc->poll(id,buf,sizeof(buf),5000,&timeout);
+              if((ret!=common::serial::ocem::OcemProtocol::OCEM_SLAVE_BUSY)&&(ret!=common::serial::ocem::OcemProtocol::OCEM_NO_TRAFFIC) && (ret<0)){
+                  printf("## an error occured after %d, ret=%d\n",looptimes-cnt,ret);
+                  break;
+              }
+              printf("[%d] ret =%10d\n",cnt,ret);
+          }
+          tot= common::debug::getUsTime()-tm;
+          printf("* done in %llu us %f per poll \n",tot,tot*1.0/looptimes);
+	  
+	} else if(!strcmp(t,"QUIT")){
+            return;
       } else if(!strcmp(t,"HELP")){
 	printRawCommandHelp();
 	return;
       }
   }
 }
-
+}
 
 static int check_for_char(){
   fd_set fds;
@@ -135,7 +160,7 @@ int main(int argc, char *argv[])
 #endif
   //////
  
-    common::serial::ocem::OcemProtocolBuffered* oc= new common::serial::ocem::OcemProtocolBuffered(dev.c_str());
+    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(dev.c_str());
     oc->init();
    raw_test(oc);
    delete oc;

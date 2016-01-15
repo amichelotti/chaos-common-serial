@@ -79,7 +79,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
           now=common::debug::getUsTime();
 	  uint64_t when=now-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,write_queue->old_req_time-now,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
           
@@ -89,18 +89,21 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	    DPRINT("[%d] command ok queue lenght %d",i->first,write_queue->size());
 	    size--;
 
-	  } /*else {
+	  } else {
 	    cmd.retry++;
-            write_queue->req_bad++;
+             
 
-	    if(cmd.retry>2){
+            write_queue->req_bad++;
+            DPRINT("[%i] command \"%s\" ERROR(errs %d) , retry later on",i->first,write_queue->req_bad);
+	    /*if(cmd.retry>2){
 	      ERR("[%d] removing not working command, retries %d",i->first,cmd.retry);
-	      write_queue->pop();
+	      write_queue->push(cmd);
 
 	      size--;
 	    }
 	    DPRINT("[%i] command not removed, retry later on",i->first);
-	  } */
+             */
+	  } 
 //	  } while(size>0);
 	}
 	
@@ -130,7 +133,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %d/%d/%d crc err %d), queue %d oldest updated %llu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),read_queue->old_req_time-now,ret,buffer);
+	    DPRINT("[%d] scheduling READ ( %d/%d/%d crc err %d), queue %d oldest updated %llu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -271,6 +274,7 @@ int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*
         read_queue->front(req);
         read_queue->pop();
         read_queue->old_req_time=req.timestamp;
+       
         DPRINT("[%d] poll queue %d returned \"%s\"",slaveid,read_queue->size(),req.buffer.c_str());
         memcpy(buf,req.buffer.c_str(),req.buffer.size()+1);
         return req.ret;

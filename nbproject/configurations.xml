@@ -70,9 +70,8 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-fPIC"/>
-        <element flagsID="1" commonFlags="-fPIC -fPIC -O3 -fPIC -O2 -O2"/>
-        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
-        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
+        <element flagsID="1" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
+        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -144,12 +143,6 @@
           <preprocessorList>
             <Elem>CHAOS</Elem>
             <Elem>NDEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="0/models/Ocem/test">
-        <ccTool>
-          <preprocessorList>
             <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
           </preprocessorList>
         </ccTool>
@@ -174,9 +167,8 @@
         </ccTool>
       </folder>
       <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="2">
           <preprocessorList>
-            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
           </preprocessorList>
         </ccTool>
@@ -185,9 +177,8 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="3">
+        <ccTool flags="2">
           <preprocessorList>
-            <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
           </preprocessorList>
         </ccTool>
@@ -195,10 +186,9 @@
       <item path="models/Ocem/OcemProtocolScheduleCFQ.cpp"
             ex="false"
             tool="1"
-            flavor2="0">
-        <ccTool flags="3">
+            flavor2="4">
+        <ccTool flags="2">
           <preprocessorList>
-            <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
           </preprocessorList>
         </ccTool>
@@ -207,7 +197,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="1">
         </ccTool>
       </item>
       <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">
