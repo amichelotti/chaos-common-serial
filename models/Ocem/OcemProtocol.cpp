@@ -12,14 +12,23 @@
 #include <string.h>
 using namespace common::serial::ocem;
 
-OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
-{
+OcemProtocol::OcemProtocol(const char*_serdev,
+                            int max,
+                            int _baudrate,
+                            int _parity,
+                            int _bits,
+                            int _stop):
+serdev(_serdev),
+max_answer_size(max),
+baudrate(_baudrate),
+parity(_parity),
+bits(_bits),
+stop(_stop) {
   DPRINT("Creating dev %s, max answer %d , baudrate %d, parity %d, bits %d, stop %d",serdev,max_answer_size,baudrate,parity,bits,stop);
   serial = new PosixSerialComm(std::string(_serdev),_baudrate,_parity,_bits,_stop,max,max);
-    
 }
 
-OcemProtocol::~OcemProtocol(){
+OcemProtocol::~OcemProtocol() {
     deinit();
 }
 
