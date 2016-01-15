@@ -35,6 +35,8 @@ void* OcemProtocolBuffered::runSchedule(){
 	  int cnt;
 	  Request cmd;
           write_queue->front(cmd);
+          write_queue->pop();
+
 	  uint64_t when=common::debug::getUsTime()-cmd.timestamp;
 	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
@@ -42,7 +44,6 @@ void* OcemProtocolBuffered::runSchedule(){
           
 	  if(ret>0){
             
-	    write_queue->pop();
 	    write_queue->req_ok++;
 	    DPRINT("[%d] command ok queue lenght %d",i->first,write_queue->size());
 	    size--;
