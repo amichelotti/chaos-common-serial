@@ -30,6 +30,7 @@
           </df>
           <in>OcemProtocol.cpp</in>
           <in>OcemProtocolBuffered.cpp</in>
+          <in>OcemProtocolScheduleCFQ.cpp</in>
         </df>
       </df>
       <df name="test">
@@ -184,6 +185,17 @@
             ex="false"
             tool="1"
             flavor2="4">
+        <ccTool flags="3">
+          <preprocessorList>
+            <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
+            <Elem>common_serial_ocem_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="models/Ocem/OcemProtocolScheduleCFQ.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
         <ccTool flags="3">
           <preprocessorList>
             <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
