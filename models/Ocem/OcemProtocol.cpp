@@ -50,7 +50,7 @@ int OcemProtocol::init(){
   return ret;
 }
 int OcemProtocol::deinit(){
-  DPRINT("deinitializing protocol");
+  DPRINT( "deinitializing protocol");
     if(serial){
       
       delete serial;
@@ -133,6 +133,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
         ERR("invalid slave id %d",slave);
         return OCEM_BAD_SLAVEID;
     }
+    if(timeoccur)*timeoccur=0;
     pthread_mutex_lock(&serial_chan_mutex);
     DPRINT(" performing poll request slave %d, timeout %d ms",slave,timeo);
     bufreq[0]=ENQ;
@@ -163,7 +164,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
         tot = 0;
         //get the rest of the message
         DPRINT("slave %d has something (%d bytes), receiving...",slave,serial->byte_available_read());
-        while((tot<max_answer_size)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)&& (found==0)){
+        while((tot<max_answer_size)&&(found==0)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)){
 	  if(tmpbuf[tot]==ETX){
 	    DPRINT("termination found %d characters",tot); 
             found++;
