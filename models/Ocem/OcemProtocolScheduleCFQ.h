@@ -43,7 +43,7 @@ namespace common {
 	  int protocol_errors;    // number of protocol errors
 	  uint64_t last_req_time; // timestamp of last request
           uint64_t old_req_time; // timestamp of last request
-
+          uint64_t last_op; // last operation
 	  uint64_t avg_req_time; // average request time
 	  uint64_t done_req_time;// average time to accomplish th request
 	  uint64_t req_ok;        // number of request accomplished ok

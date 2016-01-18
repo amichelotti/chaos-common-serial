@@ -60,10 +60,17 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
     DPRINT("THREAD STARTED 0x%x",pthread_self());
     OcemData*read_queue,*write_queue;
     uint64_t now;
+    int timeo=0;
     run=1;
     while(run){
     //  DPRINT("PROTOCOL SCHEDULE");
       std::sort(slave_queue_sorted.begin(),slave_queue_sorted.end(),algo_sort_write);
+#if 0
+      for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
+          DPRINT("SHEDULE WRITE order %d",i->first);
+      }
+#endif
+
       for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
 	int ret,timeo,size;
 	write_queue=(i->second).second;
@@ -79,14 +86,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
           now=common::debug::getUsTime();
 	  uint64_t when=now-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
-	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
-          
+	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),10000,&timeo);
+          write_queue->last_op=now;
 	  if(ret>0){
             
 	    write_queue->req_ok++;
-	    DPRINT("[%d] command ok queue lenght %d",i->first,write_queue->size());
+	    DPRINT("[%d] command \"%s\" ok queue lenght %d, ret=%d timeo %d",i->first,(char*)cmd.buffer.c_str(),write_queue->size(),ret,timeo);
 	    size--;
 
 	  } else {
@@ -94,7 +101,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
              
 
             write_queue->req_bad++;
-            DPRINT("[%i] command \"%s\" ERROR(errs %d) , retry later on",i->first,write_queue->req_bad);
+            DPRINT("[%i] command \"%s\" ERROR(errs %d) , retry later on, ret=%d timeo=%d",i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
 	    /*if(cmd.retry>2){
 	      ERR("[%d] removing not working command, retries %d",i->first,cmd.retry);
 	      write_queue->push(cmd);
@@ -113,7 +120,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
       }
 	//pthread_mutex_unlock(&write_queue->qmutex);
       // handle poll/////////////////  
+
       std::sort(slave_queue_sorted.begin(),slave_queue_sorted.end(),algo_sort_read);
+#if 0
+      for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
+          DPRINT("SHEDULE READ order %d",i->first);
+      }
+#endif
+
       for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
     int ret,timeo,size;
       int rdper=READ_PER_WRITE;
@@ -125,6 +139,8 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
 	  pol.timestamp=now;
 	  ret=OcemProtocol::poll(i->first,buffer,sizeof(buffer),1000);
+          read_queue->last_op=now;
+
           pol.ret=ret;
 	  if(ret>0){
 	    pol.buffer.assign(buffer,ret);
@@ -162,12 +178,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(const char*serdev,int max_answer_size,int baudrate,int parity,int bits,int stop):OcemProtocol(serdev,max_answer_size,baudrate,parity,bits,stop){
     slaves=0;
     initialized=0;
+    run=0;
     pthread_mutex_init(&mutex_buffer,NULL);
 
 }
 
 OcemProtocolScheduleCFQ::~OcemProtocolScheduleCFQ(){
   deinit();
+  
 }
             
 int OcemProtocolScheduleCFQ::getWriteSize(int slave){
@@ -367,7 +385,7 @@ int OcemProtocolScheduleCFQ::stop(){
       int* ret;
 
     DPRINT("STOP THREAD 0x%x",rpid);
-     run=0;
+    run=0;
     pthread_join(rpid,(void**)&ret);
     return 0;
 }
@@ -375,13 +393,14 @@ int OcemProtocolScheduleCFQ::start(){
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+  if(run==0){
+    if(pthread_create(&rpid,&attr,schedule_thread,this)<0){
+      DERR("cannot create schedule_thread thread");
+      return -1;
+    }
   
-  if(pthread_create(&rpid,&attr,schedule_thread,this)<0){
-    DERR("cannot create schedule_thread thread");
-    return -1;
-  }
   DPRINT("START THREAD 0x%x",rpid);
-
+  }
   usleep(10000);
 }
 int OcemProtocolScheduleCFQ::init(){
