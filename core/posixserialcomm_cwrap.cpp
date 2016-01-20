@@ -30,8 +30,8 @@ extern "C" {
     
     if(serdev){
       
-      char *pnt=serdev;
-      char*start_name=serdev;
+      const char *pnt=serdev;
+      const char*start_name=serdev;
       while(*pnt!=0){
 	if(*pnt=='/')
 	  start_name=pnt;
