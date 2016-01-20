@@ -13,15 +13,17 @@ ELSE()
   LINK_DIRECTORIES(${CMAKE_BINARY_DIR}/build ${CMAKE_INSTALL_PREFIX}/lib)
 ENDIF()
 
-FILE(GLOB serial_src core/*.cpp Ocem/*.cpp)
+FILE(GLOB serial_src core/*.cpp)
 FILE(GLOB serial_test_src test/*.cpp)
 ADD_EXECUTABLE(test_serial test/test_serial.cpp)
 ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
 
 # -DPOSIX_SERIAL_COMM_DEBUG
+# 
+#-DPOSIX_SERIAL_COMM_DEBUG 
 IF (DEBUG)
 
-  ADD_DEFINITIONS(-DPOSIX_SERIAL_COMM_DEBUG -DOCEM_PROTOCOL_DEBUG )
+  ADD_DEFINITIONS(-DOCEM_PROTOCOL_DEBUG )
 ENDIF()
 
 IF(FrameworkLib)
@@ -48,9 +50,10 @@ INSTALL_TARGETS(/bin echo_serial)
 FILE(GLOB ocem_src Ocem/*.h)    
 INSTALL(FILES core/posixserialcomm_cwrap.h core/PosixSerialComm.h core/AbstractSerialComm.h DESTINATION include/common/serial/core) 
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
-INSTALL(FILES ${ocem_src} DESTINATION include/common/serial/Ocem ) 
 INSTALL_TARGETS(/lib  common_serial)
 
 INSTALL_TARGETS(/bin  test_serial)
 INSTALL_TARGETS(/bin  echo_serial)
+
+ADD_SUBDIRECTORY(models)
 

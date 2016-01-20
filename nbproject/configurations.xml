@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="Modules" displayName="Modules" projectFiles="true">
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c</itemPath>
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp</itemPath>
+      <itemPath>/usr/share/cmake-2.8/Modules/CMakeCompilerABI.h</itemPath>
+    </logicalFolder>
+    <df root="." name="0">
+      <df name="CMakeFiles">
+        <df name="2.8.12.2">
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+          <df name="CompilerIdCXX">
+            <in>CMakeCXXCompilerId.cpp</in>
+          </df>
+        </df>
+      </df>
+      <df name="core">
+        <in>AbstractSerialComm.cpp</in>
+        <in>PosixSerialComm.cpp</in>
+        <in>posixserialcomm_cwrap.cpp</in>
+        <in>serial.cpp</in>
+      </df>
+      <df name="models">
+        <df name="Ocem">
+          <df name="test">
+            <in>ocem_protocol_test.cpp</in>
+          </df>
+          <in>OcemProtocol.cpp</in>
+          <in>OcemProtocolBuffered.cpp</in>
+          <in>OcemProtocolScheduleCFQ.cpp</in>
+        </df>
+      </df>
+      <df name="test">
+        <in>echo_serial.cpp</in>
+        <in>test_serial.cpp</in>
+      </df>
+    </df>
+    <df root="." name="1">
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2"/>
+        <element flagsID="1" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
+        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2"/>
+        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
+        <element flagsID="4" commonFlags="-fPIC -fPIC -fPIC -fPIC -fPIC -O2 -O2"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile install</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+      <item path="/usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c"
+            ex="false"
+            tool="0"
+            flavor2="2">
+      </item>
+      <item path="/usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c"
+            ex="false"
+            tool="0"
+            flavor2="2">
+      </item>
+      <item path="CMakeFiles/2.8.12.2/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="core/AbstractSerialComm.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <item path="core/PosixSerialComm.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <item path="core/posixserialcomm_cwrap.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <item path="core/serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <folder path="0/core">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../..</pElem>
+            <pElem>..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>CHAOS</Elem>
+            <Elem>DEBUG</Elem>
+            <Elem>NDEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+            <Elem>common_serial_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/models">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../..</pElem>
+            <pElem>..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+            <pElem>models/Ocem</pElem>
+            <pElem>models</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>CHAOS</Elem>
+            <Elem>OCEM_PROTOCOL_BUFFER_DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/models/Ocem/test">
+        <ccTool>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+            <Elem>NDEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="0/test">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../..</pElem>
+            <pElem>..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>CHAOS</Elem>
+            <Elem>DEBUG</Elem>
+            <Elem>NDEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="Modules">
+        <cTool>
+          <incDir>
+            <pElem>CMakeFiles/CMakeTmp</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>CMakeFiles/CMakeTmp</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="3">
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+            <Elem>NDEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+            <Elem>common_serial_ocem_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="models/Ocem/OcemProtocolBuffered.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool flags="3">
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+            <Elem>NDEBUG</Elem>
+            <Elem>OCEM_PROTOCOL_DEBUG</Elem>
+            <Elem>common_serial_ocem_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="models/Ocem/OcemProtocolScheduleCFQ.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool flags="4">
+          <preprocessorList>
+            <Elem>common_serial_ocem_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="models/Ocem/test/ocem_protocol_test.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool flags="1">
+        </ccTool>
+      </item>
+      <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="test/test_serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
