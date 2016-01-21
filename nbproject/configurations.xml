@@ -70,10 +70,13 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2"/>
-        <element flagsID="1" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
-        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2"/>
-        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
-        <element flagsID="4" commonFlags="-fPIC -fPIC -fPIC -fPIC -fPIC -O2 -O2"/>
+        <element flagsID="1" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2"/>
+        <element flagsID="2" commonFlags="-fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
+        <element flagsID="3" commonFlags="-fPIC -fPIC -fPIC -fPIC -fPIC -O2 -O2"/>
+        <element flagsID="4"
+                 commonFlags="-fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -O3 -O2 -O2"/>
+        <element flagsID="5"
+                 commonFlags="-fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -fPIC -O3 -fPIC -O2 -O2"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -106,19 +109,19 @@
             flavor2="4">
       </item>
       <item path="core/AbstractSerialComm.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="1">
         </ccTool>
       </item>
       <item path="core/PosixSerialComm.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="1">
         </ccTool>
       </item>
       <item path="core/posixserialcomm_cwrap.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="1">
         </ccTool>
       </item>
       <item path="core/serial.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="2">
+        <ccTool flags="1">
         </ccTool>
       </item>
       <folder path="0/core">
@@ -157,7 +160,6 @@
       <folder path="0/models/Ocem/test">
         <ccTool>
           <preprocessorList>
-            <Elem>DEBUG</Elem>
             <Elem>NDEBUG</Elem>
             <Elem>OCEM_PROTOCOL_DEBUG</Elem>
           </preprocessorList>
@@ -192,9 +194,8 @@
         </ccTool>
       </folder>
       <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool flags="3">
+        <ccTool flags="5">
           <preprocessorList>
-            <Elem>DEBUG</Elem>
             <Elem>NDEBUG</Elem>
             <Elem>OCEM_PROTOCOL_DEBUG</Elem>
             <Elem>common_serial_ocem_EXPORTS</Elem>
@@ -205,7 +206,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="3">
+        <ccTool flags="2">
           <preprocessorList>
             <Elem>DEBUG</Elem>
             <Elem>NDEBUG</Elem>
@@ -218,7 +219,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="4">
+        <ccTool flags="3">
           <preprocessorList>
             <Elem>common_serial_ocem_EXPORTS</Elem>
           </preprocessorList>
@@ -228,7 +229,7 @@
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="4">
         </ccTool>
       </item>
       <item path="test/echo_serial.cpp" ex="false" tool="1" flavor2="4">
