@@ -236,7 +236,6 @@ int OcemProtocolScheduleCFQ::unRegisterAll(){
 
 int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
     ocem_queue_t::iterator i;
-    ocem_queue_sorted_t::iterator j;
     pthread_mutex_lock(&mutex_buffer);
 
     i=slave_queue.find(slaveid);
@@ -251,7 +250,11 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
     delete ((i->second).first);
     delete ((i->second).second);
     slave_queue.erase(i);
-    
+    for(ocem_queue_sorted_t::iterator i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
+        if(i->first == slaveid){
+            slave_queue_sorted.erase(i);
+        }
+    }
     if(slave_queue.size()){
         start();
     }
@@ -381,12 +384,9 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
 int OcemProtocolScheduleCFQ::stop(){
       int* ret;
 
-    if(run){
-        run=0;
-        DPRINT("STOP THREAD 0x%x",rpid);
-
-        pthread_join(rpid,(void**)&ret);
-    }
+    DPRINT("STOP THREAD 0x%x",rpid);
+    run=0;
+    pthread_join(rpid,(void**)&ret);
     return 0;
 }
 int OcemProtocolScheduleCFQ::start(){
