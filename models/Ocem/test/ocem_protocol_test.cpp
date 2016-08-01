@@ -265,14 +265,6 @@ int main(int argc, char *argv[])
     std::string dev;
     int slave_id;
     int interactive=1;
-#ifdef CHAOS
-    
-      chaos::ui::ChaosUIToolkit::getInstance()->getGlobalConfigurationInstance()->addOption("dev,d", po::value<std::string>(&dev), "The serial device /dev/ttyxx");
-      
-      chaos::ui::ChaosUIToolkit::getInstance()->init(argc, argv);
-
-
-#else
     boost::program_options::options_description desc("options");
     
   desc.add_options()("help", "help");
@@ -290,7 +282,7 @@ int main(int argc, char *argv[])
    dev = vm[dev].as<std::string>();
    if(vm.count("interactive"))
        interactive=true;
-#endif
+
   //////
  
     common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(dev.c_str());
