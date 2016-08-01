@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <algorithm>
 
 using namespace common::serial::ocem;
 // before long queue and more old

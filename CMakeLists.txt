@@ -5,7 +5,7 @@ FILE(GLOB serial_src core/*.cpp)
 FILE(GLOB serial_test_src test/*.cpp)
 ADD_EXECUTABLE(test_serial test/test_serial.cpp)
 ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
-
+INCLUDE_DIRECTORIES(. ../ )
 # -DPOSIX_SERIAL_COMM_DEBUG
 # 
 #-DPOSIX_SERIAL_COMM_DEBUG 
