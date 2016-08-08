@@ -15,6 +15,7 @@
 #include <common/serial/models/Ocem/OcemProtocolBuffered.h>
 #include <common/debug/core/debug.h>
 #include <boost/regex.hpp>
+#include <boost/program_options.hpp>
 #include <string>
 #ifdef CHAOS
 #include <chaos/ui_toolkit/ChaosUIToolkit.h>
@@ -262,20 +263,17 @@ int main(int argc, char *argv[])
 
     std::string ver;
     std::string dev;
- 
-#ifdef CHAOS
-    
-      chaos::ui::ChaosUIToolkit::getInstance()->getGlobalConfigurationInstance()->addOption("dev,d", po::value<std::string>(&dev), "The serial device /dev/ttyxx");
-      
-      chaos::ui::ChaosUIToolkit::getInstance()->init(argc, argv);
-
-
-#else
+    int slave_id;
+    int interactive=1;
     boost::program_options::options_description desc("options");
     
   desc.add_options()("help", "help");
   // put your additional options here
   desc.add_options()("dev", boost::program_options::value<std::string>(), "serial device where the ocem is attached");
+  boost::program_options::variables_map vm;
+  boost::program_options::store(boost::program_options::parse_command_line(argc,argv, desc),vm);
+  boost::program_options::notify(vm);
+
      if(vm.count("dev")==0){
         std::cout<<"## you must specify a valid device"<<desc<<std::endl;
      return -1;
@@ -284,7 +282,7 @@ int main(int argc, char *argv[])
    dev = vm[dev].as<std::string>();
    if(vm.count("interactive"))
        interactive=true;
-#endif
+
   //////
  
     common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(dev.c_str());
