@@ -12,19 +12,17 @@
 #ifdef OCEM_PROTOCOL_DEBUG
 #define DEBUG
 #endif
+
 #include <common/debug/core/debug.h>
 
 #include <iostream>
-#include "common/serial/serial.h"
+#include <common/serial/serial.h>
 
-#ifndef POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE
-#define POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE 8192
-#endif
 #include <pthread.h>
 
 namespace common {
     namespace serial {
-
+        namespace ocem {
         class OcemProtocol {
             
             enum OcemCtrlChars {
@@ -88,7 +86,7 @@ namespace common {
              @param timeoccur return 1 if a timeout occured
              @return the number of characters read or negative for error
              */
-            int poll(int slave,char * buf,int size,int timeo=1000,int*timeoccur=0);
+            virtual int poll(int slave,char * buf,int size,int timeo=1000,int*timeoccur=0);
             
             /**
              perform a select request toward the given slave
@@ -98,13 +96,14 @@ namespace common {
              @param timeoccur return 1 if a timeout occured
              @return the number of characters of the command sent or negative for error
              */
-            int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
+            virtual int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
             
-            int init();
-            int deinit();
+            virtual int init();
+            virtual int deinit();
 	    
 	    void decodeBuf(char*inpbuf,char*outbuf,int size);
         };
+    };
     };
 };
 
