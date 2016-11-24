@@ -302,13 +302,13 @@ int OcemProtocol::waitAck(int timeo){
     int timeor=0;
     char tmpbuf;
     int ret;
-    DPRINT("[%s] waiting ack from slave",serdev);
+  //  DPRINT("[%s] waiting ack from slave",serdev);
     if((ret=serial->read(&tmpbuf,sizeof(tmpbuf),timeo,&timeor))<0) {
         ERR("[%s] error reading from slave ret %d, timeocc %d ",serdev,ret,timeor);
         return OCEM_READ_FAILED;
     }
 
-    DPRINT("[%s] received %d [x%x] bytes answer, timeoccur %d",serdev,ret,tmpbuf,timeor);
+   // DPRINT("[%s] received %d [x%x] bytes answer, timeoccur %d",serdev,ret,tmpbuf,timeor);
     
     if(ret == 0){
         ERR("[%s] no answer from slave within %d ms, timeoccur %d",serdev,timeo,timeor);
@@ -317,15 +317,15 @@ int OcemProtocol::waitAck(int timeo){
     
     if(ret==1){
         if((tmpbuf==EOT) || (tmpbuf==ACK )){
-            DPRINT("[%s] slave returned \"%s\"",serdev,(tmpbuf==ACK)?"ACK":"BUSY");
+    //        DPRINT("[%s] slave returned \"%s\"",serdev,(tmpbuf==ACK)?"ACK":"BUSY");
             return tmpbuf;
         }
         if(tmpbuf==STX){
-            DPRINT("[%s] slave returned STX, wants to talk",serdev);
+        //    DPRINT("[%s] slave returned STX, wants to talk",serdev);
             return tmpbuf;
         }
 	if(tmpbuf==NAK){
-	  DPRINT("[%s] slave returned NAK",serdev);
+	//  DPRINT("[%s] slave returned NAK",serdev);
 	  return tmpbuf;
 	}
 	serial->flush_read();
