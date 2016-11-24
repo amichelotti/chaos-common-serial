@@ -36,12 +36,13 @@ namespace common {
             
             
 
-            const char* serdev;
+           
 	    int max_answer_size;
             int baudrate,parity,bits,stop;
 
             pthread_mutex_t serial_chan_mutex;
         protected:
+             const char* serdev;
             PosixSerialComm* serial;
             // return number of char copied if success, negative otherwise
             int check_and_extract(char*buffer,char*protbuf,int size);

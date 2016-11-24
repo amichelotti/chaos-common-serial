@@ -213,7 +213,7 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 
         OcemData* d= new OcemData();
         OcemData* s= new OcemData();
-	DPRINT("registering slave %d",slaveid);
+	DPRINT("[%s,%d] registering slave %d",serdev,slaveid);
 	
         slave_queue.insert(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
         slave_queue_sorted.push_back(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
@@ -246,7 +246,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 
         return -3;
     }
-     DPRINT("Unregistering slave %d",slaveid);
+     DPRINT("[%s,%d] Unregistering slave %d",serdev,slaveid);
     stop();
     delete ((i->second).first);
     delete ((i->second).second);
@@ -276,13 +276,13 @@ int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*
 
     if(timeoccur)*timeoccur=0;
     
-    DPRINT("[%d] pool queue lenght %d ",slaveid,read_queue->size());
+    DPRINT("[%s,%d] pool queue lenght %d ",serdev,slaveid,read_queue->size());
     bool empty;
     empty=read_queue->empty();
     if(empty){
         if(wait_timeo(&read_queue->awake,&read_queue->qmutex,timeo)<0){
            if(timeoccur)*timeoccur=1;
-           DPRINT("[%d] Timeout elapsed %d, no traffic",slaveid,timeo);
+           DPRINT("[%s,%d] Timeout elapsed %d, no traffic",serdev,slaveid,timeo);
            return OCEM_NO_TRAFFIC;
         }
     }
@@ -294,7 +294,7 @@ int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*
         read_queue->pop();
         read_queue->old_req_time=req.timestamp;
        
-        DPRINT("[%d] poll queue %d returned \"%s\"",slaveid,read_queue->size(),req.buffer.c_str());
+        DPRINT("[%s,%d] poll queue %d returned \"%s\"",serdev,slaveid,read_queue->size(),req.buffer.c_str());
         memcpy(buf,req.buffer.c_str(),req.buffer.size()+1);
         return req.ret;
     } 
@@ -313,22 +313,22 @@ int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*
     gettimeofday(&tv,NULL);
     ts.tv_sec=tv.tv_sec + timeo_ms/1000;
     ts.tv_nsec=tv.tv_usec*1000 + (timeo_ms%1000)*1000000;
-    DPRINT("waiting on %x for %d",cond,timeo_ms);
+    DPRINT("[%s] waiting on %x for %d",serdev,cond,timeo_ms);
     if(pthread_cond_timedwait(cond, mutex_, &ts)!=0){
             pthread_mutex_unlock(mutex_);
 
             return -1000;
     }
-    DPRINT("exiting from wait on %x for %d",cond,timeo_ms);
+    DPRINT("[%s] exiting from wait on %x for %d",serdev,cond,timeo_ms);
     pthread_mutex_unlock(mutex_);
 
     return 0;
   }
-  DPRINT("indefinite wait on %x",cond);
+  DPRINT("[%s] indefinite wait on %x",serdev,cond);
   ret = pthread_cond_wait(cond, mutex_);
   pthread_mutex_unlock(mutex_);
 
-  DPRINT("exiting from indefinite wait on %x",cond);
+  DPRINT("[%s] exiting from indefinite wait on %x",serdev,cond);
   return ret;
 }        
 int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
@@ -347,15 +347,15 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
         std::string topush;
         topush.assign(command);
         if( last_cmd.buffer == topush){
-            DPRINT("slave %d not pushing replicated command \"%s\"",slaveid,command);
+            DPRINT("[%s,%d] slave %d not pushing replicated command \"%s\"",serdev,slaveid,slaveid,command);
             return strlen(command); 
         }
     }
     
     if(size>=MAX_WRITE_QUEUE){
-        DPRINT("[%d] WAIT for cmd \"%s\" queue reduce %d",slaveid,command,size);
+        DPRINT("[%s,%d] WAIT for cmd \"%s\" queue reduce %d",serdev,slaveid,command,size);
         if(wait_timeo(&write_queue->awake,&write_queue->qmutex,0)<0){
-           DERR("[%d] too many commands on queue %d",slaveid,size);
+           DERR("[%s,%d] too many commands on queue %d",serdev,slaveid,size);
 	   /*if((write_queue->req_ok==0)&&(write_queue->reqs-write_queue->req_ok)>=ERRORS_TOBE_FATAL){
 	     ERR("too many write error");
 	     return -101;
@@ -370,7 +370,7 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
       return -101;
     }*/
 
-    DPRINT("[%d] pushing command \"%s\"",slaveid,command);
+    DPRINT("[%s,%d] pushing command \"%s\"",serdev,slaveid,command);
     Request data;
     data.buffer.assign(command);
     data.timeo_ms=timeo;
@@ -385,7 +385,7 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
 int OcemProtocolScheduleCFQ::stop(){
       int* ret;
 
-    DPRINT("STOP THREAD 0x%x",rpid);
+    DPRINT("[%s] STOP THREAD 0x%x",serdev,rpid);
     run=0;
     pthread_join(rpid,(void**)&ret);
     return 0;
@@ -400,7 +400,7 @@ int OcemProtocolScheduleCFQ::start(){
       return -1;
     }
   
-  DPRINT("START THREAD 0x%x",rpid);
+  DPRINT("[%s] START THREAD 0x%x",serdev,rpid);
   }
   usleep(10000);
 }
