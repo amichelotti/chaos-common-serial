@@ -196,11 +196,14 @@
       <item path="models/Ocem/OcemProtocol.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
           <incDir>
-            <pElem>../../chaosframework</pElem>
+            <pElem>.</pElem>
             <pElem>../..</pElem>
             <pElem>..</pElem>
+            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
+            <pElem>models/Ocem</pElem>
+            <pElem>models</pElem>
+            <pElem>../../chaosframework</pElem>
             <pElem>../../chaosframework/chaos-distrib-x86_64-Linux/include</pElem>
-            <pElem>.</pElem>
           </incDir>
         </ccTool>
       </item>
@@ -227,14 +230,11 @@
             flavor2="4">
         <ccTool flags="0">
           <incDir>
-            <pElem>.</pElem>
+            <pElem>../../chaosframework</pElem>
             <pElem>../..</pElem>
             <pElem>..</pElem>
-            <pElem>../../chaos-x86_64-dynamic-release/include</pElem>
-            <pElem>models/Ocem</pElem>
-            <pElem>models</pElem>
-            <pElem>../../chaosframework</pElem>
             <pElem>../../chaosframework/chaos-distrib-x86_64-Linux/include</pElem>
+            <pElem>.</pElem>
           </incDir>
         </ccTool>
       </item>

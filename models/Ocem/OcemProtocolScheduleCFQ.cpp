@@ -58,7 +58,7 @@ bool algo_sort_read(const OcemProtocolScheduleCFQ::qdata_t& q0, const OcemProtoc
 void* OcemProtocolScheduleCFQ::runSchedule(){
     ocem_queue_sorted_t::iterator i;
     char buffer[2048];
-    DPRINT("THREAD STARTED 0x%x",pthread_self());
+    DPRINT("[%s] THREAD STARTED 0x%x",serdev,pthread_self());
     OcemData*read_queue,*write_queue;
     uint64_t now;
     int timeo=0;
@@ -87,14 +87,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
           now=common::debug::getUsTime();
 	  uint64_t when=now-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%s,%d] scheduling WRITE (%d/%d/%d) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %llu us ago",serdev,i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),10000,&timeo);
           write_queue->last_op=now;
 	  if(ret>0){
             
 	    write_queue->req_ok++;
-	    DPRINT("[%d] command \"%s\" ok queue lenght %d, ret=%d timeo %d",i->first,(char*)cmd.buffer.c_str(),write_queue->size(),ret,timeo);
+	    DPRINT("[%s,%d] command \"%s\" ok queue lenght %d, ret=%d timeo %d",serdev,i->first,(char*)cmd.buffer.c_str(),write_queue->size(),ret,timeo);
 	    size--;
 
 	  } else {
@@ -102,7 +102,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
              
 
             write_queue->req_bad++;
-            DPRINT("[%i] command \"%s\" ERROR(errs %d) , retry later on, ret=%d timeo=%d",i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
+            DPRINT("[%s %i] command \"%s\" ERROR(errs %d) , retry later on, ret=%d timeo=%d",serdev,i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
 	    /*if(cmd.retry>2){
 	      ERR("[%d] removing not working command, retries %d",i->first,cmd.retry);
 	      write_queue->push(cmd);
@@ -150,7 +150,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %d/%d/%d crc err %d), queue %d oldest updated %llu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
+	    DPRINT("[%s,%d] scheduling READ ( %d/%d/%d crc err %d), queue %d oldest updated %llu, ret %d data:\"%s\"",serdev,i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -168,7 +168,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
       } 
 
     }   
-    DPRINT("EXITING SCHEDULE THREAD");
+    DPRINT("[%s] EXITING SCHEDULE THREAD",serdev);
 }
 
  void* OcemProtocolScheduleCFQ::schedule_thread(void* p){
