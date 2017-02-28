@@ -213,7 +213,7 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 
         OcemData* d= new OcemData();
         OcemData* s= new OcemData();
-	DPRINT("[%s,%d] registering slave %d",serdev,slaveid);
+	DPRINT("[%s,%d] registering slave %d",serdev,slaveid,slaveid);
 	
         slave_queue.insert(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
         slave_queue_sorted.push_back(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
@@ -238,7 +238,12 @@ int OcemProtocolScheduleCFQ::unRegisterAll(){
 int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
     ocem_queue_t::iterator i;
     pthread_mutex_lock(&mutex_buffer);
-
+    for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
+           if(j->first == slaveid){
+               slave_queue_sorted.erase(j);
+               break;
+           }
+     }
     i=slave_queue.find(slaveid);
     if(i==slave_queue.end()){
         ERR("cannot find slave %d",slaveid);
@@ -251,11 +256,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
     delete ((i->second).first);
     delete ((i->second).second);
     slave_queue.erase(i);
-    for(ocem_queue_sorted_t::iterator i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
-        if(i->first == slaveid){
-            slave_queue_sorted.erase(i);
-        }
-    }
+
     if(slave_queue.size()){
         start();
     }
@@ -384,10 +385,11 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
 
 int OcemProtocolScheduleCFQ::stop(){
       int* ret;
-
-    DPRINT("[%s] STOP THREAD 0x%x",serdev,rpid);
-    run=0;
-    pthread_join(rpid,(void**)&ret);
+    if(run){
+    	DPRINT("[%s] STOP THREAD 0x%x",serdev,rpid);
+    	run=0;
+    	pthread_join(rpid,(void**)&ret);
+    }
     return 0;
 }
 int OcemProtocolScheduleCFQ::start(){

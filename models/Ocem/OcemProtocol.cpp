@@ -30,7 +30,7 @@ int OcemProtocol::init(){
   if(serial){
     if(serial->init()!=0){
       ret = OCEM_CANNOT_OPEN_DEVICE;	
-      ERR("cannot open initialize device %s",serdev);
+      ERR("cannot open/initialize device %s",serdev);
     }
     pthread_mutex_unlock(&serial_chan_mutex);
     return ret;
