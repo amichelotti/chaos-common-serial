@@ -129,7 +129,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
       }
 #endif
 
-      for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
+      for(i=slave_queue_sorted.begin();(i!=slave_queue_sorted.end())&& run;i++){
     int ret,timeo,size;
       int rdper=READ_PER_WRITE;
 	read_queue=(i->second).first;
@@ -237,6 +237,7 @@ int OcemProtocolScheduleCFQ::unRegisterAll(){
 
 int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
     ocem_queue_t::iterator i;
+    stop();
     pthread_mutex_lock(&mutex_buffer);
     for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
            if(j->first == slaveid){
@@ -251,8 +252,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 
         return -3;
     }
-     DPRINT("[%s,%d] Unregistering slave %d",serdev,slaveid);
-    stop();
+     DPRINT("[%s,%d] Unregistering slave %d",serdev,slaveid,slaveid);
     delete ((i->second).first);
     delete ((i->second).second);
     slave_queue.erase(i);
@@ -386,9 +386,10 @@ int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*time
 int OcemProtocolScheduleCFQ::stop(){
       int* ret;
     if(run){
-    	DPRINT("[%s] STOP THREAD 0x%x",serdev,rpid);
+    	DPRINT("[%s] STOPPING THREAD 0x%x",serdev,rpid);
     	run=0;
     	pthread_join(rpid,(void**)&ret);
+    	DPRINT("[%s] STOPPED THREAD 0x%x ret=%d",serdev,rpid,ret);
     }
     return 0;
 }
