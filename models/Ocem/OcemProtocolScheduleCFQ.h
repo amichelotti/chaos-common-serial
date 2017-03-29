@@ -22,6 +22,10 @@
 #define MAX_READ_QUEUE 32
 #define READ_PER_WRITE 1
 #define ERRORS_TOBE_FATAL 8
+#define PAUSE_POLL_NO_DATA 200 //MS
+#define PAUSE_SELECT_BUSY 1000
+#define SLEEP_IF_INACTIVE 10 //MS
+
 namespace common {
     namespace serial {
         namespace ocem{
@@ -39,7 +43,9 @@ namespace common {
         struct OcemData{
 	  std::queue<Request> queue;
 	  std::string second_command;
+	  uint64_t must_wait_to;
 	  int last_req_index;
+	  int nsuccessive_busy;
 	  int protocol_errors;    // number of protocol errors
 	  uint64_t last_req_time; // timestamp of last request
           uint64_t old_req_time; // timestamp of last request
@@ -58,8 +64,8 @@ namespace common {
           int empty();
           int push(Request& req);
 
-          int front(Request& req);
-          int back(Request& req);
+          Request& front();
+          Request& back();
 
 
 
