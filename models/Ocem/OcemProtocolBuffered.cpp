@@ -147,7 +147,7 @@ int OcemProtocolBuffered::registerSlave(int slaveid){
         OcemData* s= new OcemData();
 	DPRINT("registering slave %d",slaveid);
 	
-        slave_queue.insert(std::make_pair<int,std::pair<OcemData*,OcemData* > >(slaveid,std::make_pair<OcemData*,OcemData*>(d,s)));
+        slave_queue.insert(std::pair<int,std::pair<OcemData*,OcemData* > >(slaveid,std::pair<OcemData*,OcemData*>(d,s)));
     } else {
         pthread_mutex_unlock(&mutex_buffer);
        // DPRINT("already registered slave %d",slaveid);
