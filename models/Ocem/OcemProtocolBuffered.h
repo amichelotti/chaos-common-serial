@@ -10,6 +10,7 @@
 #define __serial__OcemProtocolBuffered__
 
 #ifdef OCEM_PROTOCOL_BUFFER_DEBUG
+#undef DEBUG
 #define DEBUG
 #endif
 #include <common/debug/core/debug.h>
