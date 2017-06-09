@@ -96,9 +96,9 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 				write_queue->must_wait_to=0;
 				uint64_t when=now-cmd.timestamp;
 				if(cmd.retry){
-					DPRINT("[%s,%d] scheduling a RETRY-%d WRITE (%d/%d/%d) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serdev,i->first,cmd.retry,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
+					DPRINT("[%s,%d] scheduling a RETRY-%d WRITE (%llu/%llu/%llu) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serdev,i->first,cmd.retry,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
 				} else {
-					DPRINT("[%s,%d] scheduling WRITE (%d/%d/%d) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serdev,i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
+					DPRINT("[%s,%d] scheduling WRITE (%llu/%llu/%llu) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serdev,i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
 				}
 				ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),10000,&timeo);
 				write_queue->last_op=now;
@@ -176,7 +176,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->push(pol);
 					read_queue->req_ok++;
 					pthread_cond_signal(&read_queue->awake);
-					DPRINT("[%s,%d] scheduling READ ( %d/%d/%d crc err %d), queue %d oldest updated %llu, ret %d data:\"%s\"",serdev,i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
+					DPRINT("[%s,%d] scheduling READ ( %llu/%llu/%llu crc err %llu), queue %u oldest updated %llu, ret %d data:\"%s\"",serdev,i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,(unsigned)read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
 					write_queue->must_wait_to=0;
 				} else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
 					int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
