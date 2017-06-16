@@ -276,7 +276,7 @@ void OcemProtocol::decodeBuf(char*buf,char*outbuf,int size){
 
 }
 
-int OcemProtocol::build_cmd(int slave,char*protbuf,char* cmd){
+int OcemProtocol::build_cmd(int slave,char*protbuf,const char* cmd){
 	int cnt,cntt;
 	char crc=0;
 	protbuf[0]=STX;
@@ -335,7 +335,7 @@ int OcemProtocol::waitAck(int timeo){
 	return OCEM_UNEXPECTED_SLAVE_ANSWER;
 }
 
-int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
+int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 	char tmpbuf[max_answer_size];
 	char bufreq[2];
 	int timeow=0;

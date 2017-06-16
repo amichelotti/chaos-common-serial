@@ -246,8 +246,8 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 		OcemData* s= new OcemData();
 		DPRINT("[%s,%d] registering slave %d",serdev,slaveid,slaveid);
 
-		slave_queue.insert(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
-		slave_queue_sorted.push_back(std::make_pair<int,std::pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData* > >(slaveid,std::make_pair<OcemProtocolScheduleCFQ::OcemData*,OcemProtocolScheduleCFQ::OcemData*>(d,s)));
+		slave_queue.insert(std::make_pair(slaveid,std::make_pair(d,s)));
+		slave_queue_sorted.push_back(std::make_pair (slaveid,std::make_pair(d,s)));
 	} else {
 		pthread_mutex_unlock(&mutex_buffer);
 		// DPRINT("already registered slave %d",slaveid);

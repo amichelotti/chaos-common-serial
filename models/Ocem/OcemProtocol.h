@@ -47,7 +47,7 @@ namespace common {
             // return number of char copied if success, negative otherwise
             int check_and_extract(char*buffer,char*protbuf,int size);
             // return the total size of the message
-            int build_cmd(int slave,char*protbuf,char* cmd);
+            int build_cmd(int slave,char*protbuf,const char* cmd);
 
             // return 0 if ok
             int sendAck(int ackType,int timeo);
@@ -97,7 +97,7 @@ namespace common {
              @param timeoccur return 1 if a timeout occured
              @return the number of characters of the command sent or negative for error
              */
-            virtual int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
+            virtual int select(int slave,const char* command,int timeo=1000,int*timeoccur=0);
             
             virtual int init();
             virtual int deinit();

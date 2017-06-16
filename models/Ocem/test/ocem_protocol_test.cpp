@@ -34,7 +34,7 @@ static char* convToUpper(char*str){
   *tmp=0;
   return b;
 }
-int send_command(common::serial::ocem::OcemProtocol*oc,int id,char*_cmd){
+int send_command(common::serial::ocem::OcemProtocol*oc,int id,const char*_cmd){
     char stringa[256];
     int ret;
     uint64_t tm,tot;
