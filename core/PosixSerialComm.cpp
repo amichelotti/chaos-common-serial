@@ -262,7 +262,7 @@ int PosixSerialComm::init(){
     rpid=0;
     memset(&term,0,sizeof(termios));
     
-    fd = open(comm_dev.c_str(),O_RDWR|O_NOCTTY);
+    fd = open(comm_dev.c_str(),O_RDWR|O_NOCTTY|O_EXCL);
   
     DPRINT("initialising PosixSerialComm");
     if(fd<=0){
