@@ -81,7 +81,7 @@ extern "C" {
 	return -7;
       } else {
 	id2handle[idx] = p;
-	DPRINT("opening serial \"%d\" = 0x%x\n",idx,p);
+	DPRINT("opening serial \"%d\" = 0x%p\n",idx,p);
 	return idx;
       }
     }
@@ -143,7 +143,7 @@ extern "C" {
     }
     common::serial::AbstractSerialComm* h = id2handle[_h];
     if(h){
-      DPRINT("buf 0x%x size %d timeo %d\n",buf,bsize,timeo);
+      DPRINT("buf 0x%p size %d timeo %d\n",buf,bsize,timeo);
       common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
       ret = p->write((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
@@ -161,7 +161,7 @@ extern "C" {
     
     if(h){
       common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
-      DPRINT("buf 0x%x size %d timeo %d\n",buf,bsize,timeo);
+      DPRINT("buf 0x%p size %d timeo %d\n",buf,bsize,timeo);
       ret = p->read((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
     }
@@ -226,7 +226,7 @@ extern "C" {
 
   int LVwrite_serial(pserial_handle_t h,void*buf,int bytes,int timeo,int*timoccur){
     int ret=-1;
-    DPRINT("WRITE resource %d(0x%x), buf: @x%x size %d timeo %d timeout occur(%d) x%x\n",h, id2handle[h],buf,bytes,timeo,*timoccur,timoccur);
+    DPRINT("WRITE resource %d(0x%p), buf: @x%p size %d timeo %d timeout occur(%d)",h, id2handle[h],buf,bytes,timeo,*timoccur);
 
     if(timeo>0){
       ret = pwrite_serial(h, (char*)buf,bytes,timeo,timoccur); 
@@ -240,7 +240,7 @@ extern "C" {
 
   int LVread_serial(pserial_handle_t h,void*buf,int bytes,int timeo,int*timoccur){
     int ret=-1;
-    DPRINT(" READ resource %d(0x%x), buf: @x%x size %d timeo %d timeout occur(%d) x%x\n",h,id2handle[h],buf,bytes,timeo,*timoccur,timoccur);
+    DPRINT(" READ resource %d(0x%p), buf: @x%p size %d timeo %d timeout occur(%d)\n",h,id2handle[h],buf,bytes,timeo,*timoccur);
     if(timeo>0){
       ret = pread_serial(h, (char*)buf,bytes,timeo,timoccur); 
     } else if(timeo==0){
