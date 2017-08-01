@@ -80,7 +80,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			size=write_queue->size();
 			// handle select
 			assert(write_queue);
-			DPRINT("[%s,%d] SCHEDULING WRITE of slave# %d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
+		//	DPRINT("[%s,%d] SCHEDULING WRITE of slave# %d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
 
 			if(size>0){
 				//  do{
@@ -158,7 +158,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			int ret,timeo,size;
 			int rdper=READ_PER_WRITE;
 			now=common::debug::getUsTime();
-			DPRINT("[%s,%d] SCHEDULING READ of slave #%d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
+	//		DPRINT("[%s,%d] SCHEDULING READ of slave #%d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
 			read_queue=(i->second).first;
 			write_queue=(i->second).second;
 			assert(read_queue);
