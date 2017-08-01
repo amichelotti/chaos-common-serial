@@ -208,10 +208,11 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->req_bad++;
 
 				}
-				pthread_mutex_unlock(&mutex_buffer);
 
 			} while((ret>0)&& --rdper);
 		}
+
+		pthread_mutex_unlock(&mutex_buffer);
 
 	}
 	pthread_mutex_unlock(&mutex_buffer);
