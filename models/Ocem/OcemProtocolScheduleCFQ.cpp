@@ -64,6 +64,8 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	int timeo=0;
 	run=1;
 	while(run){
+		pthread_mutex_lock(&mutex_buffer);
+
 		//  DPRINT("PROTOCOL SCHEDULE");
 		std::sort(slave_queue_sorted.begin(),slave_queue_sorted.end(),algo_sort_write);
 #if 0
@@ -88,6 +90,8 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 				now=common::debug::getUsTime();
 				if(write_queue->must_wait_to > now){
 				//	DPRINT("[%s,%d] SELECT PAUSED still for %lld us",serdev,i->first,write_queue->must_wait_to - now);
+					pthread_mutex_unlock(&mutex_buffer);
+
 					usleep(SLEEP_IF_INACTIVE*1000);
 
 					continue;
@@ -158,6 +162,8 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			write_queue=(i->second).second;
 			if(read_queue->must_wait_to > now){
 			//	DPRINT("[%s,%d] POLL PAUSED still for %lld us",serdev,i->first,read_queue->must_wait_to - now);
+				pthread_mutex_unlock(&mutex_buffer);
+
 				usleep(SLEEP_IF_INACTIVE*1000);
 				continue;
 			}
@@ -200,10 +206,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->req_bad++;
 
 				}
+				pthread_mutex_unlock(&mutex_buffer);
+
 			} while((ret>0)&& --rdper);
 		}
 
 	}
+	pthread_mutex_unlock(&mutex_buffer);
+
 	DPRINT("[%s] EXITING SCHEDULE THREAD",serdev);
 }
 
