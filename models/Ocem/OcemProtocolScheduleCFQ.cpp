@@ -32,7 +32,7 @@ bool algo_sort_write(const OcemProtocolScheduleCFQ::qdata_t& q0, const OcemProto
 		return (qq0->old_req_time<qq1->old_req_time);
 	}
 
-
+	return false;
 }
 
 bool algo_sort_read(const OcemProtocolScheduleCFQ::qdata_t& q0, const OcemProtocolScheduleCFQ::qdata_t& q1){
@@ -51,7 +51,7 @@ bool algo_sort_read(const OcemProtocolScheduleCFQ::qdata_t& q0, const OcemProtoc
 		return (qq0->old_req_time>qq1->old_req_time);
 	}
 
-
+	return false;
 }
 
 
@@ -80,7 +80,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			size=write_queue->size();
 			// handle select
 			assert(write_queue);
-			DPRINT("[%s,%d] SCHEDULING WRITE of slave %d",serdev,i->first,i->first);
+			DPRINT("[%s,%d] SCHEDULING WRITE of slave# %d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
 
 			if(size>0){
 				//  do{
@@ -160,7 +160,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			int ret,timeo,size;
 			int rdper=READ_PER_WRITE;
 			now=common::debug::getUsTime();
-			DPRINT("[%s,%d] SCHEDULING READ of slave %d",serdev,i->first,i->first);
+			DPRINT("[%s,%d] SCHEDULING READ of slave #%d nslaves %d",serdev,i->first,i->first,slave_queue_sorted.size());
 			read_queue=(i->second).first;
 			write_queue=(i->second).second;
 			assert(read_queue);
