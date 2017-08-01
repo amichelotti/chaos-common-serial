@@ -93,8 +93,6 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 				now=common::debug::getUsTime();
 				if(write_queue->must_wait_to > now){
 				//	DPRINT("[%s,%d] SELECT PAUSED still for %lld us",serdev,i->first,write_queue->must_wait_to - now);
-					pthread_mutex_unlock(&mutex_buffer);
-
 					usleep(SLEEP_IF_INACTIVE*1000);
 
 					continue;
@@ -168,8 +166,6 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
 			if(read_queue->must_wait_to > now){
 			//	DPRINT("[%s,%d] POLL PAUSED still for %lld us",serdev,i->first,read_queue->must_wait_to - now);
-				pthread_mutex_unlock(&mutex_buffer);
-
 				usleep(SLEEP_IF_INACTIVE*1000);
 				continue;
 			}
