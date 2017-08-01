@@ -74,11 +74,14 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 		}
 #endif
 
-		for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
+		for(i=slave_queue_sorted.begin();run && (i!=slave_queue_sorted.end());i++){
 			int ret,timeo,size;
 			write_queue=(i->second).second;
 			size=write_queue->size();
 			// handle select
+			assert(write_queue);
+			DPRINT("[%s,%d] SCHEDULING WRITE of slave %d",serdev,i->first,i->first);
+
 			if(size>0){
 				//  do{
 				int cnt;
@@ -153,13 +156,16 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 		}
 #endif
 
-		for(i=slave_queue_sorted.begin();(i!=slave_queue_sorted.end())&& run;i++){
+		for(i=slave_queue_sorted.begin();run && (i!=slave_queue_sorted.end());i++){
 			int ret,timeo,size;
 			int rdper=READ_PER_WRITE;
 			now=common::debug::getUsTime();
-
+			DPRINT("[%s,%d] SCHEDULING READ of slave %d",serdev,i->first,i->first);
 			read_queue=(i->second).first;
 			write_queue=(i->second).second;
+			assert(read_queue);
+			assert(write_queue);
+
 			if(read_queue->must_wait_to > now){
 			//	DPRINT("[%s,%d] POLL PAUSED still for %lld us",serdev,i->first,read_queue->must_wait_to - now);
 				pthread_mutex_unlock(&mutex_buffer);
@@ -259,18 +265,19 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 
 		OcemData* d= new OcemData();
 		OcemData* s= new OcemData();
-		DPRINT("[%s,%d] registering slave %d",serdev,slaveid,slaveid);
+		DPRINT("[%s,%d] registering slave %d -> write queue 0x%p read_queue 0x%p",serdev,slaveid,slaveid,(void*)d,(void*)s);
 
 		slave_queue.insert(std::make_pair(slaveid,std::make_pair(d,s)));
 		slave_queue_sorted.push_back(std::make_pair (slaveid,std::make_pair(d,s)));
 	} else {
 		pthread_mutex_unlock(&mutex_buffer);
-		// DPRINT("already registered slave %d",slaveid);
+		DPRINT("[%s,%d] already registered slave %d",serdev,slaveid,slaveid);
 		return 0;
 	}
+	++slaves;
 	pthread_mutex_unlock(&mutex_buffer);
 
-	return ++slaves;
+	return slaves;
 }
 
 int OcemProtocolScheduleCFQ::unRegisterAll(){
@@ -306,10 +313,12 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	if(slave_queue.size()){
 		start();
 	}
-
+	if(slaves>0){
+		slaves--;
+	}
 	pthread_mutex_unlock(&mutex_buffer);
 
-	return slaves--;
+	return slaves;
 }
 
 int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
