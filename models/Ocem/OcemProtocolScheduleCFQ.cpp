@@ -64,7 +64,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	int timeo=0;
 	run=1;
 	while(run){
-		pthread_mutex_lock(&mutex_buffer);
+		pthread_mutex_lock(&mutex_slaves);
 
 		//  DPRINT("PROTOCOL SCHEDULE");
 		std::sort(slave_queue_sorted.begin(),slave_queue_sorted.end(),algo_sort_write);
@@ -212,7 +212,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			} while((ret>0)&& --rdper);
 		}
 
-		pthread_mutex_unlock(&mutex_buffer);
+		pthread_mutex_unlock(&mutex_slaves);
 
 	}
 	pthread_mutex_unlock(&mutex_buffer);
@@ -255,7 +255,8 @@ int OcemProtocolScheduleCFQ::getReadSize(int slave){
 }
 int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 	// create if not present;
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
+
 	if(slave_queue.find(slaveid)==slave_queue.end()){
 
 
@@ -267,12 +268,14 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 		slave_queue.insert(std::make_pair(slaveid,std::make_pair(d,s)));
 		slave_queue_sorted.push_back(std::make_pair (slaveid,std::make_pair(d,s)));
 	} else {
-		pthread_mutex_unlock(&mutex_buffer);
+		pthread_mutex_unlock(&mutex_slaves);
+
 		DPRINT("[%s,%d] already registered slave %d",serdev,slaveid,slaveid);
 		return 0;
 	}
 	++slaves;
 	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 
 	return slaves;
 }
@@ -288,7 +291,8 @@ int OcemProtocolScheduleCFQ::unRegisterAll(){
 int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	ocem_queue_t::iterator i;
 	stop();
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
+
 	for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
 		if(j->first == slaveid){
 			slave_queue_sorted.erase(j);
@@ -313,7 +317,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	if(slaves>0){
 		slaves--;
 	}
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 
 	return slaves;
 }

@@ -79,6 +79,7 @@ namespace common {
             ocem_queue_t slave_queue;
             ocem_queue_sorted_t   slave_queue_sorted;    
             pthread_mutex_t mutex_buffer;
+            pthread_mutex_t mutex_slaves;
 
 	    int slaves;
         private:
