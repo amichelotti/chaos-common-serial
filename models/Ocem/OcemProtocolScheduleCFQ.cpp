@@ -64,10 +64,15 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	int timeo=0;
 	run=1;
 	while(run){
+		ocem_queue_sorted_t   slave_queue_sorted;
+
 		pthread_mutex_lock(&mutex_slaves);
 
+		std::copy(slave_queue.begin(),slave_queue.end(),slave_queue_sorted.begin());
 		//  DPRINT("PROTOCOL SCHEDULE");
 		std::sort(slave_queue_sorted.begin(),slave_queue_sorted.end(),algo_sort_write);
+		pthread_mutex_unlock(&mutex_slaves);
+
 #if 0
 		for(i=slave_queue_sorted.begin();i!=slave_queue_sorted.end();i++){
 			DPRINT("SHEDULE WRITE order %d",i->first);
@@ -212,10 +217,10 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 			} while((ret>0)&& --rdper);
 		}
 
-		pthread_mutex_unlock(&mutex_slaves);
 
 	}
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
+
 
 	DPRINT("[%s] EXITING SCHEDULE THREAD",serdev);
 }
@@ -230,6 +235,7 @@ OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(const char*serdev,int max_answe
 	initialized=0;
 	run=0;
 	pthread_mutex_init(&mutex_buffer,NULL);
+	pthread_mutex_init(&mutex_slaves,NULL);
 
 }
 
@@ -239,18 +245,18 @@ OcemProtocolScheduleCFQ::~OcemProtocolScheduleCFQ(){
 }
 
 int OcemProtocolScheduleCFQ::getWriteSize(int slave){
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
 
 	ocem_queue_t::iterator i=slave_queue.find(slave);
 	OcemData*write_queue=(i->second).second;
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 	return write_queue->size();
 }
 int OcemProtocolScheduleCFQ::getReadSize(int slave){
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
 	ocem_queue_t::iterator i=slave_queue.find(slave);
 	OcemData*read_queue=(i->second).first;
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 	return read_queue->size();
 }
 int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
@@ -263,10 +269,10 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 
 		OcemData* d= new OcemData();
 		OcemData* s= new OcemData();
-		DPRINT("[%s,%d] registering slave %d -> write queue 0x%p read_queue 0x%p",serdev,slaveid,slaveid,(void*)d,(void*)s);
+		DPRINT("[%s,%d] registering slave %d -> write queue @%p read_queue @%p",serdev,slaveid,slaveid,(void*)d,(void*)s);
 
 		slave_queue.insert(std::make_pair(slaveid,std::make_pair(d,s)));
-		slave_queue_sorted.push_back(std::make_pair (slaveid,std::make_pair(d,s)));
+	//	slave_queue_sorted.push_back(std::make_pair (slaveid,std::make_pair(d,s)));
 	} else {
 		pthread_mutex_unlock(&mutex_slaves);
 
@@ -274,7 +280,6 @@ int OcemProtocolScheduleCFQ::registerSlave(int slaveid){
 		return 0;
 	}
 	++slaves;
-	pthread_mutex_unlock(&mutex_buffer);
 	pthread_mutex_unlock(&mutex_slaves);
 
 	return slaves;
@@ -293,16 +298,16 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	stop();
 	pthread_mutex_lock(&mutex_slaves);
 
-	for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
+	/*for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
 		if(j->first == slaveid){
 			slave_queue_sorted.erase(j);
 			break;
 		}
-	}
+	}*/
 	i=slave_queue.find(slaveid);
 	if(i==slave_queue.end()){
 		ERR("cannot find slave %d",slaveid);
-		pthread_mutex_unlock(&mutex_buffer);
+		pthread_mutex_unlock(&mutex_slaves);
 
 		return -3;
 	}
@@ -325,11 +330,11 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
 
 	//registerSlave(slaveid);
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
 
 	ocem_queue_t::iterator i=slave_queue.find(slaveid);
 	OcemData*read_queue=(i->second).first;
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 
 	if(timeoccur)*timeoccur=0;
 
@@ -391,10 +396,10 @@ int OcemProtocolScheduleCFQ::wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mut
 int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
 
 	//registerSlave(slaveid);
-	pthread_mutex_lock(&mutex_buffer);
+	pthread_mutex_lock(&mutex_slaves);
 	ocem_queue_t::iterator i=slave_queue.find(slaveid);
 	OcemData*write_queue=(i->second).second;
-	pthread_mutex_unlock(&mutex_buffer);
+	pthread_mutex_unlock(&mutex_slaves);
 
 	if(timeoccur)*timeoccur=0;
 	int size=write_queue->size();

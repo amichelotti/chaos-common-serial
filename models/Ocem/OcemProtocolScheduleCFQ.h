@@ -77,7 +77,7 @@ namespace common {
 
             typedef std::vector< qdata_t  >  ocem_queue_sorted_t;
             ocem_queue_t slave_queue;
-            ocem_queue_sorted_t   slave_queue_sorted;    
+         //   ocem_queue_sorted_t   slave_queue_sorted;
             pthread_mutex_t mutex_buffer;
             pthread_mutex_t mutex_slaves;
 
