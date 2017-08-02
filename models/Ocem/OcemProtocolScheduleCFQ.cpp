@@ -64,9 +64,9 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	int timeo=0;
 	run=1;
 	while(run){
-		ocem_queue_sorted_t   slave_queue_sorted;
 
 		pthread_mutex_lock(&mutex_slaves);
+		ocem_queue_sorted_t   slave_queue_sorted(slave_queue.size());
 
 		std::copy(slave_queue.begin(),slave_queue.end(),slave_queue_sorted.begin());
 		//  DPRINT("PROTOCOL SCHEDULE");
