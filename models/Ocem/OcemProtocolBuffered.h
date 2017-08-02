@@ -74,7 +74,8 @@ namespace common {
             int wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mutex,int timeo_ms);
         public:
 
-            OcemProtocolBuffered(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
+        //    OcemProtocolBuffered(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
+            OcemProtocolBuffered(common::misc::driver::AbstractChannel_psh chan);
             ~OcemProtocolBuffered();
             
             int registerSlave(int slaveid);

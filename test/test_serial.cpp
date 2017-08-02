@@ -47,7 +47,7 @@ void* write_th(void*arg){
     }
     
     
-    DPRINT("%d] writing %d bytes at @x%x\n",cnt ,cnt*4, (char*)wptr + start_size);
+    DPRINT("%d] writing %d bytes at @%p\n",cnt ,cnt*4, (char*)wptr + start_size);
     ret= LVwrite_serial(comm, (char*)wptr + start_size,cnt*4,-1,&timeo);
     pthread_mutex_lock(&mtx);
     counter+=ret;
@@ -84,7 +84,7 @@ void* read_th(void*arg){
 
   printf("Read thread created\n");
   for(int cnt=start_size/4 ;cnt<(start_size+size);cnt++){
-    DPRINT("%d] reading %d bytes at @x%x\n",cnt ,cnt*4, (char*)rptr + start_size);
+    DPRINT("%d] reading %d bytes at @%p\n",cnt ,cnt*4, (char*)rptr + start_size);
     ret=  LVread_serial(comm,(char*)rptr + start_size,cnt*4,-1,&timeo);
     printf("%d] READ %d bytes\n",cnt,ret);
     pthread_mutex_lock(&mtx);

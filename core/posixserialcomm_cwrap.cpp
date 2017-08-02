@@ -6,11 +6,11 @@
 #define DEBUG
 #endif
 #include <common/debug/core/debug.h>
-
+#include <common/misc/driver/AbstractChannel.h>
 #define MAX_HANDLE 100
 extern "C" {
 
-  static common::serial::AbstractSerialComm* id2handle[MAX_HANDLE]={0};
+  static common::misc::driver::AbstractChannel* id2handle[MAX_HANDLE]={0};
   /*
   static int getFirstFreeHandle(){
     int cnt=0;
@@ -70,7 +70,7 @@ extern "C" {
       id2handle[idx]=0;
       }
 
-    common::serial::AbstractSerialComm*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,hw,internal_buffering,internal_buffering);
+    common::misc::driver::AbstractChannel*p = new common::serial::PosixSerialComm(serdev,baudrate,parity,bits,stop,hw,internal_buffering,internal_buffering);
     //    common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(serdev,baudrate,parity,bits,stop);
 
     
@@ -95,9 +95,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
-      common::serial::AbstractSerialComm *p =( common::serial::AbstractSerialComm *)h;
+      common::misc::driver::AbstractChannel *p =( common::misc::driver::AbstractChannel *)h;
       ret = p->deinit();
       delete p;
       id2handle[_h] = 0;
@@ -112,10 +112,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
 
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       ret = p->write_async((void*)buf,bsize);
     }
     return ret;
@@ -127,9 +127,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       ret = p->read_async((void*)buf,bsize);
     }
     return ret;
@@ -141,10 +141,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
       DPRINT("buf 0x%p size %d timeo %d\n",buf,bsize,timeo);
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       ret = p->write((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
     }
@@ -157,10 +157,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     
     if(h){
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       DPRINT("buf 0x%p size %d timeo %d\n",buf,bsize,timeo);
       ret = p->read((void*)buf,bsize,timeo,timocc);
       DPRINT("done return %d timeo %d\n",ret,*timocc);
@@ -174,10 +174,10 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
 
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       ret = p->byte_available_read();
     }
     return ret;
@@ -190,9 +190,9 @@ extern "C" {
       printf("## bad handle\n");
       return -4;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       ret = p->byte_available_write();
     }
     return ret;
@@ -203,9 +203,9 @@ extern "C" {
       printf("## bad handle\n");
       return ;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
     if(h){
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       p->flush_write();
     }
   }
@@ -214,10 +214,10 @@ extern "C" {
       printf("## bad handle\n");
       return ;
     }
-    common::serial::AbstractSerialComm* h = id2handle[_h];
+    common::misc::driver::AbstractChannel* h = id2handle[_h];
 
     if(h){
-      common::serial::AbstractSerialComm*p =( common::serial::AbstractSerialComm*)h;
+      common::misc::driver::AbstractChannel*p =( common::misc::driver::AbstractChannel*)h;
       p->flush_read();
     }
 

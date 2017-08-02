@@ -110,13 +110,20 @@ void* OcemProtocolBuffered::runSchedule(){
     OcemProtocolBuffered* pnt = (OcemProtocolBuffered*)p;
     return (void*)pnt->runSchedule();
 }
-
+/*
 OcemProtocolBuffered::OcemProtocolBuffered(const char*serdev,int max_answer_size,int baudrate,int parity,int bits,int stop):OcemProtocol(serdev,max_answer_size,baudrate,parity,bits,stop){
     slaves=0;
     initialized=0;
     pthread_mutex_init(&mutex_buffer,NULL);
 
 }
+*/
+ OcemProtocolBuffered::OcemProtocolBuffered(common::misc::driver::AbstractChannel_psh chan):OcemProtocol(chan){
+	  slaves=0;
+	    initialized=0;
+	   pthread_mutex_init(&mutex_buffer,NULL);
+
+ }
 
 OcemProtocolBuffered::~OcemProtocolBuffered(){
   deinit();
