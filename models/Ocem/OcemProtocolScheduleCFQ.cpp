@@ -337,6 +337,10 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
 
 	//registerSlave(slaveid);
+	if(run==0){
+		// scheduler is not started yet
+		return ::OcemProtocol::poll(slaveid,buf,size,timeo,timeoccur);
+	}
 	pthread_mutex_lock(&mutex_slaves);
 
 	ocem_queue_t::iterator i=slave_queue.find(slaveid);
@@ -402,6 +406,11 @@ int OcemProtocolScheduleCFQ::wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mut
 }        
 int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
 
+
+	if(run==0){
+			// scheduler is not started yet
+			return ::OcemProtocol::select(slaveid,command,timeo,timeoccur);
+	}
 	//registerSlave(slaveid);
 	pthread_mutex_lock(&mutex_slaves);
 	ocem_queue_t::iterator i=slave_queue.find(slaveid);

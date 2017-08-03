@@ -20,7 +20,7 @@ using namespace common::serial::ocem;
 void* OcemProtocolBuffered::runSchedule(){
     ocem_queue_t::iterator i;
     char buffer[2048];
-    DPRINT("THREAD STARTED 0x%x",pthread_self());
+    DPRINT("THREAD STARTED %p",pthread_self());
     OcemData*read_queue,*write_queue;
     run=1;
     while(run){
@@ -199,6 +199,10 @@ int OcemProtocolBuffered::unRegisterSlave(int slaveid){
 
 int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
  
+	if(run==0){
+			// scheduler is not started yet
+			return ::OcemProtocol::poll(slaveid,buf,size,timeo,timeoccur);
+	}
     //registerSlave(slaveid);
      pthread_mutex_lock(&mutex_buffer);
 
@@ -258,11 +262,15 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
   ret = pthread_cond_wait(cond, mutex_);
   pthread_mutex_unlock(mutex_);
 
-  DPRINT("exiting from indefinite wait on %x",cond);
+  DPRINT("exiting from indefinite wait on %p",cond);
   return ret;
 }        
 int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeoccur){
 
+	if(run==0){
+				// scheduler is not started yet
+		return ::OcemProtocol::select(slaveid,command,timeo,timeoccur);
+	}
     //registerSlave(slaveid);
     pthread_mutex_lock(&mutex_buffer);
     ocem_queue_t::iterator i=slave_queue.find(slaveid);
