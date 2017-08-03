@@ -344,7 +344,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 
 int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
 
-  DPRINT("[%s,%d] POLL",slaveid,serial->getUid().c_str());
+  DPRINT("[%s,%d] POLL",serial->getUid().c_str(),slaveid);
 	//registerSlave(slaveid);
 	if(run==0){
 		// scheduler is not started yet
@@ -415,7 +415,7 @@ int OcemProtocolScheduleCFQ::wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mut
 }        
 int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
 
-  DPRINT("[%s,%d] SELECT",slaveid,serial->getUid().c_str());
+  DPRINT("[%s,%d] SELECT",serial->getUid().c_str(),slaveid);
 
 	if(run==0){
 			// scheduler is not started yet
