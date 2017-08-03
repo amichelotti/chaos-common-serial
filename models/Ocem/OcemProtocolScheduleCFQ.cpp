@@ -477,7 +477,7 @@ int OcemProtocolScheduleCFQ::start(){
 }
 int OcemProtocolScheduleCFQ::init(){
 
-
+	DPRINT("[%s] INIT already=%d",serial->getUid().c_str(),initialized);
 	if(initialized)return 0;
 	int ret=OcemProtocol::init();
 
