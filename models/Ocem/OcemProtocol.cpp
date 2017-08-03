@@ -12,6 +12,12 @@
 #include <string.h>
 #include <common/misc/driver/ChannelFactory.h>
 using namespace common::serial::ocem;
+
+OcemProtocol::OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan){
+	DPRINT("OcemProtocol on channel '%s'",serial->getUid().c_str());
+	pthread_mutex_init(&serial_chan_mutex, NULL);
+};
+
 /*
 OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
 {
@@ -22,11 +28,14 @@ OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,
 */
 OcemProtocol::~OcemProtocol(){
 	deinit();
+	DPRINT("OcemProtocol destroy");
+
 }
 
 int OcemProtocol::init(){
 	int ret =0;
-	pthread_mutex_init(&serial_chan_mutex, NULL);
+	DPRINT("OcemProtocol init '%s'",serial->getUid().c_str());
+
 	pthread_mutex_lock(&serial_chan_mutex);
 	if(serial){
 		if(serial->init()!=0){

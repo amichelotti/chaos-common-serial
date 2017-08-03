@@ -73,7 +73,7 @@ public:
 		OCEM_BAD_SELECT_COMMAND,
 		OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE
 	} ;
-	OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan){};
+	OcemProtocol(common::misc::driver::AbstractChannel_psh chan);
 
 	//    OcemProtocol(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
 	~OcemProtocol();
