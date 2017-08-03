@@ -69,7 +69,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	  if(cycle_us<mindur){
 	    usleep(mindur-cycle_us);
 	  }
-	  DPRINT("[%s] CFQ SCHEDULE CYCLE %llu ms ====== ",cycle_us/1000);
+	  DPRINT("[%s] CFQ SCHEDULE CYCLE %llu ms ====== ",serial->getUid().c_str(),cycle_us/1000);
 	  st_cycle=common::debug::getUsTime();
 		pthread_mutex_lock(&mutex_slaves);
 		ocem_queue_sorted_t   slave_queue_sorted(slave_queue.size());
