@@ -66,33 +66,33 @@ int OcemProtocol::deinit(){
 	return 0;
 }
 
-int OcemProtocol::sendAck(int ackType,int timeo){
+int OcemProtocol::sendAck(int ackType,int timeo,const char* cmd){
 	char buf = ackType;
 	int ret;
 	int timeocc=0;
-	DPRINT("sending ACK:\"%d\"",ackType);
+	DPRINT("[%s] sending ACK:\"%d\"",cmd,ackType);
 	if((ret = serial->write(&buf,1,timeo))>0){
 		if (ackType==ACK){
-			DPRINT("waiting ACK from slave");
+			DPRINT("[%s] waiting ACK from slave",cmd);
 
 			if((ret= serial->read(&buf,1,timeo,&timeocc))>0){
 				int rett;
 				rett =(buf==EOT)?0:OCEM_EOT_MISSING_FROM_SLAVE;
 				if(rett == 0){
-					DPRINT("OK received EOT from slave");
+					DPRINT("[%s] OK received EOT from slave",cmd);
 				} else {
-					ERR("no EOT from slave received:\"%d\"",buf);
+					ERR("[%s] no EOT from slave received:\"%d\"",cmd,buf);
 
 				}
 				return rett;
 			} else {
-				ERR("no ack received in %d ms, return ret %d, timeout %d",timeo,ret,timeocc);
+				ERR("[%s] no ack received in %d ms, return ret %d, timeout %d",cmd,timeo,ret,timeocc);
 				return OCEM_NO_ACK_FROM_SLAVE;
 
 			}
 		}
 	} else {
-		ERR("error writing ACK \"%d\"",ackType);
+		ERR("[%s] error writing ACK \"%d\"",cmd,ackType);
 		return OCEM_ERROR_WRITING_ACK;
 	}
 	return 0;
@@ -140,10 +140,11 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 		ERR("[%s,%d] invalid slave id %d",serial->getUid().c_str(),slave,slave);
 		return OCEM_BAD_SLAVEID;
 	}
+	boost::mutex::scoped_lock(chanmutex);
 	DPRINT("[%s,%d] performing poll request slave %d, timeout %d ms",serial->getUid().c_str(),slave,slave,timeo);
 
 	if(timeoccur)*timeoccur=0;
-	boost::mutex::scoped_lock(chanmutex);
+
 
 	bufreq[0]=ENQ;
 	bufreq[1]=slave+ 0x40;
@@ -289,7 +290,7 @@ int OcemProtocol::build_cmd(int slave,char*protbuf,const char* cmd){
 	protbuf[cnt++] = ETX;
 	crc^=ETX|0x80;
 	protbuf[cnt++] = crc;
-	DPRINT("[%s,%d] \"%s\" msg size %d crc x%x",serial->getUid().c_str(),slave,cmd,cnt,crc);
+	//	DPRINT("[%s,%d] \"%s\" msg size %d crc x%x",serial->getUid().c_str(),slave,cmd,cnt,crc);
 
 
 	return cnt;

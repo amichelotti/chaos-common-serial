@@ -50,7 +50,7 @@ protected:
 	int build_cmd(int slave,char*protbuf,const char* cmd);
 
 	// return 0 if ok
-	int sendAck(int ackType,int timeo);
+	int sendAck(int ackType,int timeo,const char* cmd="none");
 	// return the acktype or an error
 	int waitAck(int timeo);
 

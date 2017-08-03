@@ -60,11 +60,17 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	char buffer[2048];
 	DPRINT("[%s] THREAD STARTED 0x%p",serial->getUid().c_str(),(void*)pthread_self());
 	OcemData*read_queue,*write_queue;
-	uint64_t now;
+	uint64_t now=0,st_cycle=0,mindur=minChannelAccess_ms*1000,cycle_us=0;
 	int timeo=0;
 	run=1;
+	
 	while(run){
-
+	  cycle_us=(common::debug::getUsTime()-st_cycle);
+	  if(cycle_us<mindur){
+	    usleep(mindur-cycle_us);
+	  }
+	  DPRINT("[%s] CFQ SCHEDULE CYCLE %llu ms ====== ",cycle_us/1000);
+	  st_cycle=common::debug::getUsTime();
 		pthread_mutex_lock(&mutex_slaves);
 		ocem_queue_sorted_t   slave_queue_sorted(slave_queue.size());
 
@@ -229,7 +235,7 @@ void* OcemProtocolScheduleCFQ::schedule_thread(void* p){
 	OcemProtocolScheduleCFQ* pnt = (OcemProtocolScheduleCFQ*)p;
 	return (void*)pnt->runSchedule();
 }
-OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(common::misc::driver::AbstractChannel_psh chan):OcemProtocol(chan){
+OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(common::misc::driver::AbstractChannel_psh chan,uint32_t min):OcemProtocol(chan),minChannelAccess_ms(min){
 	DPRINT("[%s] constructor",chan->getUid().c_str());
 
 	slaves=0;
@@ -338,6 +344,7 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 
 int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
 
+  DPRINT("[%s,%d] POLL",slaveid,serial->getUid().c_str());
 	//registerSlave(slaveid);
 	if(run==0){
 		// scheduler is not started yet
@@ -351,7 +358,7 @@ int OcemProtocolScheduleCFQ::poll(int slaveid,char * buf,int size,int timeo,int*
 
 	if(timeoccur)*timeoccur=0;
 
-	DPRINT("[%s,%d] pool queue lenght %d ",serial->getUid().c_str(),slaveid,read_queue->size());
+	DPRINT("[%s,%d] pool queue lenght %d",serial->getUid().c_str(),slaveid,read_queue->size());
 	bool empty;
 	empty=read_queue->empty();
 	if(empty){
@@ -408,6 +415,7 @@ int OcemProtocolScheduleCFQ::wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mut
 }        
 int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
 
+  DPRINT("[%s,%d] SELECT",slaveid,serial->getUid().c_str());
 
 	if(run==0){
 			// scheduler is not started yet
