@@ -10,6 +10,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <string.h>
+#include <common/misc/driver/ChannelFactory.h>
 using namespace common::serial::ocem;
 /*
 OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,int _bits, int _stop):serdev(_serdev),max_answer_size(max),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop)
@@ -50,8 +51,10 @@ int OcemProtocol::init(){
 	return ret;
 }
 int OcemProtocol::deinit(){
-	DPRINT( "deinit");
-	serial.reset();
+	DPRINT( "deinitializing base protocol");
+	common::misc::driver::ChannelFactory::removeChannel(serial);
+
+
 	return 0;
 }
 
@@ -160,7 +163,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 		int found=0;
 		tot = 0;
 		//get the rest of the message
-		DPRINT("[%s,%d] something (%d bytes), receiving...",serial->getUid().c_str(),serial->byte_available_read());
+		DPRINT("[%s,%d] something (%d bytes), receiving...",serial->getUid().c_str(),slave,serial->byte_available_read());
 		while((tot<max_answer_size)&&(found==0)&&((ret=serial->read(&tmpbuf[tot],1,timeo,&timeor))>0)){
 			if(tmpbuf[tot]==ETX){
 				DPRINT("[%s,%d] termination found %d characters",serial->getUid().c_str(),slave,tot);

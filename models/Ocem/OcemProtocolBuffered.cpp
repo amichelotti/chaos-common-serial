@@ -85,7 +85,7 @@ void* OcemProtocolBuffered::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %d/%d/%d crc err %d), queue %d, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
+	    DPRINT("[%d] scheduling READ ( %lld/%lld/%lld crc err %d), queue %d, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -243,7 +243,7 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
     gettimeofday(&tv,NULL);
     ts.tv_sec=tv.tv_sec + timeo_ms/1000;
     ts.tv_nsec=tv.tv_usec*1000 + (timeo_ms%1000)*1000000;
-    DPRINT("waiting on %x for %d",cond,timeo_ms);
+    DPRINT("waiting on %p for %d",cond,timeo_ms);
     if(pthread_cond_timedwait(cond, mutex_, &ts)!=0){
             pthread_mutex_unlock(mutex_);
 
