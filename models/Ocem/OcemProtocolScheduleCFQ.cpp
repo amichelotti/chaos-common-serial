@@ -476,15 +476,25 @@ int OcemProtocolScheduleCFQ::start(){
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+	int retry=1000;
 	if(run==0){
 		if(pthread_create(&rpid,&attr,schedule_thread,this)<0){
 			DERR("cannot create schedule_thread thread");
 			return -1;
 		}
 
-		DPRINT("[%s] START THREAD 0x%lx",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STARTING THREAD 0x%lx",serial->getUid().c_str(),rpid);
+		while((run==0)&&retry--){
+			usleep(10000);
+		}
+		if(retry>0){
+			DPRINT("[%s] STARTED Protocol 0x%lx",serial->getUid().c_str(),rpid);
+			return 0;
+		}
+		ERR("[%s] Protocol NOT STARTED 0x%lx",serial->getUid().c_str(),rpid);
+		return -1;
 	}
-	usleep(10000);
+	return 0;
 }
 int OcemProtocolScheduleCFQ::init(){
 
