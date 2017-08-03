@@ -197,7 +197,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->push(pol);
 					read_queue->req_ok++;
 					pthread_cond_signal(&read_queue->awake);
-					DPRINT("[%s,%d] scheduling READ ( %llu/%llu/%llu crc err %llu), queue %u oldest updated %llu, ret %d data:\"%s\"",serial->getUid().c_str(),i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,(unsigned)read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
+					DPRINT("[%s,%d] POLL OK ( %llu/%llu/%llu crc err %llu), queue %u oldest updated %llu, ret %d data:\"%s\"",serial->getUid().c_str(),i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,(unsigned)read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
 					write_queue->must_wait_to=0;
 				} else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
 					int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);

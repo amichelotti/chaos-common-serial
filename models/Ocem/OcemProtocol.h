@@ -98,7 +98,7 @@ public:
              @param timeoccur return 1 if a timeout occured
              @return the number of characters of the command sent or negative for error
 	 */
-	virtual int select(int slave,const char* command,int timeo=1000,int*timeoccur=0);
+	virtual int select(int slave,char* command,int timeo=1000,int*timeoccur=0);
 
 	virtual int init();
 	virtual int deinit();
