@@ -36,13 +36,16 @@ int OcemProtocol::init(){
 	DPRINT("OcemProtocol init '%s'",serial->getUid().c_str());
 	boost::mutex::scoped_lock(chanmutex);
 
-	if(serial){
+	if(serial.get()){
 		if(serial->init()!=0){
 			ret = OCEM_CANNOT_OPEN_DEVICE;
 			ERR("cannot open/initialize device %s",serial->getUid().c_str());
 		}
 		return ret;
-	} /*else {
+	} else{
+		throw std::logic_error("channel not created correctly");
+	}
+	/*else {
 		serial =new PosixSerialComm(std::string(serial->getUid().c_str()),baudrate,parity,bits,stop,max_answer_size,max_answer_size);
 		DPRINT("OcemProtocol Creating new PosixSerial Comm handler x%x",serial);
 		if(serial){
