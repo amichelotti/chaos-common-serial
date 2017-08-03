@@ -14,7 +14,7 @@
 using namespace common::serial::ocem;
 
 OcemProtocol::OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan){
-	DPRINT("OcemProtocol on channel '%s'",serial->getUid().c_str());
+	DPRINT("[%s] constructor",chan->getUid().c_str());
 	pthread_mutex_init(&serial_chan_mutex, NULL);
 };
 
