@@ -15,7 +15,6 @@ using namespace common::serial::ocem;
 
 OcemProtocol::OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan){
 	DPRINT("[%s] constructor",chan->getUid().c_str());
-	pthread_mutex_init(&serial_chan_mutex, NULL);
 };
 
 /*
@@ -35,14 +34,13 @@ OcemProtocol::~OcemProtocol(){
 int OcemProtocol::init(){
 	int ret =0;
 	DPRINT("OcemProtocol init '%s'",serial->getUid().c_str());
+	boost::mutex::scoped_lock(chanmutex);
 
-	pthread_mutex_lock(&serial_chan_mutex);
 	if(serial){
 		if(serial->init()!=0){
 			ret = OCEM_CANNOT_OPEN_DEVICE;
 			ERR("cannot open/initialize device %s",serial->getUid().c_str());
 		}
-		pthread_mutex_unlock(&serial_chan_mutex);
 		return ret;
 	} /*else {
 		serial =new PosixSerialComm(std::string(serial->getUid().c_str()),baudrate,parity,bits,stop,max_answer_size,max_answer_size);
@@ -52,11 +50,9 @@ int OcemProtocol::init(){
 				ERR("cannot open OCEM device %s",serial->getUid().c_str());
 				ret= OCEM_CANNOT_OPEN_DEVICE;
 			}
-			pthread_mutex_unlock(&serial_chan_mutex);
 			return ret;
 		}
 	}*/
-	pthread_mutex_unlock(&serial_chan_mutex);
 	return ret;
 }
 int OcemProtocol::deinit(){
@@ -141,9 +137,11 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 		ERR("[%s,%d] invalid slave id %d",serial->getUid().c_str(),slave,slave);
 		return OCEM_BAD_SLAVEID;
 	}
-	if(timeoccur)*timeoccur=0;
-	pthread_mutex_lock(&serial_chan_mutex);
 	DPRINT("[%s,%d] performing poll request slave %d, timeout %d ms",serial->getUid().c_str(),slave,slave,timeo);
+
+	if(timeoccur)*timeoccur=0;
+	boost::mutex::scoped_lock(chanmutex);
+
 	bufreq[0]=ENQ;
 	bufreq[1]=slave+ 0x40;
 	/**
@@ -155,7 +153,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 	if((ret= serial->write(bufreq,2,timeo,&timeow))!=2) {
 		ERR("[%s,%d] error writing slave %d ret %d, timeocc %d ",serial->getUid().c_str(),slave,slave,ret,timeow);
 		if(timeoccur)*timeoccur=timeow;
-		pthread_mutex_unlock(&serial_chan_mutex);
 
 		return OCEM_WRITE_FAILED;
 	}
@@ -164,7 +161,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 	ret = waitAck(timeo);
 	if(ret == EOT){
 		DPRINT("[%s,%d] slave %d says NO TRAFFIC",serial->getUid().c_str(),slave,slave);
-		pthread_mutex_unlock(&serial_chan_mutex);
 		//usleep(100000); // sleep
 		return OCEM_NO_TRAFFIC;
 	} else if(ret == STX){
@@ -188,7 +184,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 				DERR("[%s,%d] missing CRC",serial->getUid().c_str(),slave);
 				serial->flush_read();
 				sendAck(EOT, timeo);
-				pthread_mutex_unlock(&serial_chan_mutex);
 
 				return OCEM_MALFORMED_POLL_ANSWER;
 			}
@@ -196,9 +191,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 			DERR("[%s,%d] missing terminator",serial->getUid().c_str(),slave);
 			serial->flush_read();
 			sendAck(EOT, timeo);
-
-			pthread_mutex_unlock(&serial_chan_mutex);
-
 			return OCEM_MALFORMED_POLL_ANSWER;
 
 		}
@@ -207,7 +199,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 		DPRINT("[%s,%d] received %d bytes from %d",serial->getUid().c_str(),slave,tot,slave_rec);
 		/* if(ret<0){
             ERR(" error reading message from slave %d ret %d, timeocc %d ",slave,ret,timeor);
-            pthread_mutex_unlock(&serial_chan_mutex);
 
             return OCEM_READ_FAILED;
         }*/
@@ -216,7 +207,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 			serial->flush_read();
 
 			sendAck(EOT, timeo);
-			pthread_mutex_unlock(&serial_chan_mutex);
 			return OCEM_UNEXPECTED_SLAVE_ANSWER;
 		}
 
@@ -226,7 +216,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 			int retack;
 			DPRINT("[%s,%d] slave %d says:\"%s\"",serial->getUid().c_str(),slave,slave,buf);
 			retack=sendAck(ACK, timeo);
-			pthread_mutex_unlock(&serial_chan_mutex);
 			if(retack==0)
 				return ret;
 			return retack;
@@ -236,8 +225,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 			sendAck(EOT, timeo);
 			//sendAck(ACK, timeo)
 			serial->flush_read();
-			pthread_mutex_unlock(&serial_chan_mutex);
-
 			return ret;
 		}
 
@@ -248,7 +235,6 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 
 		ERR("[%s,%d] no answer from slave %d within %d ms, timeouccur %d",serial->getUid().c_str(),slave,slave,timeo,timeor);
 	}
-	pthread_mutex_unlock(&serial_chan_mutex);
 	return ret;
 
 }
@@ -352,7 +338,8 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 		ERR("invalid slave id %d",slave);
 		return OCEM_BAD_SLAVEID;
 	}
-	pthread_mutex_lock(&serial_chan_mutex);
+	boost::mutex::scoped_lock(chanmutex);
+
 	DPRINT("[%s,%d] performing select request to send command \"%s\" to slave %d timeout %d ms",serial->getUid().c_str(),slave,command,slave,timeo);
 
 	bufreq[0]=ENQ;
@@ -364,7 +351,6 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 	if((ret= serial->write(bufreq,sizeof(bufreq),timeo,&timeow))!=2) {
 		ERR("[%s,%d] error writing slave %d ret %d, timeocc %d ",serial->getUid().c_str(),slave,slave,ret,timeow);
 		if(timeoccur)*timeoccur=timeow;
-		pthread_mutex_unlock(&serial_chan_mutex);
 		return OCEM_WRITE_FAILED;
 	}
 
@@ -374,11 +360,9 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 
 		if(ret == NAK){
 			ERR("[%s,%d] slave not ready, sent NACK on selection",serial->getUid().c_str(),slave);
-			pthread_mutex_unlock(&serial_chan_mutex);
 			return OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE;
 		} else if(ret== EOT){
 			DPRINT("[%s,%d] slave busy",serial->getUid().c_str(),slave);
-			pthread_mutex_unlock(&serial_chan_mutex);
 			return OCEM_SLAVE_BUSY;
 		} else if(ret== STX){
 			char buf;
@@ -391,7 +375,6 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 		} else {
 			ERR("[%s,%d] slave completely unexpected answer on selection",serial->getUid().c_str(),slave);
 		}
-		pthread_mutex_unlock(&serial_chan_mutex);
 		serial->flush_read();
 		return OCEM_UNEXPECTED_SLAVE_ANSWER;
 	}
@@ -403,8 +386,6 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 		if((rett= serial->write(tmpbuf,ret,timeo,&timeow))!=ret) {
 			ERR("[%s,%d] error writing slave %d ret %d, timeocc %d ",serial->getUid().c_str(),slave,slave,rett,timeow);
 			if(timeoccur)*timeoccur=timeow;
-			pthread_mutex_unlock(&serial_chan_mutex);
-
 			return OCEM_WRITE_FAILED;
 		}
 
@@ -414,26 +395,21 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 			//	  usleep(100000); // sleep
 			if(rett == NAK){
 				ERR("[%s,%d] slave cannot accept message %d",serial->getUid().c_str(),slave,OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE);
-				pthread_mutex_unlock(&serial_chan_mutex);
 				return OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE;
 			} else if(rett== EOT){
 				DPRINT("[%s,%d] slave busy",serial->getUid().c_str(),slave);
-				pthread_mutex_unlock(&serial_chan_mutex);
 				return OCEM_SLAVE_BUSY;
 			}
 			ERR("[%s,%d] slave unexpected answer :%d",serial->getUid().c_str(),slave,rett);
 			// serial->flush_read();
-			pthread_mutex_unlock(&serial_chan_mutex);
 			return OCEM_UNEXPECTED_SLAVE_ANSWER;
 
 			return rett;
 		}
-		pthread_mutex_unlock(&serial_chan_mutex);
 		DPRINT("[%s,%d] command sent successfully to slave %d",serial->getUid().c_str(),slave,slave);
 		return ret;
 	}
 	ERR("[%s,%d] bad select command",serial->getUid().c_str(),slave);
-	pthread_mutex_unlock(&serial_chan_mutex);
 
 	return OCEM_BAD_SELECT_COMMAND;
 }

@@ -12,6 +12,7 @@
 #ifdef OCEM_PROTOCOL_DEBUG
 #define DEBUG
 #endif
+#include <boost/thread.hpp>
 
 #include <common/debug/core/debug.h>
 
@@ -39,7 +40,8 @@ class OcemProtocol {
 
 	int max_answer_size;
 
-	pthread_mutex_t serial_chan_mutex;
+//	pthread_mutex_t serial_chan_mutex;
+	boost::mutex chanmutex;
 protected:
 	common::misc::driver::AbstractChannel_psh serial;
 	// return number of char copied if success, negative otherwise
