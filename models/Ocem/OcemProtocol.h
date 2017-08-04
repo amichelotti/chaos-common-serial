@@ -43,6 +43,7 @@ class OcemProtocol {
 //	pthread_mutex_t serial_chan_mutex;
 	boost::mutex chanmutex;
 protected:
+
 	common::misc::driver::AbstractChannel_psh serial;
 	// return number of char copied if success, negative otherwise
 	int check_and_extract(char*buffer,char*protbuf,int size);

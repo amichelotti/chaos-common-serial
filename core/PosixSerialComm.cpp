@@ -427,9 +427,9 @@ int PosixSerialComm::deinit(){
     pwret =&wret;
     prret = &rret;
     
-    if(fd){
+    if(fd>=0){
         close(fd);
-        fd = NULL;
+        fd = -1;
     }
     if(read_buffer){
         delete read_buffer;
