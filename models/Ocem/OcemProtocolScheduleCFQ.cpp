@@ -255,7 +255,7 @@ OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(const char*serdev,int max_answe
 }
 */
 OcemProtocolScheduleCFQ::~OcemProtocolScheduleCFQ(){
-	DPRINT("[%s] destroy",chan->getUid().c_str());
+	DPRINT("[%s] destroy",serial->getUid().c_str());
 
 	deinit();
 
