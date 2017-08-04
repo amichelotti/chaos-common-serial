@@ -430,6 +430,9 @@ int PosixSerialComm::deinit(){
     if(fd>=0){
         close(fd);
         fd = -1;
+    } else {
+    	DPRINT("Already deinitialized");
+    	return 0;
     }
     if(read_buffer){
         delete read_buffer;
