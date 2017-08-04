@@ -62,7 +62,7 @@ int OcemProtocol::init(){
 }
 int OcemProtocol::deinit(){
 	DPRINT( "deinitializing base protocol");
-	if((serial.use_count()<=1)&& serial.get()){
+	if((serial.use_count()<=2)){
 		DPRINT( "deinitializing channel '%s' %p",serial->getUid().c_str(),serial.get());
 		serial->deinit();
 	} else {
