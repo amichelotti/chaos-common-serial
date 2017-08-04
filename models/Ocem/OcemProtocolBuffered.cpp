@@ -265,7 +265,7 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
   DPRINT("exiting from indefinite wait on %p",cond);
   return ret;
 }        
-int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeoccur){
+int OcemProtocolBuffered::select(int slaveid,const char* command,int timeo,int*timeoccur){
 
 	if(run==0){
 				// scheduler is not started yet

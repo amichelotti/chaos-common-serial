@@ -338,7 +338,7 @@ int OcemProtocol::waitAck(int timeo){
 	return OCEM_UNEXPECTED_SLAVE_ANSWER;
 }
 
-int OcemProtocol::select(int slave,char* command,int timeo,int*timeoccur){
+int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 	char tmpbuf[max_answer_size];
 	char bufreq[2];
 	int timeow=0;

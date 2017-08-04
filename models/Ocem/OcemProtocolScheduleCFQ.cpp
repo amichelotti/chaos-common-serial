@@ -415,7 +415,7 @@ int OcemProtocolScheduleCFQ::wait_timeo(pthread_cond_t* cond,pthread_mutex_t*mut
 	DPRINT("[%s] exiting from indefinite wait on @0x%p",serial->getUid().c_str(),cond);
 	return ret;
 }        
-int OcemProtocolScheduleCFQ::select(int slaveid,char* command,int timeo,int*timeoccur){
+int OcemProtocolScheduleCFQ::select(int slaveid,const char* command,int timeo,int*timeoccur){
 
   DPRINT("[%s,%d] SELECT",serial->getUid().c_str(),slaveid);
 
