@@ -312,7 +312,7 @@ int OcemProtocolScheduleCFQ::unRegisterAll(){
 
 int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	ocem_queue_t::iterator i;
-	stop();
+	// stop();
 	pthread_mutex_lock(&mutex_slaves);
 
 	/*for(ocem_queue_sorted_t::iterator j=slave_queue_sorted.begin();j!=slave_queue_sorted.end();j++){
@@ -333,8 +333,9 @@ int OcemProtocolScheduleCFQ::unRegisterSlave(int slaveid){
 	delete ((i->second).second);
 	slave_queue.erase(i);
 
-	if(slave_queue.size()){
-		start();
+	if(slave_queue.size()==0){
+		DPRINT("[%s] no more slaves stopping schedule thread",serial->getUid().c_str());
+		stop();
 	}
 	if(slaves>0){
 		slaves--;
