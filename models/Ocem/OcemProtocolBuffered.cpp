@@ -20,7 +20,7 @@ using namespace common::serial::ocem;
 void* OcemProtocolBuffered::runSchedule(){
     ocem_queue_t::iterator i;
     char buffer[2048];
-    DPRINT("THREAD STARTED %p",pthread_self());
+    DPRINT("THREAD STARTED %p",(void*)pthread_self());
     OcemData*read_queue,*write_queue;
     run=1;
     while(run){
@@ -38,7 +38,7 @@ void* OcemProtocolBuffered::runSchedule(){
           write_queue->pop();
 
 	  uint64_t when=common::debug::getUsTime()-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%d] scheduling WRITE (%lld/%lld/%lld) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
           

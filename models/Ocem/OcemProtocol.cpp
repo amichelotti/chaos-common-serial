@@ -26,8 +26,9 @@ OcemProtocol::OcemProtocol(const char*_serdev,int max,int _baudrate,int _parity,
 }
 */
 OcemProtocol::~OcemProtocol(){
-	deinit();
 	DPRINT("OcemProtocol destroy");
+
+	deinit();
 
 }
 

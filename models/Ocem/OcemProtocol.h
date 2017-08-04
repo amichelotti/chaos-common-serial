@@ -78,7 +78,7 @@ public:
 	OcemProtocol(common::misc::driver::AbstractChannel_psh chan);
 
 	//    OcemProtocol(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
-	~OcemProtocol();
+	virtual ~OcemProtocol();
 	/**
              perform a poll request toward the given slave
              @param slave slave address
