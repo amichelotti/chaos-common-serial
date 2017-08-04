@@ -29,6 +29,7 @@ OcemProtocol::~OcemProtocol(){
 	DPRINT("OcemProtocol destroy");
 
 	deinit();
+	common::misc::driver::ChannelFactory::removeChannel(serial);
 
 }
 
@@ -61,9 +62,12 @@ int OcemProtocol::init(){
 }
 int OcemProtocol::deinit(){
 	DPRINT( "deinitializing base protocol");
-	common::misc::driver::ChannelFactory::removeChannel(serial);
-
-
+	if((serial.use_count()<=1)&& serial.get()){
+		DPRINT( "deinitializing channel '%s' %p",serial->getUid().c_str(),serial.get());
+		serial->deinit();
+	} else {
+		DPRINT( "cannot deinitialize channel '%s' %p is use %ld",serial->getUid().c_str(),serial.get(),serial.use_count());
+	}
 	return 0;
 }
 
