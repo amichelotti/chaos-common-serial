@@ -14,7 +14,7 @@
 using namespace common::serial::ocem;
 
 OcemProtocol::OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan),max_answer_size(4096){
-	DPRINT("[%s] constructor",chan->getUid().c_str());
+	DPRINT("[%s] constructor channel use count %ld",chan->getUid().c_str(),chan.use_count());
 };
 
 /*

@@ -255,6 +255,8 @@ OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(const char*serdev,int max_answe
 }
 */
 OcemProtocolScheduleCFQ::~OcemProtocolScheduleCFQ(){
+	DPRINT("[%s] destroy",chan->getUid().c_str());
+
 	deinit();
 
 }
@@ -516,6 +518,12 @@ int OcemProtocolScheduleCFQ::init(){
 
 int OcemProtocolScheduleCFQ::deinit(){
 	int rett;
+	if(initialized==0){
+		DPRINT("DEINIT already deinitialized");
+		return 0;
+	} else {
+		DPRINT("[%s] DEINIT already=%d",serial->getUid().c_str(),initialized);
+	}
 	stop();
 	unRegisterAll();
 	rett=OcemProtocol::deinit();
