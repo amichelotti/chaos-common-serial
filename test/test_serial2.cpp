@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
   *temp=0;
 
 #if 1
-  common::serial::AbstractSerialComm *p = new common::serial::PosixSerialCommSimple(dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
+  common::serial::AbstractChannel *p = new common::serial::PosixSerialCommSimple(dev.c_str(),atoi(baudrate.c_str()),atoi(parity.c_str()),atoi(bits.c_str()),atoi(stop.c_str()));
   p->init();
   printf("writing\n");
   p->write((void*)"ciao",5,0,0);

@@ -34,7 +34,7 @@ INSTALL_TARGETS(/bin test_serial)
 INSTALL_TARGETS(/bin echo_serial)
 
 FILE(GLOB ocem_src Ocem/*.h)    
-INSTALL(FILES core/posixserialcomm_cwrap.h core/PosixSerialComm.h core/AbstractSerialComm.h DESTINATION include/common/serial/core) 
+INSTALL(FILES core/posixserialcomm_cwrap.h core/PosixSerialComm.h DESTINATION include/common/serial/core) 
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL_TARGETS(/lib  ${PROJECT_NAME})
 

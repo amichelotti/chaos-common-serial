@@ -11,7 +11,7 @@
 
 
 #include <iostream>
-#include "AbstractSerialComm.h"
+#include <common/misc/driver/AbstractChannel.h>
 
 #include <pthread.h>
 
@@ -29,11 +29,29 @@
 namespace common {
     namespace serial {
         // put your code here
-        class PosixSerialComm: public AbstractSerialComm{
+    typedef enum {
+               SERIAL_CANNOT_OPEN_DEVICE =-100,
+               SERIAL_BAD_PARITY_PARAM,
+               SERIAL_BAD_BIT_PARAM,
+               SERIAL_BAD_STOP_PARAM,
+               SERIAL_UNSUPPORTED_SPEED,
+               SERIAL_CANNOT_SET_BAUDRATE,
+               SERIAL_CANNOT_SET_PARAMETERS,
+               SERIAL_CANNOT_ALLOCATE_RESOURCES,
+               SERIAL_TIMEOUT,
+               SERIAL_READ_ERROR,
+               SERIAL_CANNOT_FIND_DELIM
+           } serial_error_t;
+        class PosixSerialComm: public ::common::misc::driver::AbstractChannel {
             
             int fd; // file descriptor of the communication
             pthread_t wpid,rpid; // threads that handle write/read communication
-            
+            std::string comm_dev;
+            int baudrate;
+            int parity;
+            int bits;
+           	int stop;
+           	 bool hwctrl;
             char *read_buffer;
 #ifdef POSIX_WRITE_BUFFERING    
 	    char *write_buffer;

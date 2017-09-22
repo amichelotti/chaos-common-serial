@@ -20,7 +20,7 @@ using namespace common::serial::ocem;
 void* OcemProtocolBuffered::runSchedule(){
     ocem_queue_t::iterator i;
     char buffer[2048];
-    DPRINT("THREAD STARTED 0x%x",pthread_self());
+    DPRINT("THREAD STARTED %p",(void*)pthread_self());
     OcemData*read_queue,*write_queue;
     run=1;
     while(run){
@@ -38,7 +38,7 @@ void* OcemProtocolBuffered::runSchedule(){
           write_queue->pop();
 
 	  uint64_t when=common::debug::getUsTime()-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%d/%d/%d) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%d] scheduling WRITE (%lld/%lld/%lld) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
           
@@ -85,7 +85,7 @@ void* OcemProtocolBuffered::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %d/%d/%d crc err %d), queue %d, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
+	    DPRINT("[%d] scheduling READ ( %lld/%lld/%lld crc err %d), queue %d, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -110,13 +110,20 @@ void* OcemProtocolBuffered::runSchedule(){
     OcemProtocolBuffered* pnt = (OcemProtocolBuffered*)p;
     return (void*)pnt->runSchedule();
 }
-
+/*
 OcemProtocolBuffered::OcemProtocolBuffered(const char*serdev,int max_answer_size,int baudrate,int parity,int bits,int stop):OcemProtocol(serdev,max_answer_size,baudrate,parity,bits,stop){
     slaves=0;
     initialized=0;
     pthread_mutex_init(&mutex_buffer,NULL);
 
 }
+*/
+ OcemProtocolBuffered::OcemProtocolBuffered(common::misc::driver::AbstractChannel_psh chan):OcemProtocol(chan){
+	  slaves=0;
+	    initialized=0;
+	   pthread_mutex_init(&mutex_buffer,NULL);
+
+ }
 
 OcemProtocolBuffered::~OcemProtocolBuffered(){
   deinit();
@@ -147,7 +154,7 @@ int OcemProtocolBuffered::registerSlave(int slaveid){
         OcemData* s= new OcemData();
 	DPRINT("registering slave %d",slaveid);
 	
-        slave_queue.insert(std::make_pair<int,std::pair<OcemData*,OcemData* > >(slaveid,std::make_pair<OcemData*,OcemData*>(d,s)));
+        slave_queue.insert(std::make_pair(slaveid,std::make_pair(d,s)));
     } else {
         pthread_mutex_unlock(&mutex_buffer);
        // DPRINT("already registered slave %d",slaveid);
@@ -192,6 +199,10 @@ int OcemProtocolBuffered::unRegisterSlave(int slaveid){
 
 int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*timeoccur){
  
+	if(run==0){
+			// scheduler is not started yet
+			return ::OcemProtocol::poll(slaveid,buf,size,timeo,timeoccur);
+	}
     //registerSlave(slaveid);
      pthread_mutex_lock(&mutex_buffer);
 
@@ -236,7 +247,7 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
     gettimeofday(&tv,NULL);
     ts.tv_sec=tv.tv_sec + timeo_ms/1000;
     ts.tv_nsec=tv.tv_usec*1000 + (timeo_ms%1000)*1000000;
-    DPRINT("waiting on %x for %d",cond,timeo_ms);
+    DPRINT("waiting on %p for %d",cond,timeo_ms);
     if(pthread_cond_timedwait(cond, mutex_, &ts)!=0){
             pthread_mutex_unlock(mutex_);
 
@@ -251,11 +262,15 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
   ret = pthread_cond_wait(cond, mutex_);
   pthread_mutex_unlock(mutex_);
 
-  DPRINT("exiting from indefinite wait on %x",cond);
+  DPRINT("exiting from indefinite wait on %p",cond);
   return ret;
 }        
-int OcemProtocolBuffered::select(int slaveid,char* command,int timeo,int*timeoccur){
+int OcemProtocolBuffered::select(int slaveid,const char* command,int timeo,int*timeoccur){
 
+	if(run==0){
+				// scheduler is not started yet
+		return ::OcemProtocol::select(slaveid,command,timeo,timeoccur);
+	}
     //registerSlave(slaveid);
     pthread_mutex_lock(&mutex_buffer);
     ocem_queue_t::iterator i=slave_queue.find(slaveid);
