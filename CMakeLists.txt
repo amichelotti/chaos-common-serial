@@ -33,8 +33,9 @@ TARGET_LINK_LIBRARIES(echo_serial ${PROJECT_NAME} common_debug ${libs})
 INSTALL_TARGETS(/bin test_serial)
 INSTALL_TARGETS(/bin echo_serial)
 
-FILE(GLOB ocem_src Ocem/*.h)    
-INSTALL(FILES core/posixserialcomm_cwrap.h core/PosixSerialComm.h DESTINATION include/common/serial/core) 
+FILE(GLOB ocem_src Ocem/*.h)
+FILE(GLOB src_h core/*.h)
+INSTALL(FILES ${src_h} DESTINATION include/common/serial/core) 
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL_TARGETS(/lib  ${PROJECT_NAME})
 

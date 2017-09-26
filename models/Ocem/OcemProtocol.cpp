@@ -10,10 +10,10 @@
 #include <sstream>
 #include <unistd.h>
 #include <string.h>
-#include <common/misc/driver/ChannelFactory.h>
+#include <common/serial/core/SerialChannelFactory.h>
 using namespace common::serial::ocem;
 
-OcemProtocol::OcemProtocol(common::misc::driver::AbstractChannel_psh chan):serial(chan),max_answer_size(4096){
+OcemProtocol::OcemProtocol(common::serial::AbstractSerialChannel_psh chan):serial(chan),max_answer_size(4096){
 	DPRINT("[%s] constructor channel use count %ld",chan->getUid().c_str(),chan.use_count());
 };
 
@@ -29,7 +29,7 @@ OcemProtocol::~OcemProtocol(){
 	DPRINT("OcemProtocol destroy");
 
 	deinit();
-	common::misc::driver::ChannelFactory::removeChannel(serial);
+	common::serial::SerialChannelFactory::removeChannel(serial);
 
 }
 

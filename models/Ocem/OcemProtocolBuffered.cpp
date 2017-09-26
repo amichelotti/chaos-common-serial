@@ -118,7 +118,7 @@ OcemProtocolBuffered::OcemProtocolBuffered(const char*serdev,int max_answer_size
 
 }
 */
- OcemProtocolBuffered::OcemProtocolBuffered(common::misc::driver::AbstractChannel_psh chan):OcemProtocol(chan){
+ OcemProtocolBuffered::OcemProtocolBuffered(common::serial::AbstractSerialChannel_psh chan):OcemProtocol(chan){
 	  slaves=0;
 	    initialized=0;
 	   pthread_mutex_init(&mutex_buffer,NULL);
