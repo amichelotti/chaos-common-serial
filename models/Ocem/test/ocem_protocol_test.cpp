@@ -16,7 +16,7 @@
 #include <common/debug/core/debug.h>
 #include <boost/regex.hpp>
 #include <boost/program_options.hpp>
-#include <common/misc/driver/ChannelFactory.h>
+#include <common/serial/core/SerialChannelFactory.h>
 #include <string>
 #ifdef CHAOS
 #include <chaos/ui_toolkit/ChaosUIToolkit.h>
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 
   //////
    	//common::serial::PosixSerialComm* prot=new common::serial::PosixSerialComm(dev,9600,0,8,1);
-    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(common::misc::driver::ChannelFactory::getChannel(dev,9600,0,8,1));
+    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(common::serial::SerialChannelFactory::getChannel(dev,9600,0,8,1));
     oc->init();
    raw_test(oc);
    delete oc;

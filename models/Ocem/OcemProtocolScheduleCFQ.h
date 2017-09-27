@@ -92,7 +92,7 @@ private:
 public:
 
 	//  OcemProtocolScheduleCFQ(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
-	OcemProtocolScheduleCFQ(::common::misc::driver::AbstractChannel_psh chan,uint32_t minAccess_ms=PAUSE_POLL_NO_DATA);
+	OcemProtocolScheduleCFQ(::common::serial::AbstractSerialChannel_psh chan,uint32_t minAccess_ms=PAUSE_POLL_NO_DATA);
 	~OcemProtocolScheduleCFQ();
 
 	int registerSlave(int slaveid);

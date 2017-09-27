@@ -235,7 +235,7 @@ void* OcemProtocolScheduleCFQ::schedule_thread(void* p){
 	OcemProtocolScheduleCFQ* pnt = (OcemProtocolScheduleCFQ*)p;
 	return (void*)pnt->runSchedule();
 }
-OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(common::misc::driver::AbstractChannel_psh chan,uint32_t min):OcemProtocol(chan),minChannelAccess_ms(min){
+OcemProtocolScheduleCFQ::OcemProtocolScheduleCFQ(common::serial::AbstractSerialChannel_psh chan,uint32_t min):OcemProtocol(chan),minChannelAccess_ms(min){
 	DPRINT("[%s] constructor",chan->getUid().c_str());
 
 	slaves=0;
