@@ -229,6 +229,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 
 
 	DPRINT("[%s] EXITING SCHEDULE THREAD",serial->getUid().c_str());
+	return NULL;
 }
 
 void* OcemProtocolScheduleCFQ::schedule_thread(void* p){
@@ -476,10 +477,10 @@ int OcemProtocolScheduleCFQ::select(int slaveid,const char* command,int timeo,in
 int OcemProtocolScheduleCFQ::stop(){
 	int* ret;
 	if(run){
-		DPRINT("[%s] STOPPING THREAD 0x%lx",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STOPPING THREAD 0x%p",serial->getUid().c_str(),rpid);
 		run=0;
 		pthread_join(rpid,(void**)&ret);
-		DPRINT("[%s] STOPPED THREAD 0x%lx",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STOPPED THREAD 0x%p",serial->getUid().c_str(),rpid);
 	}
 	return 0;
 }
@@ -494,15 +495,15 @@ int OcemProtocolScheduleCFQ::start(){
 			return -1;
 		}
 
-		DPRINT("[%s] STARTING THREAD 0x%lx",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STARTING THREAD 0x%p",serial->getUid().c_str(),rpid);
 		while((run==0)&&retry--){
 			usleep(10000);
 		}
 		if(retry>0){
-			DPRINT("[%s] STARTED Protocol 0x%lx",serial->getUid().c_str(),rpid);
+			DPRINT("[%s] STARTED Protocol 0x%p",serial->getUid().c_str(),rpid);
 			return 0;
 		}
-		ERR("[%s] Protocol NOT STARTED 0x%lx",serial->getUid().c_str(),rpid);
+		ERR("[%s] Protocol NOT STARTED 0x%p",serial->getUid().c_str(),rpid);
 		return -1;
 	}
 	return 0;
