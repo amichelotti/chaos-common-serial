@@ -8,7 +8,7 @@
 #ifndef DRIVER_TCPCHANNEL_H_
 #define DRIVER_TCPCHANNEL_H_
 
-#include "AbstractSerialChannel.h"
+#include <common/serial/core/AbstractSerialChannel.h>
 #include <boost/asio.hpp>
 #include <stdexcept>
 
@@ -23,9 +23,9 @@ class TCPSerialChannel: public AbstractSerialChannel {
 	size_t byte_read;
 	boost::system::error_code read_result;
 
-	asio::io_service io_service;
-	asio::deadline_timer deadline;
-	asio::ip::tcp::socket socket;
+    boost::asio::io_service io_service;
+    boost::asio::deadline_timer deadline;
+    boost::asio::ip::tcp::socket socket;
 	boost::asio::socket_base::bytes_readable command;
 	int timeout_arised;
 public:
