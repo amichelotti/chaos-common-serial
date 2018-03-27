@@ -30,8 +30,6 @@ TARGET_LINK_LIBRARIES(test_serial ${PROJECT_NAME} common_debug ${libs})
 
 TARGET_LINK_LIBRARIES(echo_serial ${PROJECT_NAME} common_debug ${libs})
 
-INSTALL_TARGETS(/bin test_serial)
-INSTALL_TARGETS(/bin echo_serial)
 
 FILE(GLOB ocem_src Ocem/*.h)
 FILE(GLOB src_h core/*.h)
@@ -39,8 +37,8 @@ INSTALL(FILES ${src_h} DESTINATION include/common/serial/core)
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL_TARGETS(/lib  ${PROJECT_NAME})
 
-INSTALL_TARGETS(/bin  test_serial)
-INSTALL_TARGETS(/bin  echo_serial)
+INSTALL_TARGETS(/bin/serial  test_serial)
+INSTALL_TARGETS(/bin/serial  echo_serial)
 
 ADD_SUBDIRECTORY(models)
 
