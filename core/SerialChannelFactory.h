@@ -32,9 +32,9 @@ public:
 	//retrieve a tcp channel
 	static AbstractSerialChannel_psh getChannel(const std::string& ip, int port );
 #ifdef CHAOS
-	static AbstractSerialChannel_psh getChannel(const chaos::common::data::CDataWrapper& config)  throw (chaos::CException);
+    static AbstractSerialChannel_psh getChannel(const chaos::common::data::CDataWrapper& config)  throw (chaos::CException);
 #endif
-	static AbstractSerialChannel_psh getChannelFromJson(const std::string& json)  throw (std::logic_error);
+    static AbstractSerialChannel_psh getChannelFromJson(const std::string& json)  throw (std::logic_error);
 	static void removeChannel(const std::string& uid);
 	static void removeChannel(AbstractSerialChannel_psh& ch);
 
