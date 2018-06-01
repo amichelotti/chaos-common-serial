@@ -46,8 +46,8 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 	}
 }
 #else
-AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error::logic_error){
-	throw std::logic_error::logic_error("not implemented");
+AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error){
+	throw std::logic_error("not implemented");
 
 }
 
