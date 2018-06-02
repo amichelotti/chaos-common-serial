@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(common_serial)
+find_package(chaos)
 find_package(Boost MODULE REQUIRED REQUIRED COMPONENTS program_options system)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
