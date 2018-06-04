@@ -42,9 +42,9 @@ FILE(GLOB src_h core/*.h)
 INSTALL(FILES ${src_h} DESTINATION include/common/serial/core) 
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL_TARGETS(/lib  ${PROJECT_NAME})
-
-INSTALL_TARGETS(/bin/serial  test_serial)
-INSTALL_TARGETS(/bin/serial  echo_serial)
-
+IF(NOT BUILD_FORCE_STATIC)
+  INSTALL_TARGETS(/bin/serial  test_serial)
+  INSTALL_TARGETS(/bin/serial  echo_serial)
+ENDIF()
 
 
