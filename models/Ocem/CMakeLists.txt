@@ -16,5 +16,5 @@ FILE(GLOB ocem_src *.h)
 
 INSTALL(FILES ${ocem_src} DESTINATION include/common/serial/models/Ocem ) 
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
-INSTALL_TARGETS(/bin ocem_protocol_test)
+INSTALL_TARGETS(/bin/serial ocem_protocol_test)
 
