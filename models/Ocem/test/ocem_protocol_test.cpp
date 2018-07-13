@@ -20,7 +20,9 @@
 #include <string>
 #include <stdio.h>
 #ifdef CHAOS
-#include <chaos/ui_toolkit/ChaosUIToolkit.h>
+#include <chaos_metadata_service_client/ChaosMetadataServiceClient.h>
+using namespace chaos::metadata_service_client;
+
 #endif
 #define DEFAULT_TIMEOUT 10000
 using boost::regex;
