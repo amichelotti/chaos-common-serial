@@ -18,7 +18,7 @@
 
 #include <iostream>
 //#include <common/serial/serial.h>
-#include <common/misc/driver/AbstractChannel.h>
+#include <common/serial/core/AbstractSerialChannel.h>
 #include <pthread.h>
 
 namespace common {
@@ -44,7 +44,7 @@ class OcemProtocol {
 	boost::mutex chanmutex;
 protected:
 
-	::common::misc::driver::AbstractChannel_psh serial;
+	::common::serial::AbstractSerialChannel_psh serial;
 	// return number of char copied if success, negative otherwise
 	int check_and_extract(char*buffer,char*protbuf,int size);
 	// return the total size of the message
@@ -76,7 +76,7 @@ public:
 		OCEM_BAD_SELECT_COMMAND,
 		OCEM_SLAVE_CANNOT_UNDERSTAND_MESSAGE
 	} ;
-	OcemProtocol(::common::misc::driver::AbstractChannel_psh chan);
+	OcemProtocol(::common::serial::AbstractSerialChannel_psh chan);
 
 	//    OcemProtocol(const char*serdev,int max_answer_size=8192,int baudrate=9600,int parity=0,int bits=8,int stop=1);
 	virtual ~OcemProtocol();
@@ -110,7 +110,7 @@ public:
 	virtual int getWriteSize(int slave){return 0;}
 	virtual int getReadSize(int slave){return 0;}
 	void decodeBuf(char*inpbuf,char*outbuf,int size);
-	::common::misc::driver::AbstractChannel_psh getChannel() const{return serial;};
+	::common::serial::AbstractSerialChannel_psh getChannel() const{return serial;};
 };
 };
 };

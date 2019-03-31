@@ -85,7 +85,7 @@ void* OcemProtocolBuffered::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %lld/%lld/%lld crc err %d), queue %d, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
+	    DPRINT("[%d] scheduling READ ( %lld/%lld/%lld crc err %llu), queue %lu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -104,6 +104,7 @@ void* OcemProtocolBuffered::runSchedule(){
 
     }   
     DPRINT("EXITING SCHEDULE THREAD");
+    return NULL;
 }
 
  void* OcemProtocolBuffered::schedule_thread(void* p){
@@ -118,7 +119,7 @@ OcemProtocolBuffered::OcemProtocolBuffered(const char*serdev,int max_answer_size
 
 }
 */
- OcemProtocolBuffered::OcemProtocolBuffered(common::misc::driver::AbstractChannel_psh chan):OcemProtocol(chan){
+ OcemProtocolBuffered::OcemProtocolBuffered(common::serial::AbstractSerialChannel_psh chan):OcemProtocol(chan){
 	  slaves=0;
 	    initialized=0;
 	   pthread_mutex_init(&mutex_buffer,NULL);
@@ -253,12 +254,12 @@ int OcemProtocolBuffered::poll(int slaveid,char * buf,int size,int timeo,int*tim
 
             return -1000;
     }
-    DPRINT("exiting from wait on %x for %d",cond,timeo_ms);
+    DPRINT("exiting from wait on %p for %d",cond,timeo_ms);
     pthread_mutex_unlock(mutex_);
 
     return 0;
   }
-  DPRINT("indefinite wait on %x",cond);
+  DPRINT("indefinite wait on %p",cond);
   ret = pthread_cond_wait(cond, mutex_);
   pthread_mutex_unlock(mutex_);
 
@@ -322,7 +323,7 @@ int OcemProtocolBuffered::select(int slaveid,const char* command,int timeo,int*t
 int OcemProtocolBuffered::stop(){
       int* ret;
 
-    DPRINT("STOP THREAD 0x%x",rpid);
+    DPRINT("STOP THREAD 0x%p",rpid);
      run=0;
     pthread_join(rpid,(void**)&ret);
     return 0;
@@ -336,9 +337,10 @@ int OcemProtocolBuffered::start(){
     DERR("cannot create schedule_thread thread");
     return -1;
   }
-  DPRINT("START THREAD 0x%x",rpid);
+  DPRINT("START THREAD 0x%p",rpid);
 
   usleep(10000);
+  return 0;
 }
 int OcemProtocolBuffered::init(){
  

@@ -11,7 +11,7 @@
 
 
 #include <iostream>
-#include <common/misc/driver/AbstractChannel.h>
+#include "AbstractSerialChannel.h"
 
 #include <pthread.h>
 
@@ -42,7 +42,8 @@ namespace common {
                SERIAL_READ_ERROR,
                SERIAL_CANNOT_FIND_DELIM
            } serial_error_t;
-        class PosixSerialComm: public ::common::misc::driver::AbstractChannel {
+
+    class PosixSerialComm: public AbstractSerialChannel {
             
             int fd; // file descriptor of the communication
             pthread_t wpid,rpid; // threads that handle write/read communication

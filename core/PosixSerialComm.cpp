@@ -25,7 +25,7 @@
 #include <string.h>
 using namespace common::serial;
 #define MIN(x,y) (x<y)?(x):(y)
-PosixSerialComm::PosixSerialComm(std::string serial_dev,int _baudrate,int _parity,int _bits,int _stop,bool _hw,int _write_buffer_size,int _read_buffer_size):common::misc::driver::AbstractChannel::AbstractChannel(serial_dev),comm_dev(serial_dev),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop),hwctrl(_hw),read_buffer(NULL),read_buffer_size(_read_buffer_size),w_read_buffer_ptr(0),r_read_buffer_ptr(0){
+PosixSerialComm::PosixSerialComm(std::string serial_dev,int _baudrate,int _parity,int _bits,int _stop,bool _hw,int _write_buffer_size,int _read_buffer_size):common::serial::AbstractSerialChannel::AbstractSerialChannel(serial_dev),comm_dev(serial_dev),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop),hwctrl(_hw),read_buffer(NULL),read_buffer_size(_read_buffer_size),w_read_buffer_ptr(0),r_read_buffer_ptr(0){
 #ifdef POSIX_WRITE_BUFFERING    
   write_buffer=NULL;
   r_write_buffer_ptr=0;
@@ -261,7 +261,6 @@ int PosixSerialComm::init(){
     wpid=0;
     rpid=0;
     memset(&term,0,sizeof(termios));
-    
     fd = open(comm_dev.c_str(),O_RDWR|O_NOCTTY|O_EXCL);
   
     DPRINT("initialising PosixSerialComm");

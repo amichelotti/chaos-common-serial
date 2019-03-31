@@ -16,10 +16,13 @@
 #include <common/debug/core/debug.h>
 #include <boost/regex.hpp>
 #include <boost/program_options.hpp>
-#include <common/misc/driver/ChannelFactory.h>
+#include <common/serial/core/SerialChannelFactory.h>
 #include <string>
+#include <stdio.h>
 #ifdef CHAOS
-#include <chaos/ui_toolkit/ChaosUIToolkit.h>
+#include <chaos_metadata_service_client/ChaosMetadataServiceClient.h>
+using namespace chaos::metadata_service_client;
+
 #endif
 #define DEFAULT_TIMEOUT 10000
 using boost::regex;
@@ -107,7 +110,7 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
     return;
   }
   printRawCommandHelp();
-  while(gets(stringa)){
+  while(fgets(stringa,sizeof(stringa),stdin)){
       uint64_t tm,tot;
       char *t=stringa;
       boost::smatch match;
@@ -286,7 +289,7 @@ int main(int argc, char *argv[])
 
   //////
    	//common::serial::PosixSerialComm* prot=new common::serial::PosixSerialComm(dev,9600,0,8,1);
-    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(common::misc::driver::ChannelFactory::getChannel(dev,9600,0,8,1));
+    common::serial::ocem::OcemProtocol* oc= new common::serial::ocem::OcemProtocol(common::serial::SerialChannelFactory::getChannel(dev,9600,0,8,1));
     oc->init();
    raw_test(oc);
    delete oc;
