@@ -16,5 +16,6 @@ FILE(GLOB ocem_src *.h)
 
 INSTALL(FILES ${ocem_src} DESTINATION include/common/serial/models/Ocem ) 
 INSTALL_TARGETS(/lib ${PROJECT_NAME})
-INSTALL_TARGETS(/bin ocem_protocol_test)
-
+IF(NOT BUILD_FORCE_STATIC)
+  INSTALL_TARGETS(/bin/serial ocem_protocol_test)
+ENDIF()

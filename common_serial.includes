@@ -1,4 +1,4 @@
+../../chaosframework
 .
-core
-models/Ocem
-/usr/local/chaos/chaos-distrib/include
+../../chaosframework/usr/local/include
+

@@ -8,7 +8,7 @@
 #include "TCPSerialChannel.h"
 #include <boost/asio/deadline_timer.hpp>
 
-#include <boost/lambda/bind.hpp>
+#include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/string.hpp>
 #include <common/debug/core/debug.h>
