@@ -23,7 +23,7 @@ namespace serial {
 
 class SerialChannelFactory {
 	static std::map<std::string,AbstractSerialChannel_psh> unique_channels;
-	boost::mutex chanmutex;
+	static boost::mutex chanmutex;
 public:
 	SerialChannelFactory();
 	virtual ~SerialChannelFactory();
