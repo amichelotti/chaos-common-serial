@@ -26,12 +26,15 @@ ENDIF()
 
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${serial_src})
+IF(COMMON_TEST)
 ADD_EXECUTABLE(test_serial test/test_serial.cpp)
 ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
-
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_debug ${libs})
 TARGET_LINK_LIBRARIES(test_serial ${PROJECT_NAME} common_debug ${libs})
 TARGET_LINK_LIBRARIES(echo_serial ${PROJECT_NAME} common_debug ${libs})
+ENDIF()
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_debug ${libs})
+
 
 ADD_SUBDIRECTORY(models)
 
@@ -43,8 +46,10 @@ INSTALL(FILES ${src_h} DESTINATION include/common/serial/core)
 INSTALL(FILES serial.h DESTINATION include/common/serial/) 
 INSTALL_TARGETS(/lib  ${PROJECT_NAME})
 IF(NOT BUILD_FORCE_STATIC)
-  INSTALL_TARGETS(/bin/serial  test_serial)
-  INSTALL_TARGETS(/bin/serial  echo_serial)
+  IF(COMMON_TEST)
+    INSTALL_TARGETS(/bin/serial  test_serial)
+    INSTALL_TARGETS(/bin/serial  echo_serial)
+  ENDIF()
 ENDIF()
 
 
