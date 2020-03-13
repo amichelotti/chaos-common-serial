@@ -48,9 +48,9 @@ int send_command(common::serial::ocem::OcemProtocol*oc,int id,const char*_cmd){
      ret=oc->select(id,stringa,1000,&timeout);
      tot=common::debug::getUsTime()-tm;
      if(ret>0){
-	printf("[%llu] in %lld OK ret:%d timeout %d \"%s\" \n",tm,tot,ret,timeout,_cmd);
+	printf("[%lu] in %lu OK ret:%d timeout %d \"%s\" \n",tm,tot,ret,timeout,_cmd);
      } else {
-         printf("[%llu]in %lld ## BAD ret:%d timeout %d \"%s\" \n",tm,tot,ret,timeout,_cmd);
+         printf("[%lu]in %lu ## BAD ret:%d timeout %d \"%s\" \n",tm,tot,ret,timeout,_cmd);
      }
      return ret;
     
@@ -139,7 +139,7 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
 	  
 	  ret=oc->poll(id,buf,sizeof(buf),5000,&timeout);
 	  tot_time=common::debug::getUsTime()-tm;
-	  printf("[%llu] in %lld us ret:%d timeout %d \"%s\" \n",tm,tot_time,ret,timeout,buf);
+	  printf("[%lu] in %lu us ret:%d timeout %d \"%s\" \n",tm,tot_time,ret,timeout,buf);
 	  continue;
 	  
 	}
@@ -186,7 +186,7 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
 
                }
                if((cntt%1000)==0){
-                    printf("[%lld] polling  %d, busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",tm,cntt,busy,nodata,error_p,byte_recv);
+                    printf("[%ld] polling  %d, busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",tm,cntt,busy,nodata,error_p,byte_recv);
                }
              
                rets=poll_wrapped(oc,id,buf,sizeof(buf),&tims,&error_p,&busy,&nodata,&byte_recv);
@@ -195,13 +195,13 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
               
                cntt++;
                if(rets>0){
-                   printf("[%lld] in %lld \"%s\" busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",now,tot,buf,busy,nodata,error_p,byte_recv);
+                   printf("[%ld] in %lu \"%s\" busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",now,tot,buf,busy,nodata,error_p,byte_recv);
                    cnt++;
                } else {
                    retry++;
                }
                if((retry>1000)){
-                   printf("[%lld] in %lld  exiting from loop busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",now,tot,busy,nodata,error_p,byte_recv);
+                   printf("[%ld] in %lu  exiting from loop busy:%d nodata:%d, other errors:%d, tot bytes:%d\n",now,tot,busy,nodata,error_p,byte_recv);
                    break;
                }
            }
@@ -234,7 +234,7 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
 
           }
           tot= common::debug::getUsTime()-tm;
-          printf("* done in %llu us %f cycle, error poll %d (busy %d, no data %d, payload %d) error select %d timeout pool %d timeout select %d \n",tot,tot*1.0/looptimes,error_p,busy,nodata,byte_recv,error_s,timeout_p,timeout_s);
+          printf("* done in %lu us %f cycle, error poll %d (busy %d, no data %d, payload %d) error select %d timeout pool %d timeout select %d \n",tot,tot*1.0/looptimes,error_p,busy,nodata,byte_recv,error_s,timeout_p,timeout_s);
 	  continue;
 	}
 	PARSE("QUIT",1){
