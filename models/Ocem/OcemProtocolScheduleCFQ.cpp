@@ -138,7 +138,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 						OcemProtocol::select(i->first,(char*)"RMT",10000,&timeo);
 						write_queue->nsuccessive_busy=0;
 					}
-					DPRINT("[%s %i] command \"%s\" ERROR(req bad %lld) , ret=%d timeo=%d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
+					DPRINT("[%s %i] command \"%s\" ERROR(req bad %lu) , ret=%d timeo=%d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
 					if((cmd.retry<3) && (cmd.buffer != "SL") && (cmd.buffer!="SA")){
 						ERR("[%s,%d] scheduled for retry command \"%s\", retries %d, req bad %lu, in queue %d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),cmd.retry,write_queue->req_bad,write_queue->size());
 						//  write_queue->push(cmd);
@@ -208,7 +208,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->push(pol);
 					read_queue->crc_err++;
 					read_queue->req_bad++;
-					DPRINT("[%s,%d] CRC failed crc err:%lld req bad %lld",serial->getUid().c_str(),i->first,read_queue->crc_err,read_queue->req_bad);
+					DPRINT("[%s,%d] CRC failed crc err:%lu req bad %lu",serial->getUid().c_str(),i->first,read_queue->crc_err,read_queue->req_bad);
 
 				} else if(ret == OCEM_NO_TRAFFIC){
 					read_queue->must_wait_to= now + PAUSE_POLL_NO_DATA*1000;
