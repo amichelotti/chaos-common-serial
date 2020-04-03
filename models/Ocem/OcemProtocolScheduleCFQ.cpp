@@ -69,7 +69,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 	  if(cycle_us<mindur){
 	    usleep(mindur-cycle_us);
 	  }
-	  DPRINT("[%s] CFQ SCHEDULE CYCLE %llu ms ====== ",serial->getUid().c_str(),cycle_us/1000);
+	  DPRINT("[%s] CFQ SCHEDULE CYCLE %lu ms ====== ",serial->getUid().c_str(),cycle_us/1000);
 	  st_cycle=common::debug::getUsTime();
 		pthread_mutex_lock(&mutex_slaves);
 		ocem_queue_sorted_t   slave_queue_sorted(slave_queue.size());
@@ -112,9 +112,9 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 				write_queue->must_wait_to=0;
 				uint64_t when=now-cmd.timestamp;
 				if(cmd.retry){
-					DPRINT("[%s,%d] scheduling a RETRY-%d WRITE (%llu/%llu/%llu) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serial->getUid().c_str(),i->first,cmd.retry,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
+					DPRINT("[%s,%d] scheduling a RETRY-%d WRITE (%lu/%lu/%lu) last op %lu us ago, cmd queue %d oldest req %lu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serial->getUid().c_str(),i->first,cmd.retry,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
 				} else {
-					DPRINT("[%s,%d] scheduling WRITE (%llu/%llu/%llu) last op %llu us ago, cmd queue %d oldest req %llu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serial->getUid().c_str(),i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
+					DPRINT("[%s,%d] scheduling WRITE (%lu/%lu/%lu) last op %lu us ago, cmd queue %d oldest req %lu ago, SENDING command \"%s\", timeout %d, issued %f s ago",serial->getUid().c_str(),i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,now-write_queue->last_op,size,now-write_queue->old_req_time,cmd.buffer.c_str(),cmd.timeo_ms,when*1.0/1000000.0);
 				}
 				ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),10000,&timeo);
 				write_queue->last_op=now;
@@ -138,9 +138,9 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 						OcemProtocol::select(i->first,(char*)"RMT",10000,&timeo);
 						write_queue->nsuccessive_busy=0;
 					}
-					DPRINT("[%s %i] command \"%s\" ERROR(req bad %lld) , ret=%d timeo=%d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
+					DPRINT("[%s %i] command \"%s\" ERROR(req bad %lu) , ret=%d timeo=%d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),write_queue->req_bad,ret,timeo);
 					if((cmd.retry<3) && (cmd.buffer != "SL") && (cmd.buffer!="SA")){
-						ERR("[%s,%d] scheduled for retry command \"%s\", retries %d, req bad %lld, in queue %d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),cmd.retry,write_queue->req_bad,write_queue->size());
+						ERR("[%s,%d] scheduled for retry command \"%s\", retries %d, req bad %lu, in queue %d",serial->getUid().c_str(),i->first,(char*)cmd.buffer.c_str(),cmd.retry,write_queue->req_bad,write_queue->size());
 						//  write_queue->push(cmd);
 
 					} else {
@@ -197,7 +197,7 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->push(pol);
 					read_queue->req_ok++;
 					pthread_cond_signal(&read_queue->awake);
-					DPRINT("[%s,%d] POLL OK ( %llu/%llu/%llu crc err %llu), queue %u oldest updated %llu, ret %d data:\"%s\"",serial->getUid().c_str(),i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,(unsigned)read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
+					DPRINT("[%s,%d] POLL OK ( %lu/%lu/%lu crc err %lu), queue %u oldest updated %lu, ret %d data:\"%s\"",serial->getUid().c_str(),i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,(unsigned)read_queue->queue.size(),now-read_queue->old_req_time,ret,buffer);
 					write_queue->must_wait_to=0;
 				} else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
 					int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
@@ -208,11 +208,11 @@ void* OcemProtocolScheduleCFQ::runSchedule(){
 					read_queue->push(pol);
 					read_queue->crc_err++;
 					read_queue->req_bad++;
-					DPRINT("[%s,%d] CRC failed crc err:%lld req bad %lld",serial->getUid().c_str(),i->first,read_queue->crc_err,read_queue->req_bad);
+					DPRINT("[%s,%d] CRC failed crc err:%lu req bad %lu",serial->getUid().c_str(),i->first,read_queue->crc_err,read_queue->req_bad);
 
 				} else if(ret == OCEM_NO_TRAFFIC){
 					read_queue->must_wait_to= now + PAUSE_POLL_NO_DATA*1000;
-					DPRINT("[%s,%d] NO traffic no pool for %d ms, wait until %lld timestamp",serial->getUid().c_str(),i->first,PAUSE_POLL_NO_DATA,now + PAUSE_POLL_NO_DATA*1000);
+					DPRINT("[%s,%d] NO traffic no pool for %d ms, wait until %lu timestamp",serial->getUid().c_str(),i->first,PAUSE_POLL_NO_DATA,now + PAUSE_POLL_NO_DATA*1000);
 
 				} else {
 
@@ -477,10 +477,10 @@ int OcemProtocolScheduleCFQ::select(int slaveid,const char* command,int timeo,in
 int OcemProtocolScheduleCFQ::stop(){
 	int* ret;
 	if(run){
-		DPRINT("[%s] STOPPING THREAD 0x%p",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STOPPING THREAD 0x%lx",serial->getUid().c_str(),rpid);
 		run=0;
 		pthread_join(rpid,(void**)&ret);
-		DPRINT("[%s] STOPPED THREAD 0x%p",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STOPPED THREAD 0x%lx",serial->getUid().c_str(),rpid);
 	}
 	return 0;
 }
@@ -495,15 +495,15 @@ int OcemProtocolScheduleCFQ::start(){
 			return -1;
 		}
 
-		DPRINT("[%s] STARTING THREAD 0x%p",serial->getUid().c_str(),rpid);
+		DPRINT("[%s] STARTING THREAD 0x%lx",serial->getUid().c_str(),rpid);
 		while((run==0)&&retry--){
 			usleep(10000);
 		}
 		if(retry>0){
-			DPRINT("[%s] STARTED Protocol 0x%p",serial->getUid().c_str(),rpid);
+			DPRINT("[%s] STARTED Protocol 0x%lx",serial->getUid().c_str(),rpid);
 			return 0;
 		}
-		ERR("[%s] Protocol NOT STARTED 0x%p",serial->getUid().c_str(),rpid);
+		ERR("[%s] Protocol NOT STARTED 0x%lx",serial->getUid().c_str(),rpid);
 		return -1;
 	}
 	return 0;

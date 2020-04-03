@@ -38,7 +38,7 @@ void* OcemProtocolBuffered::runSchedule(){
           write_queue->pop();
 
 	  uint64_t when=common::debug::getUsTime()-cmd.timestamp;
-	  DPRINT("[%d] scheduling WRITE (%lld/%lld/%lld) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
+	  DPRINT("[%d] scheduling WRITE (%lu/%lu/%lu) , cmd queue %d, SENDING command \"%s\", timeout %d, issued %llu us ago",i->first,write_queue->req_ok,write_queue->req_bad,write_queue->reqs,size,cmd.buffer.c_str(),cmd.timeo_ms,when);
 
 	  ret=OcemProtocol::select(i->first,(char*)cmd.buffer.c_str(),cmd.timeo_ms);
           
@@ -85,7 +85,7 @@ void* OcemProtocolBuffered::runSchedule(){
 	    read_queue->push(pol);
 	    read_queue->req_ok++;
             pthread_cond_signal(&read_queue->awake);
-	    DPRINT("[%d] scheduling READ ( %lld/%lld/%lld crc err %llu), queue %lu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
+	    DPRINT("[%d] scheduling READ ( %lu/%lu/%lu crc err %lu), queue %lu, ret %d data:\"%s\"",i->first,read_queue->req_ok,read_queue->req_bad,read_queue->reqs,read_queue->crc_err,read_queue->queue.size(),ret,buffer);
           } else if(ret==OCEM_POLL_ANSWER_CRC_FAILED){
               int size=(sizeof(buffer)<(strlen(buffer)+1))?sizeof(buffer):(strlen(buffer)+1);
               pol.buffer.assign(buffer,size);
@@ -323,7 +323,7 @@ int OcemProtocolBuffered::select(int slaveid,const char* command,int timeo,int*t
 int OcemProtocolBuffered::stop(){
       int* ret;
 
-    DPRINT("STOP THREAD 0x%p",rpid);
+    DPRINT("STOP THREAD 0x%lx",rpid);
      run=0;
     pthread_join(rpid,(void**)&ret);
     return 0;
@@ -337,7 +337,7 @@ int OcemProtocolBuffered::start(){
     DERR("cannot create schedule_thread thread");
     return -1;
   }
-  DPRINT("START THREAD 0x%p",rpid);
+  DPRINT("START THREAD 0x%lx",rpid);
 
   usleep(10000);
   return 0;
