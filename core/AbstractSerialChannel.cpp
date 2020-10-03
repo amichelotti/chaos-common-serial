@@ -1,5 +1,5 @@
 #include "AbstractSerialChannel.h"
-
+#include <string.h>
 namespace common {
   namespace serial {
      int AbstractSerialChannel::read(void *buffer,int maxnb,const char*isanyof,int ms_timeo,int*timeout_arised){
@@ -21,11 +21,12 @@ namespace common {
                     }
                 }
                 if(isanyof ){
-                    while(*isanyof++!=0){
-                        if(*isanyof==buf){
+                    for(int i=0;i<strlen(isanyof);i++){
+                        if(isanyof[i]==buf){
                             return cnt;
                         }
                     }
+                    
                 }
             }
             return cnt;

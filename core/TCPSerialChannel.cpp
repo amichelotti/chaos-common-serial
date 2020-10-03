@@ -80,7 +80,7 @@ void TCPSerialChannel::read_handler(const boost::system::error_code& ec, std::si
 	if(ec){
 		DERR("error ec:%s, size:%lu",ec.message().c_str(),size);
 	} else {
-		DPRINT("read %lu bytes",size);
+	//	DPRINT("read %lu bytes",size);
 	}
 	read_result=ec;
 	byte_read=size;
@@ -126,7 +126,7 @@ int TCPSerialChannel::read(void *buff,int nb,int ms_timeo,int*td){
 		int ret;
 		timeout_arised=0;
 		if(ms_timeo>0){
-			DPRINT("setting timeout to %d ms",ms_timeo);
+		//	DPRINT("setting timeout to %d ms",ms_timeo);
 			deadline.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
 
 		}
