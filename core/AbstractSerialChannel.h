@@ -34,11 +34,21 @@ namespace common {
              @param buffer destination buffer
              @param nb number of bytes to read
              @param timeo milliseconds of timeouts, 0= no timeout
-	     @param timeout_arised returns if a timeout has been triggered
+	         @param timeout_arised returns if a timeout has been triggered
              @return number of bytes read, negative on error 
              */
             virtual int read(void *buffer,int nb,int ms_timeo=0,int*timeout_arised=0)=0;
             
+            /**
+             reads (synchronous) max nb bytes from channel, until one of the characters is meet
+             @param buffer destination buffer
+             @param nb max number of bytes to read
+             @param isanyof block the read until one of specified characters is meet
+             @param timeo milliseconds of timeouts, 0= no timeout
+	         @param timeout_arised returns if a timeout has been triggered
+             @return number of bytes read, negative on error 
+             */
+            int read(void *buffer,int maxnb,const char*isanyof,int ms_timeo=0,int*timeout_arised=0);
             /**
              reads (asynchronous) nb bytes from channel
              @param buffer destination buffer
