@@ -58,7 +58,7 @@ int TCPSerialChannel::init(){
 		socket.connect(endpoint,error);
 
 		if(error){
-			DPRINT("Connecting %s:%d error:%s",ip.c_str(),port,error.message().c_str());
+			DERR("Connecting %s:%d error:%s",ip.c_str(),port,error.message().c_str());
 			return -1;
 		}
 		check_deadline();
