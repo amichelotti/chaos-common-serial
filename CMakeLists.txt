@@ -24,8 +24,13 @@ ELSE()
 SET(libs pthread ${Boost_LIBRARIES})
 ENDIF()
 
+IF(NOT CHAOS_STATIC)
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${serial_src})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} common_debug pthread)
 
+ELSE()
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${serial_src})
+ENDIF()
 IF(COMMON_TEST)
 ADD_EXECUTABLE(test_serial test/test_serial.cpp)
 ADD_EXECUTABLE(echo_serial test/echo_serial.cpp)
