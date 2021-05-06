@@ -17,6 +17,8 @@
 #include <stdio.h>
 #ifdef DEBUG
 #define DPRINT printf
+#else
+#define DPRINT 
 #endif
 #define DERR printf
 #endif
