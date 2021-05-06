@@ -10,8 +10,7 @@
 #define __AbstractSerialChannel__
 
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <common/misc/driver/AbstractChannel.h>
+
 namespace common {
   namespace serial {
         typedef enum {
@@ -22,12 +21,22 @@ namespace common {
             CHANNEL_WRITE_ERROR
 
         } channel_error_t;
-        
-        class AbstractSerialChannel:public ::common::misc::driver::AbstractChannel {
 
+#ifndef NO_EXTERNAL_DEP        
+#include <boost/shared_ptr.hpp>
+#include <common/misc/driver/AbstractChannel.h>
+        class AbstractSerialChannel:public ::common::misc::driver::AbstractChannel {
+#else
+        class AbstractSerialChannel {
+
+#endif
 
         public:
+#ifndef NO_EXTERNAL_DEP        
         	AbstractSerialChannel(const std::string& uid_):AbstractChannel(uid_){};
+#else
+   	AbstractSerialChannel(const std::string& uid_){};
+#endif
 
             /**
              reads (synchronous) nb bytes from channel
@@ -97,12 +106,16 @@ namespace common {
              flush bytes in the read buffer
              */
             virtual void flush_read()=0;
-
+#ifdef NO_EXTERNAL_DEP        
+            virtual int init()=0;
+            virtual int deinit()=0;
+#endif
 
 
         };
-
+#ifndef NO_EXTERNAL_DEP        
         typedef boost::shared_ptr<AbstractSerialChannel> AbstractSerialChannel_psh;
+#endif
     };
 
 };

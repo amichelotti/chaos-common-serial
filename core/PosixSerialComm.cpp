@@ -11,8 +11,13 @@
 #define DEBUG
 #endif
 
-
+#ifndef NO_EXTERNAL_DEP
 #include <common/debug/core/debug.h>
+#else
+#include <stdio.h>
+#define DPRINT printf
+#define DERR printf
+#endif
 
 #include "PosixSerialComm.h"
 #include <fcntl.h>
@@ -26,6 +31,7 @@
 using namespace common::serial;
 #define MIN(x,y) (x<y)?(x):(y)
 PosixSerialComm::PosixSerialComm(std::string serial_dev,int _baudrate,int _parity,int _bits,int _stop,bool _hw,int _write_buffer_size,int _read_buffer_size):common::serial::AbstractSerialChannel::AbstractSerialChannel(serial_dev),comm_dev(serial_dev),baudrate(_baudrate),parity(_parity),bits(_bits),stop(_stop),hwctrl(_hw),read_buffer(NULL),read_buffer_size(_read_buffer_size),w_read_buffer_ptr(0),r_read_buffer_ptr(0){
+
 #ifdef POSIX_WRITE_BUFFERING    
   write_buffer=NULL;
   r_write_buffer_ptr=0;

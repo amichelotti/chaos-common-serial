@@ -1,11 +1,22 @@
-#include <common/serial/pserial.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "PosixSerialComm.h"
+#include "posixserialcomm_cwrap.h"
+
 #ifdef POSIX_SERIAL_COMM_CWRAP_DEBUG
 #define DEBUG
 #endif
+#ifndef NO_EXTERNAL_DEP
 #include <common/debug/core/debug.h>
+#else
+#include <stdio.h>
+#define DPRINT printf
+#define DERR printf
+#endif
+
+
 #include "AbstractSerialChannel.h"
 #define MAX_HANDLE 100
 extern "C" {
