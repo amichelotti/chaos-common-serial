@@ -318,12 +318,12 @@ int PosixSerialComm::init(){
         term.c_cflag |= CSTOPB;
     } else if(stop == 1){
         term.c_cflag &= ~CSTOPB;
-    } else {
-      DERR("bad stop %d\n",stop);
+    } /*else {
+      DERR("bad stop %d valid 1 or 2\n",stop);
       close (fd);
       fd =-1;
       return SERIAL_BAD_BIT_PARAM;
-    }
+    }*/
     if(hwctrl)
       term.c_cflag |=CRTSCTS;
 
@@ -336,6 +336,9 @@ int PosixSerialComm::init(){
             break;
         case 9600:
             ret = cfsetospeed(&term,B9600);
+            break;
+        case 19200:
+            ret = cfsetospeed(&term,B19200);
             break;
         case 4800:
             ret = cfsetospeed(&term,B4800);
