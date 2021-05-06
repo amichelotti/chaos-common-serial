@@ -15,7 +15,9 @@
 #include <common/debug/core/debug.h>
 #else
 #include <stdio.h>
+#ifdef DEBUG
 #define DPRINT printf
+#endif
 #define DERR printf
 #endif
 
@@ -39,9 +41,9 @@ PosixSerialComm::PosixSerialComm(std::string serial_dev,int _baudrate,int _parit
   write_buffer_size=_write_buffer_size;
   nwrites=0;
   err_write=0;
-  DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d write_buffer size %d read buffer size %d",serial_dev.c_str(),baudrate,parity,bits,stop,write_buffer_size,read_buffer_size);
+  DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d write_buffer size %d read buffer size %d\n",serial_dev.c_str(),baudrate,parity,bits,stop,write_buffer_size,read_buffer_size);
 #else
-    DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d read buffer size %d",serial_dev.c_str(),baudrate,parity,bits,stop,read_buffer_size);
+    DPRINT("creating dev %s,baudrate %d parity %d bits %d stop %d read buffer size %d\n",serial_dev.c_str(),baudrate,parity,bits,stop,read_buffer_size);
 #endif
     fd = -1;
 
@@ -85,7 +87,7 @@ int PosixSerialComm::run_read(){
 	continue;
       } else if((ret<0)|| (FD_ISSET(fd,&excfd))){
 	err_read++;
-	DERR("select:error on receive %d",err_read);
+	DERR("select:error on receive %d\n",err_read);
 	continue;
       }
 
@@ -271,7 +273,7 @@ int PosixSerialComm::init(){
   
     DPRINT("initialising PosixSerialComm");
     if(fd<=0){
-      DERR("cannot open serial device \"%s\"",comm_dev.c_str());
+      DERR("cannot open serial device \"%s\"\n",comm_dev.c_str());
       return SERIAL_CANNOT_OPEN_DEVICE;
     }
     if(comm_dev == "/dev/ptmx"){
@@ -279,7 +281,7 @@ int PosixSerialComm::init(){
       if((p!=NULL) && (grantpt(fd)==0)&& (unlockpt(fd)==0)){
 	std::cout << "* client pty is \""<<p<<"\""<<std::endl;
       } else {
-	DERR("cannot open PTY SERVER serial device \"%s\"",comm_dev.c_str());
+	DERR("cannot open PTY SERVER serial device \"%s\"\n",comm_dev.c_str());
 	return SERIAL_CANNOT_OPEN_DEVICE;
       }
     }
@@ -294,7 +296,7 @@ int PosixSerialComm::init(){
     } else if(parity==0){
         term.c_cflag&=~PARENB;
     } else {
-      DERR("bad parity %d",parity);
+      DERR("bad parity %d\n",parity);
       close (fd);
       fd =-1;
       return SERIAL_BAD_PARITY_PARAM;
@@ -304,7 +306,7 @@ int PosixSerialComm::init(){
     } else if(bits == 7){
         term.c_cflag |= CS7;
     } else {
-      DERR("bad bits %d",bits);
+      DERR("bad bits %d\n",bits);
       close (fd);
       fd =-1;
       return SERIAL_BAD_BIT_PARAM;
@@ -315,7 +317,7 @@ int PosixSerialComm::init(){
     } else if(stop == 1){
         term.c_cflag &= ~CSTOPB;
     } else {
-      DERR("bad stop %d",stop);
+      DERR("bad stop %d\n",stop);
       close (fd);
       fd =-1;
       return SERIAL_BAD_BIT_PARAM;
@@ -337,12 +339,12 @@ int PosixSerialComm::init(){
             ret = cfsetospeed(&term,B4800);
             break;
         default:
-            DERR("unsupported speed %d",baudrate);
+            DERR("unsupported speed %d\n",baudrate);
             return SERIAL_UNSUPPORTED_SPEED;
             
     }
     if (ret<0){
-      DERR("bad baudrate %d",baudrate);
+      DERR("bad baudrate %d\n",baudrate);
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_SET_BAUDRATE;
@@ -353,7 +355,7 @@ int PosixSerialComm::init(){
     term.c_cc[VMIN]=0;
     DPRINT("%s parameters baudrate:%d, parity %d stop %d bits %d,fd:%d",comm_dev.c_str(),baudrate,parity,stop,bits,fd);
     if (tcsetattr(fd, TCSANOW, &term)<0){
-      DERR("cannot set parameters baudrate:%d, parity %d stop %d bits %d",baudrate,parity,stop,bits);
+      DERR("cannot set parameters baudrate:%d, parity %d stop %d bits %d\n",baudrate,parity,stop,bits);
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_SET_PARAMETERS;
@@ -405,14 +407,14 @@ int PosixSerialComm::init(){
     pthread_mutex_init(&write_mutex,NULL);
 
     if(pthread_create(&wpid,&attr,write_thread,this)<0){
-      DERR("cannot create write thread");
+      DERR("cannot create write thread\n");
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_ALLOCATE_RESOURCES;
     }
 #endif
     if(pthread_create(&rpid,&attr,read_thread,this)<0){
-      DERR("cannot create read thread");
+      DERR("cannot create read thread\n");
       close (fd);
       fd =-1;
       return SERIAL_CANNOT_ALLOCATE_RESOURCES;
