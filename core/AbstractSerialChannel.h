@@ -10,7 +10,11 @@
 #define __AbstractSerialChannel__
 
 #include <iostream>
+#ifndef NO_EXTERNAL_DEP
+#include <boost/shared_ptr.hpp>
+#include <common/misc/driver/AbstractChannel.h>
 
+#endif
 namespace common {
   namespace serial {
         typedef enum {
@@ -23,8 +27,6 @@ namespace common {
         } channel_error_t;
 
 #ifndef NO_EXTERNAL_DEP        
-#include <boost/shared_ptr.hpp>
-#include <common/misc/driver/AbstractChannel.h>
         class AbstractSerialChannel:public ::common::misc::driver::AbstractChannel {
 #else
         class AbstractSerialChannel {
