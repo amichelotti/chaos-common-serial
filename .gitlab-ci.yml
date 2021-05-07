@@ -1,0 +1,53 @@
+stages:
+    - build
+    - deploy
+
+
+before_script:
+  - export GNOW=$(date +"%Y%m%d")
+  - export NOW=$(date +"%Y%m%d-%H%M%S")
+  - export TAR_NAME_POSTFIX=$GNOW-$CI_PIPELINE_ID
+  - export NIGHTLY_NAME=chaos_distrib-$CI_JOB_NAME-$GNOW.tar.gz
+  - export MERGE_COMMENT="non-regression-$NOW-$CI_COMMIT_REF_NAME-${CI_PIPELINE_ID}"
+  - export SYS=`uname -s`
+  - if [ "$SYS" == "Linux" ];then export NPROC=`nproc`;else export NPROC=4;fi
+  - if [ -z "$TEST_BRANCH" ]; then export TEST_BRANCH=$CI_COMMIT_REF_NAME;fi
+  - if [ "$SKIP_TEST" == "true" ];then REVNAME="UNTESTED"; else REVNAME=$(basename $TEST_BRANCH); fi
+  - echo "[$CI_RUNNER_DESCRIPTION] $SYS $CI_JOB_NAME Working directory:$PWD tag $CI_COMMIT_REF_NAME CPUS:$NPROC framework in branch $TEST_BRANCH"
+  - export ARCH=`uname -m`
+  - eval export `cat /etc/*-release|grep -e "^VERSION_ID="|tr -d "\" "`
+  - eval export `cat /etc/*-release|grep -e "^ID="|tr -d "\" "`
+  - export REV_POSTFIX=$REVNAME-$ID-$VERSION_ID-$ARCH
+  - export DISTRIB_NAME=chaos-distrib-$REV_POSTFIX
+  - export DISTRIB_PREFIX=/usr/local/chaos/chaos-distrib
+  - export INSTALL_DIR=$DISTRIB_PREFIX
+  - export CHAOS_MDS=localhost:5000
+  - export CHAOS_INTERFACE=lo
+  - export CHAOS_LIVE_SERVERS=couchbase
+  - export CHAOS_LOG_SERVERS=influxdb:8086  
+  - export CHAOS_DB_SERVERS=mongo
+  - export PATH=/usr/local/chaos/qt-56/bin:$PATH
+  - echo "Running on $ID $VERSION_ID $ARCH (distrib name '$DISTRIB_NAME') $REVNAME"
+  - git config --global user.email andrea.michelotti@lnf.infn.it
+  - git config --global user.name amichelo
+  - git config --global color.ui true
+  - rm -rf chaosframework
+  - mkdir -p $INSTALL_DIR
+  
+
+build_centos6_i686:
+  stage: build
+  retry: 2
+  tags:  
+    - shared
+  image: baltig.infn.it:4567/chaos-lnf-control/chaos_bundle_compilation:centos6
+  script:
+    - cmake -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 . 
+    - make
+
+  artifacts:
+    name: "libcommon_serial.so"
+    paths:
+      - libcommon_serial.so
+    expire_in: 2 day
+    when: always
