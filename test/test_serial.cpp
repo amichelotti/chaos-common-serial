@@ -202,10 +202,9 @@ int main(int argc, char *argv[])
   printf("* dev: %s baudrate:%d parity:%d bits:%d stop:%d control flow hw:%s\n",dev,baudrate,parity,bits,stop,hw?"NO":"YES");
 
 
-
   int comm = popen_serial(bufsize,dev,baudrate,parity,bits,stop,hw);
   if(comm<0){
-    printf("## error during initialization\n");
+    printf("## error during initialization ret=%d\n",comm);
     return -1;
   }
   wptr = (unsigned*)malloc((start_size + cycles)*4);

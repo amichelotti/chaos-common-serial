@@ -11,10 +11,10 @@
 
 
 #include <iostream>
-#include "AbstractSerialChannel.h"
+
 
 #include <pthread.h>
-
+#include "AbstractSerialChannel.h"
 
 
 #ifndef POSIX_SERIAL_COMM_DEFAULT_MAX_BUFFER_WRITE_SIZE
@@ -44,7 +44,7 @@ namespace common {
            } serial_error_t;
 
     class PosixSerialComm: public AbstractSerialChannel {
-            
+
             int fd; // file descriptor of the communication
             pthread_t wpid,rpid; // threads that handle write/read communication
             std::string comm_dev;
