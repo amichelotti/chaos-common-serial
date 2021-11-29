@@ -41,7 +41,7 @@ class OcemProtocol {
 	const int max_answer_size;
 
 //	pthread_mutex_t serial_chan_mutex;
-	boost::mutex chanmutex;
+	ChaosMutex chanmutex;
 protected:
 
 	::common::serial::AbstractSerialChannel_psh serial;

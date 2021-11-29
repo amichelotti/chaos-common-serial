@@ -36,7 +36,7 @@ OcemProtocol::~OcemProtocol(){
 int OcemProtocol::init(){
 	int ret =0;
 	DPRINT("OcemProtocol init '%s'",serial->getUid().c_str());
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 
 	if(serial.get()){
 		if(serial->init()!=0){
@@ -145,7 +145,7 @@ int OcemProtocol::poll(int slave,char * buf,int size,int timeo,int*timeoccur){
 		ERR("[%s,%d] invalid slave id %d",serial->getUid().c_str(),slave,slave);
 		return OCEM_BAD_SLAVEID;
 	}
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 	DPRINT("[%s,%d] performing poll request slave %d, timeout %d ms",serial->getUid().c_str(),slave,slave,timeo);
 
 	if(timeoccur)*timeoccur=0;
@@ -347,7 +347,7 @@ int OcemProtocol::select(int slave,const char* command,int timeo,int*timeoccur){
 		ERR("invalid slave id %d",slave);
 		return OCEM_BAD_SLAVEID;
 	}
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 
 	DPRINT("[%s,%d] performing select request to send command \"%s\" to slave %d timeout %d ms",serial->getUid().c_str(),slave,command,slave,timeo);
 

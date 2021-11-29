@@ -14,7 +14,7 @@ namespace common {
 namespace serial {
 
 std::map<std::string,AbstractSerialChannel_psh> SerialChannelFactory::unique_channels;
-boost::mutex SerialChannelFactory::chanmutex;
+ChaosMutex SerialChannelFactory::chanmutex;
 
 #ifdef CHAOS
 using namespace chaos::common::data;
@@ -58,7 +58,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::st
 #endif
 
 AbstractSerialChannel_psh SerialChannelFactory::getChannel(std::string serial_dev,int baudrate,int parity,int bits,int stop,bool hwctrl){
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 	std::map<std::string,AbstractSerialChannel_psh>::iterator i=unique_channels.find(serial_dev);
 	if(i!=unique_channels.end()){
 		DPRINT("retrieving SERIAL channel '%s' @%p in use count %ld",serial_dev.c_str(),i->second.get(),i->second.use_count());
@@ -77,7 +77,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip
 	std::stringstream ss;
 	ss<<ip<<":"<<port;
 
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 	std::map<std::string,AbstractSerialChannel_psh>::iterator i=unique_channels.find(ss.str());
 	if(i!=unique_channels.end()){
 		DPRINT("retrieving TCP channel '%s' @%p in use count %ld",ss.str().c_str(),i->second.get(),i->second.use_count());
@@ -91,7 +91,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip
 }
 
 void SerialChannelFactory::removeChannel(const std::string& uid){
-	boost::mutex::scoped_lock l(chanmutex);
+	ChaosLockGuard l(chanmutex);
 
 	std::map<std::string,AbstractSerialChannel_psh>::iterator i=unique_channels.find(uid);
 	if(i!=unique_channels.end()){
