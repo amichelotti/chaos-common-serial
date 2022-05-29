@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.9)
 project(common_serial)
 find_package(Boost MODULE QUIET COMPONENTS program_options system)
 IF(Boost_FOUND)
