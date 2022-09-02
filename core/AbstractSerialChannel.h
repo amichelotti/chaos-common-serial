@@ -108,6 +108,15 @@ namespace common {
              flush bytes in the read buffer
              */
             virtual void flush_read()=0;
+            /**
+             * @brief Read a buffer delimited
+             * 
+             * @param buffer returned buffer 
+             * @param delimiter delimiter
+             * @param timeo_ms timeout in ms
+             * @return int the number of chars read, negative error
+             */
+            int readLine(std::string&buffer,const std::string delimiter,int timeo_ms=0);
 #ifdef NO_EXTERNAL_DEP        
             virtual int init()=0;
             virtual int deinit()=0;
