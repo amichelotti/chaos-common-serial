@@ -61,7 +61,7 @@ int TCPSerialChannel::init(){
 			DPRINT("Connecting %s:%d error:%s",ip.c_str(),port,error.message().c_str());
 			return -1;
 		}
-		check_deadline();
+		//check_deadline();
 	} catch(boost::system::system_error e){
 		DERR("and error occurred connecting: %s",e.what());
 		return -2;
@@ -90,7 +90,7 @@ void TCPSerialChannel::read_handler(const boost::system::error_code& ec, std::si
 	if(ec){
 		DERR("error ec:%s, size:%lu",ec.message().c_str(),size);
 	} else {
-		DPRINT("read %lu bytes",size);
+		//DPRINT("read %lu bytes",size);
 	}
 
 }
@@ -109,6 +109,7 @@ void TCPSerialChannel::check_deadline( )
      DERR("TIMEOUT!!");
      socket.cancel(ignored_ec);
      timeout_arised++;
+	 read_result=boost::asio::error::timed_out;
      // There is no longer an active deadline. The expiry is set to positive
      // infinity so that the actor takes no action until a new deadline is set.
      deadline.expires_at(boost::posix_time::pos_infin);
@@ -125,14 +126,19 @@ int TCPSerialChannel::read(void *buff,int nb,int ms_timeo,int*td){
 		boost::system::error_code error;
 		int ret;
 		timeout_arised=0;
+	//	asio::deadline_timer timer(socket.get_io_service()); 
+
 		if(ms_timeo>0){
 		//	DPRINT("setting timeout to %d ms",ms_timeo);
+			//timer.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
 			deadline.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
+			check_deadline();
 
 		}
 		asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(),boost::bind(&TCPSerialChannel::read_handler,this, boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 		//asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(), ReadHandler);
 		//asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(), var(ec) = _1);
+		io_service.reset();
 		do io_service.run_one(); while (read_result == boost::asio::error::would_block);
 
 
