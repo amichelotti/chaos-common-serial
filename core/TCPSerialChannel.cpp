@@ -12,12 +12,68 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/string.hpp>
 #include <common/debug/core/debug.h>
+#include <boost/asio/read_until.hpp>
 using boost::lambda::var;
 
 using boost::lambda::_1;
 namespace common {
 namespace serial {
 
+int TCPSerialChannel::readLine(std::string&buffer,const std::string delimiter,int timeo_ms){
+	int ret=-100;
+	boost::asio::streambuf streambuf;
+	read_result = boost::asio::error::would_block;
+	buffer="";
+  boost::asio::async_read_until(socket, streambuf, delimiter,
+    [delimiter, &streambuf,&buffer,this](
+      const boost::system::error_code& error_code,
+      std::size_t bytes_transferred)
+    {
+      // Verify streambuf contains more data beyond the delimiter. (e.g.
+      // async_read_until read beyond the delimiter)
+     // assert(streambuf.size() > bytes_transferred);
+  //    DPRINT(" streambuf size %ld byte transferred %ld bytes",streambuf.size(),bytes_transferred);
+
+      // Extract up to the first delimiter.
+      buffer={buffers_begin(streambuf.data()),buffers_begin(streambuf.data()) + bytes_transferred- delimiter.size()};
+
+      // Consume through the first delimiter so that subsequent async_read_until
+      // will not reiterate over the same data.
+      streambuf.consume(bytes_transferred);
+	//  this->wait_read.notify_one();
+   //   DPRINT(" received \"%s\" %ld bytes", buffer.c_str(),streambuf.size());
+		read_result = error_code;
+
+    }
+  );
+  if(timeo_ms>0){
+		//	DPRINT("setting timeout to %d ms",ms_timeo);
+			//timer.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
+			deadline.expires_from_now(boost::posix_time::milliseconds(timeo_ms));
+			check_deadline();
+
+	}
+/*	if(timeo_ms>0){
+	 	if(!this->wait_read.timed_wait(lock_wait,boost::posix_time::milliseconds(timeo_ms)){
+			DERR("TIMEOUT");
+			return ret;
+		}
+	} else {
+		this->wait_read.wait(lock_wait);
+	}*/
+	io_service.reset();
+	do {
+	//	DPRINT(" waiting... delimiter %s",delimiter.c_str() );
+
+		io_service.run_one(); 
+	} while (read_result == boost::asio::error::would_block);
+	if(read_result==boost::asio::error::timed_out){
+		DPRINT(" TIMEOUT... delimiter %s",delimiter.c_str() );
+
+		return -100;
+	}
+	return buffer.size();
+}
 
 TCPSerialChannel::TCPSerialChannel(const std::string& _ip_port):AbstractSerialChannel(_ip_port),socket(io_service),deadline(io_service),byte_read(0), read_result(boost::asio::error::would_block),command(true),timeout_arised(0)  {
 	// TODO Auto-generated constructor stub

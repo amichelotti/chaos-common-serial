@@ -27,6 +27,8 @@ class TCPSerialChannel: public AbstractSerialChannel {
     boost::asio::deadline_timer deadline;
     boost::asio::ip::tcp::socket socket;
 	boost::asio::socket_base::bytes_readable command;
+  //  boost::condition_variable wait_read;
+  //  boost::mutex lock_wait;
 	int timeout_arised;
 public:
 	TCPSerialChannel(const std::string& ipport);
@@ -106,6 +108,8 @@ public:
        flush bytes in the read buffer
        */
       virtual void flush_read();
+
+      int readLine(std::string&buffer,const std::string delimiter,int timeo_ms=0);
 
 
 
