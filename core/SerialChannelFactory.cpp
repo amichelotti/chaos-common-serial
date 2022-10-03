@@ -9,6 +9,7 @@
 #include "PosixSerialComm.h"
 #include <common/debug/core/debug.h>
 #include "TCPSerialChannel.h"
+#include "TCPSocketClient.h"
 
 namespace common {
 namespace serial {
@@ -42,8 +43,10 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 		}
 		GET_PARAMETER_DO(channel,tcp,string,0){
 			GET_PARAMETER(channel,port,int32_t,1);
+			//bool oldstyle=false;
+			GET_PARAMETER_DO(channel,oldstyle,bool,0)
 
-			return getChannel(tcp,port);
+			return getChannel(tcp,port,oldstyle);
 
 		}
 	}
@@ -72,7 +75,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(std::string serial_de
 	return ret;
 
 }
-AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip, int port ){
+AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip, int port , bool oldstyle){
 	AbstractSerialChannel_psh p;
 	std::stringstream ss;
 	ss<<ip<<":"<<port;
@@ -84,10 +87,23 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip
 		return i->second;
 	}
 	DPRINT("creating TCP channel '%s' @%p",ss.str().c_str(),p.get());
-	TCPSerialChannel* ptr=new TCPSerialChannel(ss.str());
-	AbstractSerialChannel_psh ret(ptr);
-	unique_channels[ss.str()]=ret;
-	return ret;
+	if (oldstyle)
+	{
+		DPRINT("Using old style sockets");
+		TCPSocketClient* ptr= new TCPSocketClient(ss.str());
+		AbstractSerialChannel_psh ret(ptr);
+		unique_channels[ss.str()]=ret;
+		return ret;
+	}
+	else
+	{
+	   TCPSerialChannel* ptr=new TCPSerialChannel(ss.str());
+	   AbstractSerialChannel_psh ret(ptr);
+	   unique_channels[ss.str()]=ret;
+	   return ret;
+	}
+	
+	
 }
 
 void SerialChannelFactory::removeChannel(const std::string& uid){

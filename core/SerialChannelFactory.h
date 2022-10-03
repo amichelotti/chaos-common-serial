@@ -30,7 +30,7 @@ public:
 	// retrieve a Serial Channel
 	static AbstractSerialChannel_psh getChannel(std::string serial_dev,int baudrate,int parity,int bits,int stop,bool hwctrl=false);
 	//retrieve a tcp channel
-	static AbstractSerialChannel_psh getChannel(const std::string& ip, int port );
+	static AbstractSerialChannel_psh getChannel(const std::string& ip, int port, bool oldstyle=false );
 #ifdef CHAOS
     static AbstractSerialChannel_psh getChannel(const chaos::common::data::CDataWrapper& config)  throw (chaos::CException);
 #endif
