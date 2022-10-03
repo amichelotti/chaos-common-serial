@@ -112,18 +112,58 @@ int TCPSocketClient::deinit() {
 
 int TCPSocketClient::read(void *buff,int nb,int ms_timeo,int*td){
 		int iResult;
-		memset(buff, 0, nb);
+        if (is_open)
+        {
+            memset(buff, 0, nb);
 #ifdef _WIN32
-		iResult = recv(ConnectSocket, (char*)buff, 256, 0);
+            if (setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&ms_timeo, sizeof(int)) < 0)
+				printf("setsockopt failed\n");
+            iResult = recv(ConnectSocket, (char*)buff, 256, 0);
+             if (iResult < 0)
+            {
+                int err = WSAGetLastError();
+				if (err == WSAETIMEDOUT)
+				{
+					if (td)
+					{
+						*td = 1;
+					}
+					printf("Timeout Arised while reading from socket");
+				}
+				else 
+					printf("reading failed with error: %ld\n", err);
+            }
 #else 
-		iResult = ::read(this->sockfd, buff, nb);
+            struct timeval timeout;
+            timeout.tv_sec = (int)(ms_timeo / 1000);
+	        timeout.tv_usec = ((ms_timeo % 1000) * 1000);
+			
+            int err=setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+			if (err < 0)
+            {
+                int errtype=errno;
+               
+				printf("setsockopt rec failed with err %d and errno %d\n",err,errtype);
+            }
+            iResult = ::read(this->sockfd, buff, nb);
+            if (iResult < 0)
+            {
+                int errorCode = errno;
+				if (errorCode == EWOULDBLOCK)
+				{
+                    if(td){
+					    *td=1;
+				    }
+                    std::cout << "Timeout arised while reading from socket" << std::endl;
+                }
+                else
+                    std::cout << "Error reading from socket" << std::endl;
+            }
 #endif
-		if (iResult < 0)
-		{
-			std::cout << "Error reading from socket" << std::endl;
-			return iResult;
-		}
-		return iResult;
+            
+            return iResult;
+        }
+        return -1;
 }
 
 int TCPSocketClient::write(void *buffer,int nb,int ms_timeo,int*timeout_arised)
@@ -133,12 +173,22 @@ int TCPSocketClient::write(void *buffer,int nb,int ms_timeo,int*timeout_arised)
 			int iResult;
 			std::cout << "Writing " << ((const char*)buffer) << std::endl;
 #ifdef _WIN32
+            if (setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&ms_timeo, sizeof(int)) < 0)
+				printf("setsockopt failed\n");
+
 			iResult = send(ConnectSocket,(const char*) buffer, nb, 0);
 			if (iResult == SOCKET_ERROR) 
 			{
 				printf("send failed with error: %d\n", WSAGetLastError());
 			}
 #else
+            struct timeval timeout;
+			timeout.tv_sec = (int)(ms_timeo / 1000);
+	        timeout.tv_usec = ((ms_timeo % 1000) * 1000);
+            
+			if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0)
+				printf("setsockopt wr failed\n");
+
 			iResult = ::write(sockfd, buffer, nb);
 			if (iResult < 0)
 			{
