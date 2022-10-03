@@ -171,7 +171,7 @@ int TCPSocketClient::write(void *buffer,int nb,int ms_timeo,int*timeout_arised)
 		if (is_open)
 		{
 			int iResult;
-			std::cout << "Writing " << ((const char*)buffer) << std::endl;
+			//std::cout << "Writing " << ((const char*)buffer) << std::endl;
 #ifdef _WIN32
             if (setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&ms_timeo, sizeof(int)) < 0)
 				printf("setsockopt failed\n");
