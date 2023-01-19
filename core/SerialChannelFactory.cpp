@@ -28,7 +28,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::st
 		throw std::logic_error("bad json");
 	}
 }
-AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::data::CDataWrapper& json )  throw(chaos::CException) {
+AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::data::CDataWrapper& json )   {
 	AbstractSerialChannel_psh tt;
 	GET_PARAMETER_TREE((&json),channel){
 		GET_PARAMETER_DO(channel,serdev,string,0){
