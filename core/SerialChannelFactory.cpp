@@ -19,7 +19,7 @@ ChaosMutex SerialChannelFactory::chanmutex;
 
 #ifdef CHAOS
 using namespace chaos::common::data;
-AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error){
+AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  {
 	try{
 		chaos::common::data::CDataWrapper data;
 		data.setSerializedJsonData(json.c_str());
@@ -53,7 +53,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 	return tt;
 }
 #else
-AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error){
+AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  {
 	throw std::logic_error("not implemented");
 
 }

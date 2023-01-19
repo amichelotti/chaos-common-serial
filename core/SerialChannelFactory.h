@@ -34,7 +34,7 @@ public:
 #ifdef CHAOS
     static AbstractSerialChannel_psh getChannel(const chaos::common::data::CDataWrapper& config)  ;
 #endif
-    static AbstractSerialChannel_psh getChannelFromJson(const std::string& json)  throw (std::logic_error);
+    static AbstractSerialChannel_psh getChannelFromJson(const std::string& json)  ;
 	static void removeChannel(const std::string& uid);
 	static void removeChannel(AbstractSerialChannel_psh& ch);
 
