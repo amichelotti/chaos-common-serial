@@ -30,14 +30,17 @@ int AbstractSerialChannel::read(void *buffer, int maxnb, const char *isanyof, in
   }
   while (cnt < maxnb) {
     char buf;
-    if (read(&buf, 1, ms_timeo, &t_arised) > 0) {
+    int ret;
+    if ((ret=read(&buf, 1, ms_timeo, &t_arised))> 0) {
       bufp[cnt++] = buf;
-    }
+    } 
     if (t_arised) {
       if (timeout_arised) {
         *timeout_arised = t_arised;
         return cnt;
       }
+    } else if(ret<0){
+      return ret;
     }
     if (isanyof) {
       for (int i = 0; i < strlen(isanyof); i++) {

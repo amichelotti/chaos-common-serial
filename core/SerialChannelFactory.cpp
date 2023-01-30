@@ -43,10 +43,13 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 		}
 		GET_PARAMETER_DO(channel,tcp,string,0){
 			GET_PARAMETER(channel,port,int32_t,1);
-			//bool oldstyle=false;
-			GET_PARAMETER_DO(channel,oldstyle,bool,0)
+			GET_PARAMETER_DO(channel,oldstyle,bool,0){
+				DPRINT("OLDSTYLE %d",oldstyle);
+				return getChannel(tcp,port,oldstyle);
 
-			return getChannel(tcp,port,oldstyle);
+			}
+
+			return getChannel(tcp,port);
 
 		}
 	}
