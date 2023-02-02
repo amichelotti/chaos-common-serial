@@ -8,13 +8,13 @@
 
 
 #include <boost/program_options.hpp>
-#include <boost/regex.hpp>
+#include <regex>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <common/serial/models/Ocem/OcemProtocolBuffered.h>
 #include <common/debug/core/debug.h>
-#include <boost/regex.hpp>
+#include <regex>
 #include <boost/program_options.hpp>
 #include <common/serial/core/SerialChannelFactory.h>
 #include <string>
@@ -25,7 +25,7 @@ using namespace chaos::metadata_service_client;
 
 #endif
 #define DEFAULT_TIMEOUT 10000
-using boost::regex;
+using std::regex;
 
 static char* convToUpper(char*str){
   char *b = str;
@@ -113,7 +113,6 @@ void raw_test(common::serial::ocem::OcemProtocol*oc){
   while(fgets(stringa,sizeof(stringa),stdin)){
       uint64_t tm,tot;
       char *t=stringa;
-      boost::smatch match;
       toks=0;
       convToUpper(t);
       tok[0]=strtok(stringa," ");

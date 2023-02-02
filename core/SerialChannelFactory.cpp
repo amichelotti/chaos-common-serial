@@ -9,6 +9,7 @@
 #include "PosixSerialComm.h"
 #include <common/debug/core/debug.h>
 #include "TCPSerialChannel.h"
+#include "TCPSocketClient.h"
 
 namespace common {
 namespace serial {
@@ -18,7 +19,7 @@ ChaosMutex SerialChannelFactory::chanmutex;
 
 #ifdef CHAOS
 using namespace chaos::common::data;
-AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error){
+AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  {
 	try{
 		chaos::common::data::CDataWrapper data;
 		data.setSerializedJsonData(json.c_str());
@@ -27,7 +28,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::st
 		throw std::logic_error("bad json");
 	}
 }
-AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::data::CDataWrapper& json )  throw(chaos::CException) {
+AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::data::CDataWrapper& json )   {
 	AbstractSerialChannel_psh tt;
 	GET_PARAMETER_TREE((&json),channel){
 		GET_PARAMETER_DO(channel,serdev,string,0){
@@ -42,6 +43,11 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 		}
 		GET_PARAMETER_DO(channel,tcp,string,0){
 			GET_PARAMETER(channel,port,int32_t,1);
+			GET_PARAMETER_DO(channel,oldstyle,bool,0){
+				DPRINT("OLDSTYLE %d",oldstyle);
+				return getChannel(tcp,port,oldstyle);
+
+			}
 
 			return getChannel(tcp,port);
 
@@ -50,7 +56,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const chaos::common::
 	return tt;
 }
 #else
-AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  throw (std::logic_error){
+AbstractSerialChannel_psh SerialChannelFactory::getChannelFromJson(const std::string& json)  {
 	throw std::logic_error("not implemented");
 
 }
@@ -72,7 +78,7 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(std::string serial_de
 	return ret;
 
 }
-AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip, int port ){
+AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip, int port , bool oldstyle){
 	AbstractSerialChannel_psh p;
 	std::stringstream ss;
 	ss<<ip<<":"<<port;
@@ -84,10 +90,23 @@ AbstractSerialChannel_psh SerialChannelFactory::getChannel(const std::string& ip
 		return i->second;
 	}
 	DPRINT("creating TCP channel '%s' @%p",ss.str().c_str(),p.get());
-	TCPSerialChannel* ptr=new TCPSerialChannel(ss.str());
-	AbstractSerialChannel_psh ret(ptr);
-	unique_channels[ss.str()]=ret;
-	return ret;
+	if (oldstyle)
+	{
+		DPRINT("Using old style sockets");
+		TCPSocketClient* ptr= new TCPSocketClient(ss.str());
+		AbstractSerialChannel_psh ret(ptr);
+		unique_channels[ss.str()]=ret;
+		return ret;
+	}
+	else
+	{
+	   TCPSerialChannel* ptr=new TCPSerialChannel(ss.str());
+	   AbstractSerialChannel_psh ret(ptr);
+	   unique_channels[ss.str()]=ret;
+	   return ret;
+	}
+	
+	
 }
 
 void SerialChannelFactory::removeChannel(const std::string& uid){

@@ -12,12 +12,68 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/string.hpp>
 #include <common/debug/core/debug.h>
+#include <boost/asio/read_until.hpp>
 using boost::lambda::var;
 
 using boost::lambda::_1;
 namespace common {
 namespace serial {
 
+int TCPSerialChannel::readLine(std::string&buffer,const std::string delimiter,int timeo_ms){
+	int ret=-100;
+	boost::asio::streambuf streambuf;
+	read_result = boost::asio::error::would_block;
+	buffer="";
+  boost::asio::async_read_until(socket, streambuf, delimiter,
+    [delimiter, &streambuf,&buffer,this](
+      const boost::system::error_code& error_code,
+      std::size_t bytes_transferred)
+    {
+      // Verify streambuf contains more data beyond the delimiter. (e.g.
+      // async_read_until read beyond the delimiter)
+     // assert(streambuf.size() > bytes_transferred);
+  //    DPRINT(" streambuf size %ld byte transferred %ld bytes",streambuf.size(),bytes_transferred);
+
+      // Extract up to the first delimiter.
+      buffer={buffers_begin(streambuf.data()),buffers_begin(streambuf.data()) + bytes_transferred- delimiter.size()};
+
+      // Consume through the first delimiter so that subsequent async_read_until
+      // will not reiterate over the same data.
+      streambuf.consume(bytes_transferred);
+	//  this->wait_read.notify_one();
+   //   DPRINT(" received \"%s\" %ld bytes", buffer.c_str(),streambuf.size());
+		read_result = error_code;
+
+    }
+  );
+  if(timeo_ms>0){
+		//	DPRINT("setting timeout to %d ms",ms_timeo);
+			//timer.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
+			deadline.expires_from_now(boost::posix_time::milliseconds(timeo_ms));
+			check_deadline();
+
+	}
+/*	if(timeo_ms>0){
+	 	if(!this->wait_read.timed_wait(lock_wait,boost::posix_time::milliseconds(timeo_ms)){
+			DERR("TIMEOUT");
+			return ret;
+		}
+	} else {
+		this->wait_read.wait(lock_wait);
+	}*/
+	io_service.reset();
+	do {
+	//	DPRINT(" waiting... delimiter %s",delimiter.c_str() );
+
+		io_service.run_one(); 
+	} while (read_result == boost::asio::error::would_block);
+	if(read_result==boost::asio::error::timed_out){
+		DPRINT(" TIMEOUT... delimiter %s",delimiter.c_str() );
+
+		return -100;
+	}
+	return buffer.size();
+}
 
 TCPSerialChannel::TCPSerialChannel(const std::string& _ip_port):AbstractSerialChannel(_ip_port),socket(io_service),deadline(io_service),byte_read(0), read_result(boost::asio::error::would_block),command(true),timeout_arised(0)  {
 	// TODO Auto-generated constructor stub
@@ -61,7 +117,7 @@ int TCPSerialChannel::init(){
 			DERR("Connecting %s:%d error:%s",ip.c_str(),port,error.message().c_str());
 			return -1;
 		}
-		check_deadline();
+		//check_deadline();
 	} catch(boost::system::system_error e){
 		DERR("and error occurred connecting: %s",e.what());
 		return -2;
@@ -90,7 +146,7 @@ void TCPSerialChannel::read_handler(const boost::system::error_code& ec, std::si
 	if(ec){
 		DERR("error ec:%s, size:%lu",ec.message().c_str(),size);
 	} else {
-		DPRINT("read %lu bytes",size);
+		//DPRINT("read %lu bytes",size);
 	}
 
 }
@@ -109,6 +165,7 @@ void TCPSerialChannel::check_deadline( )
      DERR("TIMEOUT!!");
      socket.cancel(ignored_ec);
      timeout_arised++;
+	 read_result=boost::asio::error::timed_out;
      // There is no longer an active deadline. The expiry is set to positive
      // infinity so that the actor takes no action until a new deadline is set.
      deadline.expires_at(boost::posix_time::pos_infin);
@@ -125,14 +182,19 @@ int TCPSerialChannel::read(void *buff,int nb,int ms_timeo,int*td){
 		boost::system::error_code error;
 		int ret;
 		timeout_arised=0;
+	//	asio::deadline_timer timer(socket.get_io_service()); 
+
 		if(ms_timeo>0){
 		//	DPRINT("setting timeout to %d ms",ms_timeo);
+			//timer.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
 			deadline.expires_from_now(boost::posix_time::milliseconds(ms_timeo));
+			check_deadline();
 
 		}
 		asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(),boost::bind(&TCPSerialChannel::read_handler,this, boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 		//asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(), ReadHandler);
 		//asio::async_read( socket,  boost::asio::buffer(buff, nb), boost::asio::transfer_all(), var(ec) = _1);
+		io_service.reset();
 		do io_service.run_one(); while (read_result == boost::asio::error::would_block);
 
 

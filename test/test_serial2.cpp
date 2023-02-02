@@ -11,8 +11,8 @@
 #include <common/debug/core/debug.h>
 #include <common/serial/serial.h>
 #include <boost/program_options.hpp>
-#include <boost/regex.hpp>
-static const boost::regex parse_arg("(.+),(\\d+),(\\d),(\\d),(\\d)");
+#include <regex>
+static const std::regex parse_arg("(.+),(\\d+),(\\d),(\\d),(\\d)");
 #define BIG_BUFFER_SIZE 1024*1024
 /**
    test of byte_available
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
 
   int cycles=100,start_size=0;
-  boost::smatch match;
+  std::smatch match;
   boost::program_options::options_description desc("options");
   unsigned*wptr,*rptr;
   int bufsize = 8192;
