@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
 project(common_serial_ocem)
 #     -DOCEM_CORE_DEBUG -DOCEM_PROTOCOL_DEBUG
 ADD_DEFINITIONS( -DOCEM_PROTOCOL_BUFFER_DEBUG -fPIC)
