@@ -9,13 +9,14 @@
 #include <boost/asio/deadline_timer.hpp>
 
 #include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/algorithm/string.hpp>
+//#include <boost/lambda/lambda.hpp>
+//#include <boost/algorithm/string.hpp>
+#include <chaos/common/ChaosCommon.h>
 #include <common/debug/core/debug.h>
 #include <boost/asio/read_until.hpp>
-using boost::lambda::var;
+//using boost::lambda::var;
 
-using boost::lambda::_1;
+//using boost::lambda::_1;
 namespace common {
 namespace serial {
 
@@ -78,7 +79,8 @@ int TCPSerialChannel::readLine(std::string&buffer,const std::string delimiter,in
 TCPSerialChannel::TCPSerialChannel(const std::string& _ip_port):AbstractSerialChannel(_ip_port),socket(io_service),deadline(io_service),byte_read(0), read_result(boost::asio::error::would_block),command(true),timeout_arised(0)  {
 	// TODO Auto-generated constructor stub
 	std::vector<std::string> strs;
-	boost::split(strs, _ip_port, boost::is_any_of(":"));
+	//boost::split(strs, _ip_port, boost::is_any_of(":"));
+	strs=chaos::split(_ip_port,":");
 	if(strs.size()!=2){
 		throw std::logic_error("bad IP:port specification");
 	}
